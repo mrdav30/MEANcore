@@ -155,23 +155,6 @@ var initGlobalConfigFiles = function (config, assets) {
 
   // Setting Globbed policies files
   config.files.server.policies = getGlobbedPaths(assets.server.policies);
-
-  // Setting Globbed Submodules Config
-  config.submodules = [];
-  var appConfig = getGlobbedPaths(assets.submodules.appConfig);
-  appConfig.forEach(function (configPath) {
-    var basePath = path.dirname(configPath);
-    var routes = assets.submodules.routes.map(dest => basePath + '/' + dest);
-    var configs = assets.submodules.config.map(dest => basePath + '/' + dest);
-    var sockets = assets.submodules.sockets.map(dest => basePath + '/' + dest);
-    config.submodules.push({
-      basePath: basePath,
-      appConfig: configPath,
-      routes: getGlobbedPaths(routes),
-      configs: getGlobbedPaths(configs),
-      sockets: getGlobbedPaths(sockets)
-    });
-  });
 };
 
 /**

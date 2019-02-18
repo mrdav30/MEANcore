@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Meancore</title>
+  <base href="/">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+  <meta name="Expires" content="Tue, 01 Jun 1999 19:58:02 GMT">
+  <meta http-equiv="cache-control" content="no-cache" />
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= GOOGLE_ANALYTICS_ID %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+  </script>
+</head>
+
+<body>
+  <!--[if lt IE 10]>
+  <p>
+    You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
+  </p>
+  <![endif]-->
+  <noscript>
+    <p>
+      This page requires JavaScript to work properly. Please enable JavaScript in your browser.
+    </p>
+  </noscript>
+  <app-root></app-root>
+</body>
+
+</html>

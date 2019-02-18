@@ -5,37 +5,40 @@
   "projects": {
     "meancore": {
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "client",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist/meancore",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "index": "client/index.html",
+            "main": "client/main.ts",
+            "polyfills": "client/polyfills.ts",
+            "tsConfig": "client/tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "client/favicon.ico",
+              "client/robots.txt",
+              "client/assets"
             ],
             "styles": [
-              "src/main.css"
+              "client/main.scss"
             ],
             "scripts": [],
             "es5BrowserSupport": true
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "client/environments/environment.ts",
+                "with": "client/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -45,13 +48,17 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                }
-              ]
+              "budgets": [{
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              }]
+            },
+            "test": {
+              "fileReplacements": [{
+                "replace": "client/environments/environment.ts",
+                "with": "client/environments/environment.test.ts"
+              }]
             }
           }
         },
@@ -63,6 +70,9 @@
           "configurations": {
             "production": {
               "browserTarget": "meancore:build:production"
+            },
+            "test": {
+              "browserTarget": "ng-configuration:build:test"
             }
           }
         },
@@ -75,17 +85,17 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
+            "main": "client/test.ts",
+            "polyfills": "client/polyfills.ts",
+            "tsConfig": "client/tsconfig.spec.json",
+            "karmaConfig": "client/karma.conf.js",
             "styles": [
-              "src/styles.css"
+              "client/main.scss"
             ],
             "scripts": [],
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "client/favicon.ico",
+              "client/assets"
             ]
           }
         },
@@ -93,8 +103,8 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
+              "client/tsconfig.app.json",
+              "client/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

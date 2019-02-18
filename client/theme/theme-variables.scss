@@ -1,0 +1,17 @@
+/*
+ * Application global variables.
+ */
+
+// Set Font Awesome font path
+$fa-font-path: "~@fortawesome/fontawesome-free-webfonts/webfonts";
+
+// ---------------------------------------------------------------------------
+// Bootstrap variables
+//
+// Override Bootstrap variables here to suite your theme.
+// Copy variables you want to customize from node_modules/bootstrap/scss/_variables.scss
+
+// Use Bootstrap defaults for other variables, imported here so we can access all app variables in one place when used
+// in components.
+@import "~bootstrap/scss/_functions";
+@import "~bootstrap/scss/_variables";

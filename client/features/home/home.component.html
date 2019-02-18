@@ -1,0 +1,15 @@
+<div class="container">
+  <div *ngIf="!isLoggedIn">
+    <div class="card">
+      <div class="card-title">MEANcore Applications</div>
+      <div class="card-body">Please log in to continue.</div>
+    </div>
+  </div>
+  <div *ngIf="isLoggedIn">
+    <!--Admin -->
+    <div class="card">
+      <div class="card-title">MEANcore</div>
+      <div class="card-body">Common core to all MEAN applications.</div>
+    </div>
+  </div>
+</div>

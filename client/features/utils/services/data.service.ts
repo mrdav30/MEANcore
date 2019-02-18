@@ -1,0 +1,54 @@
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+import { environment } from '../../../environments/environment';
+
+import { HandleErrorService } from './handle-error.service';
+
+// generic data service to be used as base for other entity services
+export abstract class AbstractRestService {
+    protected appBase = environment.appBase;
+
+    constructor(
+        protected http: HttpClient,
+        protected actionUrl: string,
+        protected handleErrorService: HandleErrorService) { }
+
+    GetAll(): Observable<{}> {
+        return this.http.get(this.appBase + this.actionUrl)
+            .pipe(
+                catchError(this.handleErrorService.handleError())
+            );
+    }
+
+    GetById(id: string): Observable<{}> {
+        return this.http.get(this.appBase + this.actionUrl + '/' + id)
+            .pipe(
+                catchError(this.handleErrorService.handleError())
+            );
+    }
+
+    Save(entity: any): Observable<{}> {
+        if (entity._id) {
+            // update
+            return this.http.put(this.appBase + this.actionUrl + '/' + entity._id, entity)
+                .pipe(
+                    catchError(this.handleErrorService.handleError())
+                );
+        } else {
+            // create
+            return this.http.post(this.appBase + this.actionUrl, entity)
+                .pipe(
+                    catchError(this.handleErrorService.handleError())
+                );
+        }
+    }
+
+    Delete(id: string): Observable<{}> {
+        return this.http.delete(this.appBase + this.actionUrl + '/' + id)
+            .pipe(
+                catchError(this.handleErrorService.handleError())
+            );
+    }
+}

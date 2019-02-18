@@ -7,10 +7,26 @@
 
 # dependencies
 /node_modules
+/coverage
+.coverage.yml
 
 # profiling files
 chrome-profiler-events.json
 speed-measure-plugin.json
+
+# General
+# =======
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.tmp
+*.bak
+*.swp
+logs/
+build/
 
 # IDEs and editors
 /.idea
@@ -20,6 +36,50 @@ speed-measure-plugin.json
 *.launch
 .settings/
 *.sublime-workspace
+
+
+# Sublime editor
+# ==============
+.sublime-project
+*.sublime-project
+*.sublime-workspace
+
+# Eclipse project files
+# =====================
+.project
+.settings/
+.*.md.html
+.metadata
+*~.nib
+local.properties
+
+# IntelliJ
+# ========
+*.iml
+
+# Cloud9 IDE
+# =========
+.c9/
+data/
+mongod
+
+# Visual Studio
+# =========
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+better-assert/.npmignore
+better-assert/History.md
+better-assert/Makefile
+better-assert/Readme.md
+better-assert/example.js
+better-assert/index.js
+better-assert/package.json
+coverage_js/
+npm-debug.log.
+package-lock.json
+.vs/
 
 # IDE - VSCode
 .vscode/*
@@ -41,4 +101,11 @@ testem.log
 
 # System Files
 .DS_Store
+ehthumbs.db
 Thumbs.db
+
+# MEANcore app and assets
+# ======================
+/content
+config/env/local.js
+config/env/local-*.js

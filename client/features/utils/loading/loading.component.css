@@ -1,0 +1,33 @@
+/*loading gif*/
+
+.loading-div {
+  margin: 0px;
+  padding: 0px;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: #666666;
+  z-index: 999999;
+  opacity: .8;
+  filter: opacity(70%);
+}
+
+.loading-div p {
+  color: White;
+  left: 45%;
+  position: absolute;
+  top: 30%;
+}
+
+
+.loading-div p>img {
+  display: block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: url('/assets/images/ajax-loading.gif') no-repeat;
+  width: 180px; /* Width of new image */
+  height: 236px; /* Height of new image */
+  padding-left: 180px; /* Equal to width of new image */
+}
