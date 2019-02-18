@@ -1,0 +1,53 @@
+.upload-picture {
+    position: relative;
+    z-index: 1;
+    background: rgba(19, 19, 19, 1);
+    background: -moz-linear-gradient(left, rgba(19, 19, 19, 1) 0%, rgba(76, 76, 76, 0.39) 100%);
+    background: -webkit-linear-gradient(left, rgba(19, 19, 19, 1) 0%, rgba(76, 76, 76, 0.39) 100%);
+    background: -o-linear-gradient(left, rgba(19, 19, 19, 1) 0%, rgba(76, 76, 76, 0.39) 100%);
+    background: -ms-linear-gradient(left, rgba(19, 19, 19, 1) 0%, rgba(76, 76, 76, 0.39) 100%);
+    background: linear-gradient(to right, rgba(19, 19, 19, 1) 0%, rgba(76, 76, 76, 0.39) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#131313', endColorstr='#4c4c4c', GradientType=1);
+    /* background-image: url('./api/admin/content/images/avatar-placeholder.png'); */
+    background-size: contain;
+    border-radius: 1em;
+}
+
+.upload-picture img {
+    max-width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+    border-radius: 1em;
+}
+
+.upload-picture label {
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    margin: 0px;
+    position: relative;
+    z-index: 3;
+}
+
+.upload-picture .drag-over .infotext {
+    color: white;
+    border: dashed 5px white;
+}
+
+.upload-picture .infotext {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    border: dashed 3px rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    font-size: 150%;
+    display: table
+}
+
+.upload-picture .infotext span {
+    vertical-align: middle;
+    display: table-cell;
+    height: 100%;
+}

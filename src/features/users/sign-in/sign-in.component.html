@@ -1,0 +1,47 @@
+<div class="container" *ngIf="!authService.isLoggedIn">
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <div class="card" [ngbCollapse]="isUserValidated">
+        <h3 class="card-header">Sign In</h3>
+        <div class="card-body">
+          <div>
+            <label for="usernameOrEmail">Username/Email</label>
+            <input id="usernameOrEmail" name="usernameOrEmail" type="text" [(ngModel)]="user.usernameOrEmail"
+              #usernameOrEmail="ngModel" #userFocus spellcheck="false" class="form-control" appAnimatedLabel
+              (keydown.Enter)="validateUser()" />
+          </div>
+          <div *ngIf="usernameOrEmail.invalid && usernameOrEmail.errors" class="alert alert-danger">
+            <div *ngIf="usernameOrEmail.errors.notused"><i class="fas fa-exclamation mr-2"></i>Username or email doesn't
+              exist</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/sign-up" class="card-link">Create account</a>
+          <button type="button" [disabled]="usernameOrEmail.invalid" (click)="validateUser()" class="btn btn-primary float-right">Next</button>
+        </div>
+      </div>
+      <div class="card" [ngbCollapse]="!isUserValidated">
+        <h3 class="card-header">Welcome, {{user.usernameOrEmail}}!</h3>
+        <div class="card-body">
+          <div>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" [(ngModel)]="user.password" #password="ngModel"
+              #passFocus spellcheck="false" class="form-control inline-control" appAnimatedLabel appPasswordToggle
+              (keydown.Enter)="signIn()" />
+          </div>
+          <div *ngIf="password.invalid && password.errors" class="alert alert-danger">
+            <div *ngIf="password.errors.incorrect">
+              <i class="fas fa-exclamation mr-2"></i>Password doesn't match our records
+            </div>
+          </div>
+          <a [routerLink]="['/password/recover', user.usernameOrEmail]" class="card-link">Forgot password?</a>
+        </div>
+        <div class="card-footer">
+          <button type="button" (click)="signIn()" [disabled]="password.invalid" class="btn btn-primary float-right">Next</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+</div>

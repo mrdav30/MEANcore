@@ -1,0 +1,45 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-navbar sticky-top">
+  <a class="navbar-brand" routerLink="/home"><img class="img-fluid" src="{{appLogo}}" /></a>
+  <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarNav"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <!-- data-toggle="collapse" data-target="#navbarNav" -->
+  <div class="collapse navbar-collapse" id="navbarNav" [ngbCollapse]="isNavbarCollapsed">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a routerLink="{{appHome}}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+          <i class="fas fa-home md-24"></i>
+        </a>
+      </li>
+      <ng-template ngFor let-menu [ngForOf]="visibleMenus">
+        <li class="nav-item">
+          <a *ngIf="appBase === menu.appBase" routerLink="{{menu.route}}" routerLinkActive="active-link" class="nav-link">{{menu.label}}</a>
+          <a *ngIf="appBase !== menu.appBase" href="{{ menu.appBase.slice(0, -1) + menu.route }}" [ngClass]="menu.styleClass"
+            class="nav-link">{{menu.label}}</a>
+        </li>
+      </ng-template>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li *ngIf="showSearchNav" class="nav-item search-nav">
+        <form name="searchForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+          <div class="search-panel mr-2">
+            <button type="button" class="btn btn-small" (click)="isSearchVisible=isSearchVisible?false:true">
+              <i class="fas fa-search"></i>
+            </button>
+            <input type="search" name="searchQuery" id="searchQuery" *ngIf="isSearchVisible" placeholder="Search..."
+              [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required>
+          </div>
+        </form>
+      </li>
+      <li *ngIf="!user && showLoginNav" class="nav-item">
+        <a routerLink="/sign-in" routerLinkActive="btn-secondary" class="btn btn-outline-dark mr-2">Login</a>
+        <a routerLink="/sign-up" routerLinkActive="btn-secondary" class="btn btn-outline-dark">Get Started</a>
+      </li>
+      <li *ngIf="user" class="nav-item">
+        <span class="mr-2"><strong>Hello, {{user.displayName}}!</strong></span>
+        <button type="button" (click)="logout()" class="btn btn-outline-dark">Logout</button>
+      </li>
+    </ul>
+  </div>
+</nav>

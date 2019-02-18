@@ -3,7 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  APP_DEFAULT_ROUTE: 'home',
+  GOOGLE_ANALYTICS_ID: 'UA-133696885-1',
+  APP_NAME: 'meancorecms',
+  APP_BASE: '/meancore-cms/',
+  API_END_POINT: '',
+  APP_TAG_NAME: 'meancore-cms'
 };
 
 /*
