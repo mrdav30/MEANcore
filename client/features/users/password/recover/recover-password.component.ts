@@ -16,16 +16,16 @@ export interface RouteParams {
 export class RecoverPasswordComponent implements OnInit {
   @ViewChild('usernameOrEmail') usernameOrEmail: NgModel;
   @ViewChild('password') password: NgModel;
-  private user: any = {
+  public user: any = {
     usernameOrEmail: '',
     password: ''
   };
-  private isSecretValidated = false;
-  private isSecretReset = false;
-  private message: string;
+  public isSecretValidated = false;
+  public isSecretReset = false;
+  public message: string;
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) { }

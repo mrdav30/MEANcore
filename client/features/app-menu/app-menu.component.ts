@@ -28,7 +28,7 @@ export class AppMenuComponent implements OnInit {
   public appSearchRoute: string;
   public searchQuery: string;
   public isNavbarCollapsed = true;
-  private user: any = false;
+  public user: any = false;
 
   constructor(
     private router: Router,

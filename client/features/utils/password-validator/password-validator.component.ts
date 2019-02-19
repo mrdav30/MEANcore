@@ -10,10 +10,10 @@ export class PasswordValidatorComponent implements OnChanges {
     @Input() passwordToCheck: string;
     @Output() GetPasswordValidation = new EventEmitter<any>();
 
-    private requirementsColor: string;
-    private requirementsProgress: string;
+    public requirementsColor: string;
+    public requirementsProgress: string;
     // Requirements Meter - visual indicator for users
-    private requirementsMeter = [{
+    public requirementsMeter = [{
         color: 'danger',
         progress: '20'
     }, {

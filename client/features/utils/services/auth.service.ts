@@ -21,6 +21,7 @@ export class AuthService {
     public redirectUrl = environment.appDefaultRoute;
     public user: any = false;
     public userChange$: Observable<any>;
+    public isLoggedIn = false;
 
     private currentUserUrl = this.appBase + this.appEndPoint + '/users/me';
     private signInUrl = this.appBase + this.appEndPoint + '/auth/signIn'; // URL to web API
@@ -39,7 +40,7 @@ export class AuthService {
     ) {
         this.http.get(this.currentUserUrl).subscribe((data) => {
             this.user = data;
-        })
+        });
         this.userChange$ = new Observable(observer => this.observer = observer).pipe(
             share()
         );
@@ -119,6 +120,7 @@ export class AuthService {
 
     notifyUserSubscribers(user: any): void {
         this.user = user;
+        this.isLoggedIn = true;
         this.observer.next(this.user);
     }
 

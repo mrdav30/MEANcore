@@ -22,7 +22,7 @@ export class SignInComponent implements OnInit, AfterViewInit {
   public isUserValidated = false;
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
   ) { }
 

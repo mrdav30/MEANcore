@@ -10,20 +10,20 @@ import { environment } from '../../../environments/environment';
     styleUrls: ['./image-upload.component.css']
 })
 export class ImageUploadComponent implements OnInit {
-    private uploader: FileUploader;
-    private hasDragOver = false;
+    public uploader: FileUploader;
+    public hasDragOver = false;
 
     @Input()
-    private imageWidth = 200;
+    public imageWidth = 200;
 
     @Input()
-    private imageHeight = 200;
+    public imageHeight = 200;
 
     @Input()
-    private currentUrl = '';
+    public currentUrl = '';
 
     @Output()
-    private urlChange = new EventEmitter();
+    public urlChange = new EventEmitter();
 
     constructor() {
         this.uploader = new FileUploader({

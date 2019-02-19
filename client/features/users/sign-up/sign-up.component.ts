@@ -29,10 +29,10 @@ export class SignUpComponent implements OnInit {
   public isInstallation = false;
 
   constructor(
+    public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit() {

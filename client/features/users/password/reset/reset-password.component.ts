@@ -15,17 +15,17 @@ export interface RouteParams {
 })
 export class ResetPasswordComponent implements OnInit {
   @ViewChild('newPassword') newPassword: NgModel;
-  private credentials: any = {
+  public credentials: any = {
     token: '',
     newPassword: ''
   };
-  private isTokenInvalid = false;
-  private isSecretReset = false;
-  private passwordTooltip: string;
-  private passwordErrors: string[];
+  public isTokenInvalid = false;
+  public isSecretReset = false;
+  public passwordTooltip: string;
+  public passwordErrors: string[];
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute
   ) { }
