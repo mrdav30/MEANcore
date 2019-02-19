@@ -391,7 +391,7 @@ var initApps = function (db) {
       }
       res.redirect(toApp);
     } else if (req.originalUrl === '/favicon.ico') {
-      res.sendFile('assets/icons/favicon.ico', {
+      res.sendFile('/favicon.ico', {
         root: '.'
       });
     } else {

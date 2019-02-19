@@ -5,7 +5,7 @@ module.exports = {
     title: 'MEANcore - MeanStack Web Projects!',
     name: 'MEANcore',
     description: 'Applications runing on mean stack',
-    keywords: 'mongodb, express, angularjs, typescript, node.js, mongoose, passport',
+    keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
     appBase: '/',
     domainPattern: '',
     defaultPage: 'index.html'
