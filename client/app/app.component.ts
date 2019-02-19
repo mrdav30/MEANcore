@@ -5,6 +5,8 @@ import { distinctUntilChanged } from 'rxjs/operators';
 
 import { environment } from '../environments/environment';
 
+import { ScriptInjectorService } from '../features/utils';
+
 declare var gtag: (type: string, googleAnalyticsID: string, pageProperties: any) => void;
 
 @Component({
@@ -18,8 +20,13 @@ export class AppComponent implements OnInit {
 
   public constructor(
     private titleService: Title,
-    private router: Router
-  ) { }
+    private router: Router,
+    private scriptInjectorService: ScriptInjectorService
+  ) {
+    this.scriptInjectorService.load('gtag').catch(error => {
+      console.log(error);
+    });
+  }
 
   ngOnInit() {
     this.router.events.pipe(

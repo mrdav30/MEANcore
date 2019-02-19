@@ -25,6 +25,7 @@ import { LoadingInterceptor } from '../features/utils';
 import { LoadingService } from '../features/utils';
 import { MessagingInterceptor } from '../features/utils';
 import { MessagingService } from '../features/utils';
+import { ScriptInjectorService } from '../features/utils';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { MessagingService } from '../features/utils';
     },
     LoadingService,
     MessagingService,
+    ScriptInjectorService,
     {
       provide: APP_BASE_HREF,
       useValue: environment.appBase

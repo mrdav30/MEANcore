@@ -46,6 +46,8 @@ export * from './services/messaging.service';
 export * from './services/password-validator.service';
 export * from './services/recaptcha.service';
 export * from './services/cached-data.service';
+export * from './services/seo.service';
+export * from './services/script-injector.service';
 
 export { LoadingInterceptor } from './services/loading.interceptor';
 export { MessagingInterceptor } from './services/messaging.interceptor';

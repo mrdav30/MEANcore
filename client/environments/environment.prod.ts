@@ -12,7 +12,7 @@ export const environment = {
   appBase: '/',
   appEndPoint: 'api',
   MENU_CONFIG: [],
-  googleAnalyticsID: '',
+  googleAnalyticsID: 'UA-XXXX-Y',
   recaptchaSiteKey: '',
   owasp: {
     allowPassphrases: true,
@@ -24,5 +24,6 @@ export const environment = {
   showLoginNav: true,
   showSearchNav: true,
   imageUploadApi: '',
-  siteSearchRoute: '/'
+  siteSearchRoute: '/',
+  twitterHandle: ''
 };
