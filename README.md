@@ -30,7 +30,12 @@ Make sure you have installed all of the following prerequisites on your developm
  npm install
  ```
 
-2. Launch development server, and open `localhost:3000` in your browser:
+ 2. Build client files for distribution:
+ ```bash
+ npm build
+ ```
+
+3. Launch development server, and open `localhost:4200` in your browser:
  ```bash
  npm start
  ```
@@ -67,19 +72,20 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 
 Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
-npm start                     | Build client and run development server on `http://localhost:3000/`
-npm run start.prod            | Build client for production and run production server on `http://localhost:3000/`
+npm start                     | Run development ng server on `http://localhost:4200/` using proxy config for express endpoints
+npm run client                | Run development ng server on `http://localhost:4200/` only
+npm run server                | Run development express server only 
 npm run build                 | Lint code and build app for development in `dist/` folder
 npm run build.prod            | Lint code and build app for production in `dist/` folder
-npm test                      | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
+npm test:client               | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
 npm run test                  | Lint code and run unit tests once for continuous integration
 npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
-npm run lint                  | Lint code
+npm run lint:client           | Lint code
 npm run postinstall           | Updates version information based on project's package.json
 
 ## Development server
 
-Run `npm start` for a dev server. Navigate to `http://localhost:3000/`. The app will automatically reload if you change
+Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
 any of the source files.
 You should not use `ng serve` directly, as it does not use the backend express configuration.
 
