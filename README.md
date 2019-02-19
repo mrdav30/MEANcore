@@ -139,8 +139,8 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - [Async](https://caolan.github.io/async/)
 
 ## Contributing
-We welcome pull requests from the community! Just be sure to read the [contributing](CONTRIBUTING.md) doc to get started.
+We welcome pull requests from the community! Just be sure to read the [contributing](https://github.com/mrdav30/MEANcore/blob/master/CONTRIBUTING.MD) doc to get started.
 
 # Licence
 
-[License](LICENSE.md) 
+[License](https://github.com/mrdav30/MEANcore/blob/master/LICENSE.MD) 
