@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/client/environments/version.ts
 
 # dependencies
 /node_modules
