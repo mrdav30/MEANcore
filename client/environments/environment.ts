@@ -5,7 +5,7 @@
 import { VERSION } from './version';
 
 // Define menu config as:
-// MENU_CONFIG { menus: [{ label: string; route: string; permission: string[]; visible: boolean; }]; }
+// MENU_CONFIG: [{ label: string; route: string; permission: string[]; visible: boolean; }];
 
 export const environment = {
   production: false,

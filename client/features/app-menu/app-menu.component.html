@@ -14,9 +14,7 @@
       </li>
       <ng-template ngFor let-menu [ngForOf]="visibleMenus">
         <li class="nav-item">
-          <a *ngIf="appBase === menu.appBase" routerLink="{{menu.route}}" routerLinkActive="active-link" class="nav-link">{{menu.label}}</a>
-          <a *ngIf="appBase !== menu.appBase" href="{{ menu.appBase.slice(0, -1) + menu.route }}" [ngClass]="menu.styleClass"
-            class="nav-link">{{menu.label}}</a>
+          <a routerLink="{{menu.route}}" routerLinkActive="active-link" class="nav-link">{{menu.label}}</a>
         </li>
       </ng-template>
     </ul>
