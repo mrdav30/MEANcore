@@ -30,12 +30,7 @@ Make sure you have installed all of the following prerequisites on your developm
  npm install
  ```
 
- 2. Build client files for distribution:
- ```bash
- npm build
- ```
-
-3. Launch development server, and open `localhost:4200` in your browser:
+2. Launch development server, and open `localhost:4200` in your browser:
  ```bash
  npm start
  ```
