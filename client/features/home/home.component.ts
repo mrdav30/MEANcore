@@ -12,16 +12,16 @@ import * as _ from 'lodash';
     styleUrls: ['home.component.css']
 })
 export class HomeComponent implements OnInit {
-    isLoggedIn: boolean = false;
+    isLoggedIn = false;
 
     constructor(
-        public _authService: AuthService,
-        public _router: Router
+        public authService: AuthService,
+        public router: Router
     ) { }
 
     ngOnInit() {
-        if (this._authService.user) {
-            this.isLoggedIn = this._authService.user ? true : false;
+        if (this.authService.user) {
+            this.isLoggedIn = this.authService.user ? true : false;
         }
     }
 }
