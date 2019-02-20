@@ -29,6 +29,7 @@ import { CsvPipe } from './pipes/csv.pipe';
 import { SlugifyPipe } from './pipes/slugify.pipe';
 
 import { AuthGuard } from './services/auth-guard.service';
+import { DirectAccessGuard } from './services/direct-access-guard.service';
 import { AuthService } from './services/auth.service';
 import { HandleErrorService } from './services/handle-error.service';
 import { LoadingService } from './services/loading.service';
@@ -39,6 +40,7 @@ export * from './pipes/slugify.pipe';
 
 export * from './services/data.service';
 export * from './services/auth-guard.service';
+export * from './services/direct-access-guard.service';
 export * from './services/auth.service';
 export * from './services/handle-error.service';
 export * from './services/loading.service';
@@ -88,6 +90,7 @@ const pipes = [
 const services = [
   AuthGuard,
   AuthService,
+  DirectAccessGuard,
   HandleErrorService,
   LoadingService,
   MessagingService,

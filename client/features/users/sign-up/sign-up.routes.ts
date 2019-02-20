@@ -2,6 +2,8 @@ import { Route } from '@angular/router';
 
 import { SignUpComponent } from './sign-up.component';
 
+import { DirectAccessGuard } from '../../utils';
+
 export const SignUpRoutes: Route[] = [
   {
     path: 'sign-up',
@@ -10,6 +12,7 @@ export const SignUpRoutes: Route[] = [
   },
   {
     path: 'sign-up/:install',
-    component: SignUpComponent
+    component: SignUpComponent,
+    canActivate: [DirectAccessGuard]
   }
 ];
