@@ -6,7 +6,7 @@ module.exports = {
   server: {
     /* ServerJs */
     allJS: ['server.js', 'config/**/*.js', 'server/**/*.js'],
-    routes: ['server/!(core)/*routes.js', 'server/core/**/*routes.js'],
+    routes: ['server/!(core)/**/*routes.js', 'server/core/**/*routes.js'],
     sockets: 'server/**/*sockets.js',
     models: 'server/**/*model.js',
     config: ['server/*/config/*.js'],
