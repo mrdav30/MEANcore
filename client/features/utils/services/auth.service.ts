@@ -19,11 +19,10 @@ export class AuthService {
     public appBase = environment.appBase;
     public appEndPoint = environment.appEndPoint;
     public redirectUrl = environment.appDefaultRoute;
-    public user: any = false;
+    public user: any;
     public userChange$: Observable<any>;
     public isLoggedIn = false;
 
-    private currentUserUrl = this.appBase + this.appEndPoint + '/users/me';
     private signInUrl = this.appBase + this.appEndPoint + '/auth/signIn'; // URL to web API
     private recoverUrl = this.appBase + this.appEndPoint + '/auth/forgot';
     private resetUrl = this.appBase + this.appEndPoint + '/auth/reset/';
@@ -31,19 +30,18 @@ export class AuthService {
     private validateUrl = this.appBase + this.appEndPoint + '/auth/validate';
     private signUpUrl = this.appBase + this.appEndPoint + '/auth/signUp';
     private installUrl = this.appBase + this.appEndPoint + '/install';
-    private observer: Observer<any>;
+    private authListener: Observer<any>;
 
     constructor(
         private http: HttpClient,
         private router: Router,
         private handleErrorService: HandleErrorService
     ) {
-        this.http.get(this.currentUserUrl).subscribe((data) => {
-            this.user = data;
-        });
-        this.userChange$ = new Observable(observer => this.observer = observer).pipe(
+        this.userChange$ = new Observable(observer => this.authListener = observer).pipe(
             share()
         );
+        // retrieve user information from local storage
+        this.user = JSON.parse(localStorage.getItem('user')) || false;
     }
 
     signIn(user): Observable<{}> {
@@ -119,9 +117,14 @@ export class AuthService {
     }
 
     notifyUserSubscribers(user: any): void {
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+        } else {
+            localStorage.removeItem('user');
+        }
         this.user = user;
-        this.isLoggedIn = true;
-        this.observer.next(this.user);
+        this.isLoggedIn = user ? true : false;
+        this.authListener.next(this.user);
     }
 
     hasRole(role): boolean {
