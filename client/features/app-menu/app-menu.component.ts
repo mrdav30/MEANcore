@@ -15,7 +15,7 @@ export class MenuConfig { menus: [{ label: string; route: string; permission: st
 })
 
 export class AppMenuComponent implements OnInit {
-  public appHome: string;
+  public appHome: string = environment.appDefaultRoute;
   public appBase: string;
   public appLogo: string;
   //  UI Config
@@ -43,7 +43,6 @@ export class AppMenuComponent implements OnInit {
     this.showSearchNav = environment.showSearchNav;
     this.appSearchRoute = environment.siteSearchRoute;
     this.appBase = environment.appBase;
-    this.appHome = this.authService.redirectUrl;
     this.authService.userChange$.subscribe(user => {
       this.onSetUser(user);
     });
@@ -64,7 +63,6 @@ export class AppMenuComponent implements OnInit {
   }
 
   setMenuUI(): void {
-    this.appHome = this.authService.redirectUrl;
     let userRoles = this.user && this.user.roles ? this.user.roles : ['user'];
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
