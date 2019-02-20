@@ -147,7 +147,7 @@ var initMiddleware = function (app, config) {
       }
       res.redirect(toApp);
     } else if (req.originalUrl === '/favicon.ico') {
-      res.sendFile('/favicon.ico', {
+      res.sendFile(config.staticFiles + 'favicon.ico', {
         root: '.'
       });
     } else {
