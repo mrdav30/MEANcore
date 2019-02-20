@@ -137,6 +137,23 @@ var initMiddleware = function (app, config) {
   //     }
   //     next();
   // });
+
+  app.use(cookieParser());
+  app.use(function (req, res, next) {
+    if (req.originalUrl.length <= 1) {
+      let toApp = req.cookies.lastapp;
+      if (config.appBase !== toApp) {
+        toApp = '/';
+      }
+      res.redirect(toApp);
+    } else if (req.originalUrl === '/favicon.ico') {
+      res.sendFile('/favicon.ico', {
+        root: '.'
+      });
+    } else {
+      next();
+    }
+  });
 };
 
 /**
@@ -189,9 +206,9 @@ var initViewEngine = function (app, config) {
 };
 
 /**
- * Invoke modules server configuration
+ * Invoke server configuration
  */
-var initModulesConfiguration = function (app, config) {
+var initServerConfiguration = function (app, config) {
   config.files.server.configs.forEach(function (configPath) {
     require(path.resolve(configPath))(app);
   });
@@ -218,7 +235,7 @@ var initHelmetHeaders = function (app) {
 /**
  * Configure the modules static routes
  */
-var initModulesClientRoutes = function (app, config) {
+var initClientRoutes = function (app, config) {
   var cacheTime = -9999;
   if (process.env.NODE_ENV !== 'development') {
     cacheTime = '30d';
@@ -246,9 +263,9 @@ var initModulesClientRoutes = function (app, config) {
 };
 
 /**
- * Configure the modules server routes
+ * Configure the server routes
  */
-var initModulesServerRoutes = function (app, config) {
+var initServerRoutes = function (app, config) {
   // Globbing routing files
   config.files.server.routes.forEach(function (routePath) {
     require(path.resolve(routePath))(app);
@@ -339,7 +356,7 @@ var init = function (config, db) {
   enableCORS(app);
 
   // Initialize modules static client routes, before session!
-  initModulesClientRoutes(app, config);
+  initClientRoutes(app, config);
 
   //  Configure mongodb models
   initServerModels(config);
@@ -348,10 +365,10 @@ var init = function (config, db) {
   // initSession(app, config, db);
 
   // Initialize Modules configuration
-  initModulesConfiguration(app, config);
+  initServerConfiguration(app, config);
 
   // Initialize modules server routes
-  initModulesServerRoutes(app, config);
+  initServerRoutes(app, config);
 
   // Initialize error routes
   initErrorRoutes(app, config);
@@ -381,23 +398,6 @@ var initApps = function (db) {
   } else if (config.app.domainPattern) {
     rootApp.use(vhost(config.app.domainPattern, init(config, db)));
   }
-
-  rootApp.use(cookieParser());
-  rootApp.use(function (req, res, next) {
-    if (req.originalUrl.length <= 1) {
-      let toApp = req.cookies.lastapp;
-      if (appConfig.find(conf => conf.appBase === toApp)) {
-        toApp = '/';
-      }
-      res.redirect(toApp);
-    } else if (req.originalUrl === '/favicon.ico') {
-      res.sendFile('/favicon.ico', {
-        root: '.'
-      });
-    } else {
-      next();
-    }
-  });
 
   rootApp = configureSocketIO(rootApp, db);
 

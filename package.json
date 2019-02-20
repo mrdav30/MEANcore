@@ -59,7 +59,6 @@
     "git-describe": "^4.0.4",
     "googleapis": "^37.1.0",
     "helmet": "^3.8.2",
-    "highlightjs": "^9.12.0",
     "https-proxy-agent": "^2.2.1",
     "lodash": "~4.17.5",
     "lusca": "~1.5.1",
