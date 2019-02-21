@@ -7,12 +7,11 @@ import { DirectAccessGuard } from '../../utils';
 export const SignUpRoutes: Route[] = [
   {
     path: 'sign-up',
-    redirectTo: 'sign-up/',
-    pathMatch: 'full'
-  },
-  {
-    path: 'sign-up/:install',
     component: SignUpComponent,
     canActivate: [DirectAccessGuard]
+  },
+  {
+    path: 'sign-up-admin/:install',
+    component: SignUpComponent
   }
 ];
