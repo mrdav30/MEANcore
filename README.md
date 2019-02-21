@@ -1,3 +1,9 @@
+[![MEAN.JS Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)]
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
+[![Dependencies Status](https://david-dm.org/mrdav30/MEANcore.svg)](https://david-dm.org/mrdav30/MEANcore)
+[![Known Vulnerabilities](https://snyk.io/test/github/mrdav30/MEANcore/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mrdav30/MEANcore?targetFile=package.json)
+
 # Meancore Starter Kit
 
 The MEANcore starter kit is a full-stack JavaScript open-source solution, which provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
