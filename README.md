@@ -1,6 +1,6 @@
-[![MEAN.JS Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)]
+[![MEAN.JS Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)](https://github.com/mrdav30/MEANcore)
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
 [![Dependencies Status](https://david-dm.org/mrdav30/MEANcore.svg)](https://david-dm.org/mrdav30/MEANcore)
 [![Known Vulnerabilities](https://snyk.io/test/github/mrdav30/MEANcore/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mrdav30/MEANcore?targetFile=package.json)
 
