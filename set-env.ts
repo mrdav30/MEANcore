@@ -19,6 +19,7 @@ export const environment = {
     apiBaseUrl: '${process.env.API_BASE_URL}',
     googleAnalyticsID: '${process.env.GOOGLE_ANALYTICS_ID}',
     recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
+    twitterHandle: '${process.env.TWITTER_HANDLE}',
     appName: '${process.env.APP_NAME}',
     appBaseUrl: '${process.env.APP_BASE_URL}',
     imageUploadUrl: '${process.env.IMAGE_UPLOAD_URL}'

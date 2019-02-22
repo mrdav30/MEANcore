@@ -67,7 +67,7 @@ import {
     SeoService,
     {
       provide: APP_BASE_HREF,
-      useValue: environment.appBase
+      useValue: environment.appBaseUrl
     },
     {
       provide: '@env',
