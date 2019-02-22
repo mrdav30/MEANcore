@@ -64,7 +64,11 @@ e2e/                         end-to-end tests
 scripts/                     additional scripts for server
 server/                      project source code for server
 reports/                     test and coverage reports
+.env                         process.env variable configuration
 proxy.conf.js                backend proxy configuration
+server.js                    script to launch express
+set-env.ts                   run to configure environment configuration based on process.env
+version.ts                   creates a version file under assets based on package version
 ```
 
 # Main tasks
@@ -73,6 +77,7 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 
 Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
+npm run config                | Produces angular environment configuration from .env
 npm start                     | Run development ng server on `http://localhost:4200/` using proxy config for express endpoints
 npm run client                | Run development ng server on `http://localhost:4200/` only
 npm run server                | Run development express server only 
@@ -82,7 +87,7 @@ npm test:client               | Run unit tests via [Karma](https://karma-runner.
 npm run test                  | Lint code and run unit tests once for continuous integration
 npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
 npm run lint:client           | Lint code
-npm run postinstall           | Updates version information based on project's package.json
+npm run postinstall           | Updates angular environment configuration from .env and version information based on project's package.json
 
 ## Development server
 
