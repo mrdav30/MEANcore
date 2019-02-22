@@ -1,9 +1,6 @@
 # How to contribute
 
-Support and contributions from the open source community are essential for keeping
-MEANcore up to date and always improving! There are a few guidelines that we need
-contributors to follow to keep the project consistent, as well as allow us to keep
-maintaining MEANcore in a reasonable amount of time.
+Support and contributions from the open source community are essential for keeping MEANcore up to date and always improving! There are a few guidelines that contributors need to follow to keep the project consistent, as well as allow us to keep maintaining MEANcore in a reasonable amount of time.
 
 ## Creating an Issue
 
