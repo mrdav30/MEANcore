@@ -21,9 +21,7 @@ export const environment = {
     recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
     appName: '${process.env.APP_NAME}',
     appBaseUrl: '${process.env.APP_BASE_URL}',
-    imageUploadUrl: '${process.env.IMAGE_UPLOAD_URL}',
-    twitterHandle: '${process.env.TWITTER_HANDLE}',
-    disqusShortname: '${process.env.DISQUS_SHORT_NAME}'
+    imageUploadUrl: '${process.env.IMAGE_UPLOAD_URL}'
 };
 `;
 
