@@ -35,10 +35,6 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [{
-                "replace": "client/environments/environment.ts",
-                "with": "client/environments/environment.prod.ts"
-              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -52,12 +48,6 @@
                 "type": "initial",
                 "maximumWarning": "2mb",
                 "maximumError": "5mb"
-              }]
-            },
-            "test": {
-              "fileReplacements": [{
-                "replace": "client/environments/environment.ts",
-                "with": "client/environments/environment.test.ts"
               }]
             }
           }

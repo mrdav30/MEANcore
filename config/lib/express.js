@@ -24,8 +24,6 @@ var config = require('../config'),
   lusca = require('lusca'),
   vhost = require('vhost');
 
-//var oracleQueryService = require(path.resolve('./app/services/oracle.query.service'));
-
 // Auth servers may not have valid SSL
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 

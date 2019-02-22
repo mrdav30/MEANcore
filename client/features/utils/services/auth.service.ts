@@ -16,20 +16,20 @@ const httpOptions = {
 @Injectable()
 export class AuthService {
     public appName = environment.appName;
-    public appBase = environment.appBase;
-    public appEndPoint = environment.appEndPoint;
+    public appBase = environment.appBaseUrl;
+    public apiEndPoint = environment.apiBaseUrl;
     public redirectUrl = environment.appDefaultRoute;
     public user: any;
     public userChange$: Observable<any>;
     public isLoggedIn = false;
 
-    private signInUrl = this.appBase + this.appEndPoint + '/auth/signIn'; // URL to web API
-    private recoverUrl = this.appBase + this.appEndPoint + '/auth/forgot';
-    private resetUrl = this.appBase + this.appEndPoint + '/auth/reset/';
-    private signOutUrl = this.appBase + this.appEndPoint + '/auth/signOut';
-    private validateUrl = this.appBase + this.appEndPoint + '/auth/validate';
-    private signUpUrl = this.appBase + this.appEndPoint + '/auth/signUp';
-    private installUrl = this.appBase + this.appEndPoint + '/install';
+    private signInUrl = this.appBase + this.apiEndPoint + '/auth/signIn'; // URL to web API
+    private recoverUrl = this.appBase + this.apiEndPoint + '/auth/forgot';
+    private resetUrl = this.appBase + this.apiEndPoint + '/auth/reset/';
+    private signOutUrl = this.appBase + this.apiEndPoint + '/auth/signOut';
+    private validateUrl = this.appBase + this.apiEndPoint + '/auth/validate';
+    private signUpUrl = this.appBase + this.apiEndPoint + '/auth/signUp';
+    private installUrl = this.appBase + this.apiEndPoint + '/install';
     private authListener: Observer<any>;
 
     constructor(

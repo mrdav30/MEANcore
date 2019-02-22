@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { environment } from '../../environments/environment';
 
-export class MenuConfig { menus: [{ label: string; route: string; permission: string[]; visible: boolean; }]; }
+export class MenuConfig { label: string; route: string; roles: string[]; permission: string[]; visible: boolean; }
 
 @Component({
   moduleId: module.id,
@@ -17,15 +17,15 @@ export class MenuConfig { menus: [{ label: string; route: string; permission: st
 export class AppMenuComponent implements OnInit {
   public appHome: string = environment.appDefaultRoute;
   public appBase: string;
-  public appLogo: string;
+  public appLogo = 'assets/images/logo.png';
   //  UI Config
   public menus: MenuConfig[] = [];
   public visibleMenus: MenuConfig[] = [];
-  public showLoginNav: boolean;
-  public showSearchNav: boolean;
+  public showLoginNav = false;
+  public showSearchNav = true;
   // used to toggle search input
   public isSearchVisible = false;
-  public appSearchRoute: string;
+  public appSearchRoute = '';
   public searchQuery: string;
   public isNavbarCollapsed = true;
   public user: any = false;
@@ -36,13 +36,6 @@ export class AppMenuComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.appLogo = environment.appLogo || '';
-    this.menus = environment.MENU_CONFIG ? environment.MENU_CONFIG : [];
-    // hide login/sign-up buttons per application
-    this.showLoginNav = environment.showLoginNav;
-    this.showSearchNav = environment.showSearchNav;
-    this.appSearchRoute = environment.siteSearchRoute;
-    this.appBase = environment.appBase;
     this.authService.userChange$.subscribe(user => {
       this.onSetUser(user);
     });

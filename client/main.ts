@@ -5,7 +5,7 @@ import { environment } from './environments/environment';
 
 import { AppModule } from './app/app.module';
 
-const APP_BASE = environment.appBase;
+const APP_BASE = environment.appBaseUrl;
 
 if (environment.production) {
   enableProdMode();

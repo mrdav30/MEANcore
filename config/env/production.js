@@ -14,7 +14,7 @@ module.exports = {
     host: process.env.HOST || '0.0.0.0',
     //replace with your splunk HTTP event collector endpoint
     splunkUrl: 'http://splunk.org:8088/services/collector',
-    splunkToken: 'a76c4f11-9aa2-41c6-ba1e-85bf3c0e7dad',
+    splunkToken: 'replace-with-spunk',
     mongoDB: {
         uri: process.env.MONGOHQ_URL || process.env.MONGODB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/meancore',
         options: {

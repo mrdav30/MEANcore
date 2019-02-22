@@ -27,7 +27,7 @@ export class ImageUploadComponent implements OnInit {
 
     constructor() {
         this.uploader = new FileUploader({
-            url: environment.appBase + environment.imageUploadApi,
+            url: environment.appBaseUrl + environment.imageUploadUrl,
             disableMultipart: false,
             autoUpload: true,
             itemAlias: 'upload'

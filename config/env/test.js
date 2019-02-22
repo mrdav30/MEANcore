@@ -8,7 +8,7 @@ module.exports = {
   },
   port: process.env.PORT || 3001,
   splunkUrl: 'https://splunk.acmoore.org:8088/services/collector',
-  splunkToken: 'a76c4f11-9aa2-41c6-ba1e-85bf3c0e7dad',
+  splunkToken: 'replace-with-spunk',
   mongoDB: {
     uri: process.env.MONGOHQ_URL || process.env.MONGODB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + '/meancore-test',
     // Enable mongoose debug mode

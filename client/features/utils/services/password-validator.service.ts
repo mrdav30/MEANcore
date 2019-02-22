@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import * as owasp from 'owasp-password-strength-test/owasp-password-strength-test';
 
-import { environment } from '../../../environments/environment';
-
 @Injectable()
 export class PasswordValidatorService {
+    public owaspConfig = {
+        allowPassphrases: true,
+        maxLength: 128,
+        minLength: 10,
+        minPhraseLength: 20,
+        minOptionalTestsToPass: 4
+    };
 
     constructor() {
-        owasp.config(environment.owasp);
+        owasp.config(this.owaspConfig);
     }
 
     public getResult(password) {
