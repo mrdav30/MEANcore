@@ -1,4 +1,4 @@
-[![MEAN.JS Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)](https://github.com/mrdav30/MEANcore)
+[![MEANcore Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)](https://github.com/mrdav30/MEANcore)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
 [![Dependencies Status](https://david-dm.org/mrdav30/MEANcore.svg)](https://david-dm.org/mrdav30/MEANcore)
