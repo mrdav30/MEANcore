@@ -17,7 +17,11 @@ module.exports = {
   // Config required for Google Recaptcha
   RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY || '',
   mongoDB: {
-    promise: global.Promise
+    promise: global.Promise,
+    options: {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    }
   },
   port: process.env.PORT || 3000,
   host: process.env.HOST || '0.0.0.0',

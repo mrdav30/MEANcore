@@ -78,7 +78,8 @@ var initSession = function (app, config, db) {
     name: config.sessionKey,
     store: new mongoStore({
       db: db,
-      collection: config.sessionCollection
+      collection: config.sessionCollection,
+      url: config.mongoDB.uri
     })
   }));
 

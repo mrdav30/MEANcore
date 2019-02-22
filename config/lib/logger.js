@@ -11,14 +11,15 @@ var validFormats = ['combined', 'common', 'dev', 'short', 'tiny'];
 
 // Instantiating the default winston application logger with the Console
 // transport
-var logger = new winston.Logger({
+var logger = new winston.createLogger({
   transports: [
     new winston.transports.Console({
       level: 'info',
-      colorize: true,
-      showLevel: true,
       handleExceptions: true,
-      humanReadableUnhandledException: true
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
     })
   ],
   exitOnError: false
@@ -29,7 +30,7 @@ var logger = new winston.Logger({
 // Useful for integrating with stream-related mechanism like Morgan's stream
 // option to log all HTTP requests to a file
 logger.stream = {
-  write: function(msg) {
+  write: function (msg) {
     logger.info(msg);
   }
 };
@@ -50,7 +51,7 @@ logger.setupFileLogger = function setupFileLogger(options) {
     // Check first if the configured path is writable and only then
     // instantiate the file logging transport
     if (fs.openSync(fileLoggerTransport.filename, 'a+')) {
-      logger.add(winston.transports.File, fileLoggerTransport);
+      logger.add(new winston.transports.File(fileLoggerTransport));
     }
 
     return true;
@@ -86,21 +87,18 @@ logger.getLogOptions = function getLogOptions(configOptions) {
     return false;
   }
 
-  var logPath = configFileLogger.directoryPath + '/' + configFileLogger.fileName;
+  var logPath = configFileLogger.directoryPath + '\\' + configFileLogger.fileName;
 
   return {
     level: 'debug',
-    colorize: false,
     filename: logPath,
-    timestamp: true,
     maxsize: configFileLogger.maxsize ? configFileLogger.maxsize : 10485760,
     maxFiles: configFileLogger.maxFiles ? configFileLogger.maxFiles : 2,
-    json: (_.has(configFileLogger, 'json')) ? configFileLogger.json : false,
-    eol: '\n',
-    tailable: true,
-    showLevel: true,
     handleExceptions: true,
-    humanReadableUnhandledException: true
+    humanReadableUnhandledException: true,
+    format: winston.format.combine(
+      winston.format.simple()
+    )
   };
 
 };

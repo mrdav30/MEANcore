@@ -59,11 +59,11 @@ exports.forgot = function (req, res, next) {
 				to: user.email,
 				from: config.mailer.from,
 				subject: 'Password Reset',
-				path: 'app/users/templates/reset-password-email',
+				path: 'server/users/templates/reset-password-email',
 				data: {
 					name: user.displayName,
 					appName: config.app.title,
-					url: 'http://' + req.headers.host + req.baseUrl + '/auth/reset/' + token
+					url: 'http://' + req.headers.host + req.baseUrl + '/api/auth/reset/' + token
 				}
 			};
 
@@ -167,7 +167,7 @@ exports.reset = function (req, res, next) {
 				to: user.email,
 				from: config.mailer.from,
 				subject: 'Your password has been changed',
-				path: 'app/users/templates/reset-password-confirm-email',
+				path: 'server/users/templates/reset-password-confirm-email',
 				data: {
 					name: user.displayName,
 					appName: config.app.title

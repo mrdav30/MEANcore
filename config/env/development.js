@@ -52,8 +52,7 @@ module.exports = {
             directoryPath: process.cwd(),
             fileName: 'app.log',
             maxsize: 10485760,
-            maxFiles: 2,
-            json: false
+            maxFiles: 2
         }
     },
     ldap: {

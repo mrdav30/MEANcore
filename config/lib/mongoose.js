@@ -23,12 +23,8 @@ module.exports.loadModels = function (callback) {
 module.exports.connect = function (callback) {
     mongoose.Promise = config.mongoDB.promise;
 
-    var options = _.merge(config.mongoDB.options || {}, {
-        useMongoClient: true
-    });
-
     mongoose
-        .connect(config.mongoDB.uri, options)
+        .connect(config.mongoDB.uri, config.mongoDB.options)
         .then(function (connection) {
             // Enabling mongoose debug mode if required
             mongoose.set('debug', config.mongoDB.debug);
