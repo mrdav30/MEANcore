@@ -111,3 +111,4 @@ Thumbs.db
 /content
 config/env/local.js
 config/env/local-*.js
+client/environments/environment.ts
