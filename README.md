@@ -146,8 +146,11 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - [Async](https://caolan.github.io/async/)
 
 ## Contributing
-We welcome pull requests from the community! Just be sure to read the [contributing](https://github.com/mrdav30/MEANcore/blob/master/CONTRIBUTING.MD) doc to get started.
+Pull requests are from the community! Just be sure to read the [contributing](https://github.com/mrdav30/MEANcore/blob/master/CONTRIBUTING.MD) doc to get started.
 
-# Licence
+## Credits
+Special thanks to the [MEAN.JS](https://github.com/meanjs/mean) team for the hard work they put into their project.  I used their base for many projects over the years and learned a lot from what they accomplished.
+
+# License
 
 [License](https://github.com/mrdav30/MEANcore/blob/master/LICENSE.MD) 
