@@ -41,7 +41,14 @@ export class AuthService {
             share()
         );
         // retrieve user information from local storage
-        this.user = JSON.parse(localStorage.getItem('user')) || false;
+        const currentUser = JSON.parse(localStorage.getItem('user')) || false;
+        const now = new Date().getTime();
+        // remove user from local storage if expired
+        if (currentUser && currentUser.expiresIn < now) {
+            localStorage.removeItem('user');
+        } else {
+            this.user = currentUser;
+        }
     }
 
     signIn(user): Observable<{}> {
@@ -118,6 +125,8 @@ export class AuthService {
 
     notifyUserSubscribers(user: any): void {
         if (user) {
+            // User localStore expiration is set by default to 24 hours
+            user.expiresIn = new Date().getTime() + 24 * (60 * 60 * 1000);
             localStorage.setItem('user', JSON.stringify(user));
         } else {
             localStorage.removeItem('user');
