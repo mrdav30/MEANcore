@@ -81,6 +81,11 @@ var UserSchema = new Schema({
         type: Date,
         default: Date.now
     },
+    /* for security validation to prevent hack attempts */
+    knownIPAddresses: {
+        type: [String],
+        default: [],
+    },
     /* For reset password */
     resetPasswordToken: {
         type: String
