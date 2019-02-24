@@ -4,8 +4,6 @@
 /dist
 /tmp
 /out-tsc
-/client/environments/version.ts
-.env
 
 # dependencies
 /node_modules
@@ -111,4 +109,5 @@ Thumbs.db
 /content
 config/env/local.js
 config/env/local-*.js
-client/environments/environment.ts
+_content/
+.env
