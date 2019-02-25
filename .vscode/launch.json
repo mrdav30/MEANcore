@@ -15,9 +15,6 @@
         "--nolazy",
         "--max-old-space-size=4096"
       ],
-      "env": {
-        "NODE_ENV": "development"
-      },
       "console": "internalConsole",
       "sourceMaps": false,
       "outFiles": []

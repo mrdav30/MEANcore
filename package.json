@@ -17,16 +17,19 @@
   "scripts": {
     "ng": "ng",
     "config": "node set-env.ts",
-    "build": "npm run config && node version.ts && ng build",
-    "build.prod": "npm run config && node version.ts && ng build --prod --aot ",
-    "client": "ng serve --aot --progress=false --proxy-config proxy.conf.js",
-    "server": "nodemon server.js",
-    "start": "node version.ts && npm-run-all -p client server",
-    "test:client": "node version.ts && ng test",
+    "version": "node version.ts",
+    "build": "npm run config && npm run version && ng build",
+    "build.prod": "npm run config && npm run version && ng build --prod --aot ",
+    "client:dev": "ng serve --aot --progress=false --proxy-config proxy.conf.js",
+    "server:dev": "nodemon server.js",
+    "start:dev": "npm run version && npm-run-all -p client:dev server:dev",
+    "server:prod": "node server.js",
+    "start:prod": "npm run version && npm run server:prod",
+    "test:client": "ng test",
     "lint:client": "ng lint",
     "lint:server": "tslint './server/**/*.ts' -c ./server/tslint.json --fix",
-    "e2e": "npm run config && node version.ts && ng e2e",
-    "postinstall": "node version.ts && npm run build"
+    "e2e": "npm run config && ng e2e",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "@angular/animations": "~7.2.0",

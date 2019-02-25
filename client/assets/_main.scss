@@ -64,7 +64,8 @@ a {
 a:focus,
 a:hover {
   color: #7b7b7b;
-  text-decoration: none;
+  text-decoration: none !important;
+  font-weight: 900;
   outline: 0
 }
 
@@ -287,9 +288,10 @@ button.navbar-toggle span {
   color: #337ab7;
 }
 
-.nav-tabs>li.active>a {
+.nav-tabs>li>a.active {
   background-color: #fff !important;
   color: #555;
+  font-weight: 900;
 }
 
 a.disabled {

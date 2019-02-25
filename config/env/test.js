@@ -87,18 +87,20 @@ module.exports = {
   mailer: {
     from: process.env.MAILER_FROM || 'MAILER_FROM',
     options: {
-      service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
+      // using ethereal email for development
+      host: process.env.MAILER_HOST || "smtp.ethereal.email",
+      port: process.env.MAILER_PORT || 587,
+      service: process.env.MAILER_SERVICE_PROVIDER || '',
+      //  secure: true, // true = use TLS, false = upgrade later with STARTTLS
       auth: {
-        user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
-        pass: process.env.MAILER_PASSWORD || 'MAILER_PASSWORD'
-      }
-      //SNMP
-      // host: 'MAILER_HOST',
-      // port: MAILER_PORT,
-      // tls: {
-      //     rejectUnauthorized: false
-      // },
-      // ignoreTLS: true
+        user: process.env.MAILER_USER || "username",
+        pass: process.env.MAILER_PASS || "pass"
+      },
+    //   tls: {
+    //     // do not fail on invalid certs
+    //     rejectUnauthorized: false,
+    //     ciphers: 'SSLv3'
+    //   }
     }
   }
 };

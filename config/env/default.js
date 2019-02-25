@@ -53,7 +53,7 @@ module.exports = {
     p3p: 'ABCDEF',
     xssProtection: true
   },
-  illegalUsernames: ['meanjs', 'administrator', 'password', 'admin', 'user',
+  illegalUsernames: ['meancore', 'administrator', 'password', 'admin', 'user',
     'unknown', 'anonymous', 'null', 'undefined', 'api'
   ],
   aws: {
