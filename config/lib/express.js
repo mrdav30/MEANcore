@@ -44,7 +44,7 @@ var initLocalVariables = function (app, config) {
   // Setting application local variables
   app.locals.title = config.app.title;
   app.locals.description = config.app.description;
-  if (config.secure && config.secure.ssl === true) {
+  if (config.secure && config.secure.ssl) {
     app.locals.secure = config.secure.ssl;
   }
   app.locals.keywords = config.app.keywords;

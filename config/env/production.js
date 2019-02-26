@@ -4,9 +4,9 @@ var fs = require('fs');
 
 module.exports = {
   secure: {
-    ssl: false,
-    privateKey: './config/sslcerts/private.key',
-    certificate: './config/sslcerts/certificate.crt',
+    ssl: process.env.HOST_SECURE || false,
+    privateKey: './config/sslcerts/key.pem',
+    certificate: './config/sslcerts/cert.pem',
     caBundle: './config/sslcerts/ca_bundle.crt'
   },
   port: process.env.PORT || 8443,

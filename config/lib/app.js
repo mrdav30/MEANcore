@@ -56,7 +56,7 @@ module.exports.start = function start(callback) {
       }));
 
       // Create server URL
-      var server = (process.env.NODE_ENV === 'secure' ? 'https://' : 'http://') + config.host + ':' + config.port;
+      var server = (config.secure && config.secure.ssl ? 'https://' : 'http://') + config.host + ':' + config.port;
       // Logging initialization
       console.log('--');
       console.log(chalk.green(config.app.title));
