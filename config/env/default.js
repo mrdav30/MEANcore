@@ -3,11 +3,10 @@
 module.exports = {
   app: {
     title: 'MEANcore - MeanStack Web Projects!',
-    name: 'MEANcore',
+    name: process.env.APP_NAME || 'meancore',
     description: 'Applications runing on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
     appBase: process.env.APP_BASE_URL || '/',
-    domainPattern: process.env.DOMAIN_PATTERN || '',
     defaultPage: 'index.html'
   },
   // Config required for Google Analytics
@@ -28,6 +27,7 @@ module.exports = {
   // DOMAIN config should be set to the fully qualified application accessible
   // URL. For example: https://www.myapp.com (including port if required).
   domain: process.env.DOMAIN,
+  domainPattern: process.env.DOMAIN_PATTERN || '',
   // Session Cookie settings
   sessionCookie: {
     // session expiration is set by default to 24 hours
