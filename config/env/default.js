@@ -19,7 +19,9 @@ module.exports = {
     promise: global.Promise,
     options: {
       useNewUrlParser: true,
-      useCreateIndex: true
+      useCreateIndex: true,
+      keepAlive: 30000,
+      connectTimeoutMS: 30000
     }
   },
   port: process.env.PORT || 3000,
