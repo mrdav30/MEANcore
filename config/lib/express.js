@@ -138,21 +138,6 @@ var initMiddleware = function (app, config) {
   // });
 
   app.use(cookieParser());
-  app.use(function (req, res, next) {
-    if (req.originalUrl.length <= 1) {
-      let toApp = req.cookies.lastapp;
-      if (config.appBase !== toApp) {
-        toApp = '/';
-      }
-      res.redirect(toApp);
-    } else if (req.originalUrl === '/favicon.ico') {
-      res.sendFile(config.staticFiles + 'favicon.ico', {
-        root: '.'
-      });
-    } else {
-      next();
-    }
-  });
 };
 
 /**
