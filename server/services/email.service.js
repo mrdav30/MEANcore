@@ -33,7 +33,7 @@ exports.sendEmail = function (req, res, options, next) {
         done(null, options.emailHTML);
       } else if (options.path) {
         if (options.data) {
-          options.data.baseUrl = options.data.baseUrl || baseUrl;
+          options.data.baseUrl = options.data.baseUrl || res.locals.host;
         }
         res.render(path.resolve(options.path), options.data, function (err, emailHTML) {
           if (err) {
@@ -61,7 +61,7 @@ exports.sendEmail = function (req, res, options, next) {
           console.error('Mail - Error : - ', err, err.message);
           console.error('Mail - Options ', mailOptions);
         }
-        if (!err && process.env.NODE_ENV === 'development') {
+        if (!err && config.mailer.test) {
           // retrieve sample sent from ethereal mail
           console.log('Preview URL: ' + nodemailer.getTestMessageUrl(response));
         }

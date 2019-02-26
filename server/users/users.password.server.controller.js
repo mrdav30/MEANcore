@@ -63,7 +63,7 @@ exports.forgot = function (req, res, next) {
         data: {
           name: user.displayName,
           appTitle: config.app.title,
-          url: 'http://' + req.headers.host + req.baseUrl + '/api/auth/reset/' + token
+          url: res.locals.host + '/api/auth/reset/' + token
         }
       };
 
