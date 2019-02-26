@@ -16,15 +16,10 @@ var createTestAccount = function (config, cb) {
 exports.sendEmail = function (req, res, options, next) {
   var config = req.app.locals.config;
   var mailTransport;
-  var httpTransport = 'http://';
-  if (config.secure && config.secure.ssl === true) {
-    httpTransport = 'https://';
-  }
-  var baseUrl = req.app.get('domain') || httpTransport + req.headers.host;
 
   async.waterfall([
     function (done) {
-      if (process.env.NODE_ENV === 'development') {
+      if (config.mailer.test) {
         createTestAccount(config, (err) => {
           done(err);
         })

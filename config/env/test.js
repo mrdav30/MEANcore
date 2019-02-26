@@ -85,22 +85,24 @@ module.exports = {
     callbackURL: '/auth/github/callback'
   },
   mailer: {
+    test: process.env.MAILER_TEST || true,
     from: process.env.MAILER_FROM || 'MAILER_FROM',
     options: {
       // using ethereal email for development
       host: process.env.MAILER_HOST || "smtp.ethereal.email",
-      port: process.env.MAILER_PORT || 587,
       service: process.env.MAILER_SERVICE_PROVIDER || '',
+      port: process.env.MAILER_PORT || 587,
       //  secure: true, // true = use TLS, false = upgrade later with STARTTLS
       auth: {
         user: process.env.MAILER_USER || "username",
         pass: process.env.MAILER_PASS || "pass"
       },
-    //   tls: {
-    //     // do not fail on invalid certs
-    //     rejectUnauthorized: false,
-    //     ciphers: 'SSLv3'
-    //   }
+      //SNMP
+      //   tls: {
+      //     // do not fail on invalid certs
+      //     rejectUnauthorized: false,
+      //     ciphers: 'SSLv3'
+      //   }
     }
   }
 };
