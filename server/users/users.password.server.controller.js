@@ -62,7 +62,7 @@ exports.forgot = function (req, res, next) {
         path: 'server/users/templates/reset-password-email',
         data: {
           name: user.displayName,
-          appName: config.app.title,
+          appTitle: config.app.title,
           url: 'http://' + req.headers.host + req.baseUrl + '/api/auth/reset/' + token
         }
       };
@@ -176,7 +176,7 @@ exports.reset = function (req, res, next) {
         path: 'server/users/templates/reset-password-confirm-email',
         data: {
           name: user.displayName,
-          appName: config.app.title
+          appTitle: config.app.title
         }
       };
 
