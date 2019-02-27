@@ -62,8 +62,8 @@ exports.forgot = function (req, res, next) {
         path: 'server/users/templates/reset-password-email',
         data: {
           name: user.displayName,
-          appName: config.app.title,
-          url: 'http://' + req.headers.host + req.baseUrl + '/api/auth/reset/' + token
+          appTitle: config.app.title,
+          url: res.locals.host + '/api/auth/reset/' + user.username + '/' + token
         }
       };
 
@@ -96,10 +96,10 @@ exports.validateResetToken = function (req, res) {
     }
   }, function (err, user) {
     if (!user) {
-      return res.redirect(req.baseUrl + '/password/reset/invalid');
+      return res.redirect(req.baseUrl + '/password/reset/' + req.params.username + '/invalid');
     }
 
-    res.redirect(req.baseUrl + '/password/reset/' + req.params.token);
+    res.redirect(req.baseUrl + '/password/reset/' + req.params.username + '/' + req.params.token);
   });
 };
 

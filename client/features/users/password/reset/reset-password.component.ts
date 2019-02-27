@@ -5,6 +5,7 @@ import { NgModel } from '@angular/forms';
 import { AuthService } from '../../../utils';
 
 export interface RouteParams {
+  username: string;
   token: string;
 }
 
@@ -19,6 +20,7 @@ export class ResetPasswordComponent implements OnInit {
     token: '',
     newPassword: ''
   };
+  public username: string;
   public isTokenInvalid = false;
   public isSecretReset = false;
   public passwordTooltip: string;
@@ -32,11 +34,9 @@ export class ResetPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe((params: RouteParams) => {
-      if (params.token === 'invalid') {
-        this.isTokenInvalid = true;
-      } else {
-        this.credentials.token = params.token;
-      }
+      this.isTokenInvalid = params.token === 'invalid' ? true : false;
+      this.credentials.token = params.token !== 'invalid' ? params.token : 'invalid';
+      this.username = params.username ? params.username : null;
     });
   }
 
