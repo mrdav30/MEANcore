@@ -28,6 +28,7 @@ import { ReCaptchaDirective } from './directives/recaptcha.directive';
 import { CsvPipe } from './pipes/csv.pipe';
 import { SlugifyPipe } from './pipes/slugify.pipe';
 
+import { ConfigService } from './services/config.service';
 import { AuthGuard } from './services/auth-guard.service';
 import { DirectAccessGuard } from './services/direct-access-guard.service';
 import { AuthService } from './services/auth.service';
@@ -39,6 +40,8 @@ import { PasswordValidatorService } from './services/password-validator.service'
 export * from './pipes/slugify.pipe';
 
 export * from './services/data.service';
+export * from './services/app-load.service';
+export * from './services/config.service';
 export * from './services/auth-guard.service';
 export * from './services/direct-access-guard.service';
 export * from './services/auth.service';
@@ -88,6 +91,7 @@ const pipes = [
 ];
 
 const services = [
+  ConfigService,
   AuthGuard,
   AuthService,
   DirectAccessGuard,

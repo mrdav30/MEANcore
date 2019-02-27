@@ -4,7 +4,7 @@ import { ResetPasswordComponent } from './reset-password.component';
 
 export const ResetPasswordRoutes: Route[] = [
   {
-    path: 'password/reset/:token',
+    path: 'password/reset/:username/:token',
     component: ResetPasswordComponent
   }
 ];

@@ -63,7 +63,7 @@ exports.forgot = function (req, res, next) {
         data: {
           name: user.displayName,
           appTitle: config.app.title,
-          url: res.locals.host + '/api/auth/reset/' + token
+          url: res.locals.host + '/api/auth/reset/' + user.username + '/' + token
         }
       };
 
@@ -96,10 +96,10 @@ exports.validateResetToken = function (req, res) {
     }
   }, function (err, user) {
     if (!user) {
-      return res.redirect(req.baseUrl + '/password/reset/invalid');
+      return res.redirect(req.baseUrl + '/password/reset/' + req.params.username + '/invalid');
     }
 
-    res.redirect(req.baseUrl + '/password/reset/' + req.params.token);
+    res.redirect(req.baseUrl + '/password/reset/' + req.params.username + '/' + req.params.token);
   });
 };
 
@@ -118,7 +118,7 @@ exports.reset = function (req, res, next) {
             $gt: Date.now()
           }
         })
-        .select('username displayName email roles password salt')
+        // .select('username displayName email roles password salt')
         .exec(function (err, user) {
           if (!err && user) {
             if (!user.authenticate(passwordDetails.newPassword)) {
@@ -143,8 +143,8 @@ exports.reset = function (req, res, next) {
                       });
                     } else {
                       // Return authenticated user
-                      res.json({
-                        user: user,
+                      res.status(200).send({
+                        user: req.user,
                         secretReset: true
                       });
 
@@ -176,7 +176,7 @@ exports.reset = function (req, res, next) {
         path: 'server/users/templates/reset-password-confirm-email',
         data: {
           name: user.displayName,
-          appTitle: config.app.title
+          appName: config.app.title
         }
       };
 
@@ -200,45 +200,45 @@ exports.changePassword = function (req, res) {
 
   if (req.user) {
     if (passwordDetails.newPassword) {
-      User.findById(req.user._id)
-        .select('username displayName email roles password salt')
-        .exec(function (err, user) {
-          if (!err && user) {
-            if (user.authenticate(passwordDetails.currentPassword)) {
-              user.password = passwordDetails.newPassword;
+      User.findById(req.user._id).exec(function (err, user) {
+        if (!err && user) {
+          if (user.authenticate(passwordDetails.currentPassword)) {
+            user.password = passwordDetails.newPassword;
 
-              user.save(function (err) {
-                if (err) {
-                  return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                  });
-                } else {
-                  // Remove sensitive data before login
-                  user.password = undefined;
-                  user.salt = undefined;
+            user.save(function (err) {
+              if (err) {
+                return res.status(400).send({
+                  message: errorHandler.getErrorMessage(err)
+                });
+              } else {
+                // Remove sensitive data before login
+                user.password = undefined;
+                user.salt = undefined;
 
-                  req.login(user, function (err) {
-                    if (err) {
-                      res.status(400).send(err);
-                    } else {
-                      res.send({
-                        message: 'Password changed successfully'
-                      });
-                    }
-                  });
-                }
-              });
-            } else {
-              res.status(400).send({
-                message: 'Current password is incorrect'
-              });
-            }
+                req.login(user, function (err) {
+                  if (err) {
+                    res.status(400).send({
+                      message: errorHandler.getErrorMessage(err)
+                    });
+                  } else {
+                    res.send({
+                      message: 'Password changed successfully'
+                    });
+                  }
+                });
+              }
+            });
           } else {
             res.status(400).send({
-              message: 'User is not found'
+              message: 'Current password is incorrect'
             });
           }
-        });
+        } else {
+          res.status(400).send({
+            message: 'User is not found'
+          });
+        }
+      });
     } else {
       res.status(400).send({
         message: 'Please provide a new password'
