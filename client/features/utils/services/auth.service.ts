@@ -23,6 +23,7 @@ export class AuthService {
     public userChange$: Observable<any>;
     public isLoggedIn = false;
 
+    private getProfileUrl = this.appBase + this.apiEndPoint + '/users/me';
     private signInUrl = this.appBase + this.apiEndPoint + '/auth/signIn'; // URL to web API
     private recoverUrl = this.appBase + this.apiEndPoint + '/auth/forgot';
     private resetUrl = this.appBase + this.apiEndPoint + '/auth/reset/';
@@ -40,8 +41,15 @@ export class AuthService {
         this.userChange$ = new Observable(observer => this.authListener = observer).pipe(
             share()
         );
-        // retrieve user information from local storage
-        this.user = JSON.parse(localStorage.getItem('user')) || false;
+    }
+
+    getUser(): Promise<any> {
+        return this.http.get(this.getProfileUrl)
+            .pipe(
+                tap((data: any) => this.user = data),
+                catchError(this.handleErrorService.handleError<any>('UserSignIn'))
+            )
+            .toPromise();
     }
 
     signIn(user): Observable<{}> {
@@ -117,11 +125,6 @@ export class AuthService {
     }
 
     notifyUserSubscribers(user: any): void {
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
-        }
         this.user = user;
         this.isLoggedIn = user ? true : false;
         this.authListener.next(this.user);

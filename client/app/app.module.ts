@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -30,6 +30,10 @@ import {
   SeoService
 } from '../features/utils';
 
+export function authServiceFactory(authService: AuthService): any {
+  return () => authService.getUser();
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,6 +55,12 @@ import {
   providers: [
     AuthGuard,
     AuthService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: authServiceFactory,
+      deps: [AuthService],
+      multi: true
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
