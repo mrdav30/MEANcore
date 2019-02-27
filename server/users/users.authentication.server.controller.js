@@ -62,29 +62,32 @@ exports.signUp = function (req, res) {
       user.provider = 'local';
       user.displayName = user.firstName + ' ' + user.lastName;
       var config = req.app.locals.config;
-      user.appName = config.appName.toLowerCase();
+      user.appName = config.app.name.toLowerCase();
+      // Set IP of a successful signup to prevent logins from unknown IPs.
+      user.knownIPAddresses.push(req.connection.remoteAddress);
 
-      // Then save the user
       user.save(function (err) {
         if (err) {
           return res.status(400).send({
             message: errorHandler.getErrorMessage(err)
           });
-        } else {
-          // Remove sensitive data before login
-          user.password = undefined;
-          user.salt = undefined;
-
-          req.login(user, function (err) {
-            if (err) {
-              return res.status(400).send(err);
-            }
-
-            res.json({
-              user: user
-            });
-          });
         }
+
+        // Remove sensitive data before login
+        user.password = undefined;
+        user.salt = undefined;
+
+        req.login(user, function (err) {
+          if (err) {
+            return res.status(400).send({
+              message: errorHandler.getErrorMessage(err)
+            });
+          }
+
+          return res.status(200).send({
+            user: req.user
+          });
+        });
       });
     }
   });
@@ -104,32 +107,44 @@ exports.signIn = function (req, res, next) {
         invalidSecret: true
       });
     } else {
-      async.seq(
-        function (user, fn) {
+      async.series([
+        function (done) {
           // Set last known IP of a successful login to prevent logins from unknown IPs.
           var knownIPAddresses = user.get('knownIPAddresses') ? user.get('knownIPAddresses') : [];
           if (!knownIPAddresses.includes(req.connection.remoteAddress)) {
             user.knownIPAddresses.push(req.connection.remoteAddress);
-            user.save(function(err){
-				fn(err, user);
-			});
+            user.updateOne({
+              _id: mongoose.Types.ObjectId(user.get('_id'))
+            }, {
+              $set: _.omit(user, '_id')
+            }, function (err) {
+              done(err);
+            });
           } else {
-			fn(null, user);
+            done(null);
           }
         }
-      )(user, function (err, user) {
+      ], function (err) {
+        if (err) {
+          return res.status(400).send({
+            message: errorHandler.getErrorMessage(err)
+          });
+        }
+
         // Remove sensitive data before login
         user.password = undefined;
         user.salt = undefined;
 
         req.login(user, function (err) {
           if (err) {
-            return res.status(400).send(err);
-          } else {
-            return res.json({
-              user: user
+            return res.status(400).send({
+              message: errorHandler.getErrorMessage(err)
             });
           }
+
+          return res.status(200).send({
+            user: req.user
+          });
         });
       });
     }
@@ -141,7 +156,7 @@ exports.signIn = function (req, res, next) {
  */
 exports.signOut = function (req, res) {
   req.logout();
-  return res.json({
+  return res.status(200).send({
     message: 'You are now logged out of the system'
   });;
 };
@@ -231,7 +246,11 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
       user.markModified('additionalProvidersData');
 
       // And save the user
-      user.save(function (err) {
+      user.updateOne({
+        _id: mongoose.Types.ObjectId(user.get('_id'))
+      }, {
+        $set: _.omit(user, '_id')
+      }, function (err) {
         return done(err, user, '/#!/settings/accounts');
       });
     } else {
@@ -256,7 +275,11 @@ exports.removeOAuthProvider = function (req, res, next) {
       user.markModified('additionalProvidersData');
     }
 
-    user.save(function (err) {
+    user.updateOne({
+      _id: mongoose.Types.ObjectId(user.get('_id'))
+    }, {
+      $set: _.omit(user, '_id')
+    }, function (err) {
       if (err) {
         return res.status(400).send({
           message: errorHandler.getErrorMessage(err)
@@ -264,9 +287,11 @@ exports.removeOAuthProvider = function (req, res, next) {
       } else {
         req.login(user, function (err) {
           if (err) {
-            return res.status(400).send(err);
+            return res.status(400).send({
+              message: errorHandler.getErrorMessage(err)
+            });;
           } else {
-            return res.json(user);
+            return res.status(200).send(user);
           }
         });
       }

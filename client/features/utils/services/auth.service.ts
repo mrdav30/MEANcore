@@ -7,6 +7,7 @@ import * as _ from 'lodash';
 
 import { environment } from '../../../environments/environment';
 
+import { ConfigService } from './config.service';
 import { HandleErrorService } from './handle-error.service';
 
 const httpOptions = {
@@ -15,25 +16,21 @@ const httpOptions = {
 
 @Injectable()
 export class AuthService {
-    public appName = environment.appName;
-    public appBase = environment.appBaseUrl;
-    public apiEndPoint = environment.apiBaseUrl;
     public redirectUrl = environment.appDefaultRoute;
     public user: any;
     public userChange$: Observable<any>;
-    public isLoggedIn = false;
 
-    private getProfileUrl = this.appBase + this.apiEndPoint + '/users/me';
-    private signInUrl = this.appBase + this.apiEndPoint + '/auth/signIn'; // URL to web API
-    private recoverUrl = this.appBase + this.apiEndPoint + '/auth/forgot';
-    private resetUrl = this.appBase + this.apiEndPoint + '/auth/reset/';
-    private signOutUrl = this.appBase + this.apiEndPoint + '/auth/signOut';
-    private validateUrl = this.appBase + this.apiEndPoint + '/auth/validate';
-    private signUpUrl = this.appBase + this.apiEndPoint + '/auth/signUp';
-    private installUrl = this.appBase + this.apiEndPoint + '/install';
+    private signInUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signIn'; // URL to web API
+    private recoverUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/forgot';
+    private resetUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/reset/';
+    private signOutUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signOut';
+    private validateUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/validate';
+    private signUpUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signUp';
+    private installUrl = environment.appBaseUrl + environment.apiBaseUrl + '/install';
     private authListener: Observer<any>;
 
     constructor(
+        private configService: ConfigService,
         private http: HttpClient,
         private router: Router,
         private handleErrorService: HandleErrorService
@@ -41,15 +38,8 @@ export class AuthService {
         this.userChange$ = new Observable(observer => this.authListener = observer).pipe(
             share()
         );
-    }
 
-    getUser(): Promise<any> {
-        return this.http.get(this.getProfileUrl)
-            .pipe(
-                tap((data: any) => this.user = data),
-                catchError(this.handleErrorService.handleError<any>('UserSignIn'))
-            )
-            .toPromise();
+        this.user = this.configService.user || false;
     }
 
     signIn(user): Observable<{}> {
@@ -126,7 +116,6 @@ export class AuthService {
 
     notifyUserSubscribers(user: any): void {
         this.user = user;
-        this.isLoggedIn = user ? true : false;
         this.authListener.next(this.user);
     }
 
@@ -140,13 +129,13 @@ export class AuthService {
 
     hasPermission(permission): boolean {
         permission = permission.toLowerCase();
-        const permissions = this.user.permission_data[this.appName];
+        const permissions = this.user.permission_data[environment.appName];
         return !!_.find(permissions, (p) => p.name === permission);
     }
 
     checkPermission(permission, attributes): any {
         permission = permission.toLowerCase();
-        const permissions = _.filter(this.user.permission_data[this.appName], (p) => p.name === permission);
+        const permissions = _.filter(this.user.permission_data[environment.appName], (p) => p.name === permission);
         return _.some(permissions, (p) => {
             return _.every(Object.keys(attributes), (key) => {
                 const attr = attributes[key];

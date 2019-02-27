@@ -1,8 +1,7 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { APP_BASE_HREF } from '@angular/common';
+import { HTTP_INTERCEPTORS, HttpClientModule, HttpClient } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
 
@@ -20,6 +19,7 @@ import { SignUpModule } from '../features/users/sign-up/sign-up.module';
 
 import {
   UtilsModule,
+  AppLoadService,
   AuthGuard,
   AuthService,
   LoadingInterceptor,
@@ -30,8 +30,8 @@ import {
   SeoService
 } from '../features/utils';
 
-export function authServiceFactory(authService: AuthService): any {
-  return () => authService.getUser();
+export function init_app(appLoadService: AppLoadService) {
+  return () => appLoadService.initializeApp();
 }
 
 @NgModule({
@@ -53,14 +53,15 @@ export function authServiceFactory(authService: AuthService): any {
     HomeModule
   ],
   providers: [
-    AuthGuard,
-    AuthService,
+    AppLoadService,
     {
       provide: APP_INITIALIZER,
-      useFactory: authServiceFactory,
-      deps: [AuthService],
+      useFactory: init_app,
+      deps: [AppLoadService],
       multi: true
     },
+    AuthGuard,
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
@@ -75,10 +76,6 @@ export function authServiceFactory(authService: AuthService): any {
     MessagingService,
     ScriptInjectorService,
     SeoService,
-    {
-      provide: APP_BASE_HREF,
-      useValue: environment.appBaseUrl
-    },
     {
       provide: '@env',
       useValue: environment
