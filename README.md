@@ -37,12 +37,20 @@ Make sure you have installed all of the following prerequisites on your developm
 NODE_ENV='development'
 PRODUCTION=false
 DOMAIN=
+DOMAIN_PATTERN=
+HOST_SECURE=
+PROXY=
 
-APP_NAME='MEANcore'
+APP_NAME='meancore'
 APP_BASE_URL='/'
 API_BASE_URL='api'
 APP_DEFAULT_ROUTE='home'
 IMAGE_UPLOAD_URL='/admin/upload'
+TWITTER_HANDLE=
+
+SESSION_SECRET='MEANCORE'
+SESSION_KEY='meancore-key'
+SESSION_COLLECTION='meancore-sessions'
 
 GOOGLE_ANALYTICS_ID=''
 GOOGLE_CLIENT_EMAIL=''
@@ -50,6 +58,14 @@ GOOGLE_PRIVATE_KEY=""
 GOOGLE_VIEW_ID=
 RECAPTCHA_SECRET_KEY=''
 RECAPTCHA_SITE_KEY=''
+
+MAILER_FROM='support@meancore.com'
+MAILER_SERVICE_PROVIDER=
+MAILER_HOST='smtp.ethereal.email'
+MAILER_PORT=587
+MAILER_USER="username"
+MAILER_SECRET="pass"
+MAILER_TEST=true
 ```
 
 2. Next install dependencies:
@@ -59,7 +75,7 @@ RECAPTCHA_SITE_KEY=''
 
 3. Then launch development server, and open `localhost:4200` in your browser:
  ```bash
- npm start
+ npm start:dev
  ```
 
 # Project structure
@@ -82,10 +98,10 @@ client/                      project source code for client
 config/                      configuration for express
 dist/                        compiled client version
 e2e/                         end-to-end tests
-scripts/                     additional scripts for server
 server/                      project source code for server
 reports/                     test and coverage reports
 .env                         process.env variable configuration
+generate-ssl-certs.sh        generate self-signed certs for dev testing
 proxy.conf.js                backend proxy configuration
 server.js                    script to launch express
 set-env.ts                   run to configure environment configuration based on process.env
@@ -99,20 +115,23 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
 npm run config                | Produces angular environment configuration from .env
-npm start                     | Run development ng server on `http://localhost:4200/` using proxy config for express endpoints
-npm run client                | Run development ng server on `http://localhost:4200/` only
-npm run server                | Run development express server only 
-npm run build                 | Lint code and build app for development in `dist/` folder
-npm run build.prod            | Lint code and build app for production in `dist/` folder
+npm run version               | Generates version control information based on projects package.json
+npm start:dev                 | Builds client and runs development ng server on `http://localhost:4200/` using proxy config for express endpoints to `http://localhost:3000/`
+npm start:prod                | Builds client for prod and runs production express server 
+npm run client:dev            | Run development ng server on `http://localhost:4200/` only
+npm run server:dev            | Run development express server only on `http://localhost:3000/`
+npm run server:prod           | Run production express server only 
+npm run build:dev             | Lint code and build app for development in `dist/` folder
+npm run build:prod            | Lint code and build app for production in `dist/` folder
 npm test:client               | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
 npm run test                  | Lint code and run unit tests once for continuous integration
 npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
-npm run lint:client           | Lint code
-npm run postinstall           | Updates angular environment configuration from .env and version information based on project's package.json
+npm run lint:client           | Lint client code
+npm run lint:server           | Lint server code
 
 ## Development server
 
-Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
+Run `npm start:dev` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
 any of the source files.
 You should not use `ng serve` directly, as it does not use the backend express configuration.
 
