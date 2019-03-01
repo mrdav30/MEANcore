@@ -24,6 +24,7 @@ import { PasswordToggleDirective } from './directives/password-toggle.directive'
 import { AnimatedLabelDirective } from './directives/animated-label.directive';
 import { SplitDirective } from './directives/split.directive';
 import { ReCaptchaDirective } from './directives/recaptcha.directive';
+import { InputRestrictionDirective } from './directives/input-restriction.directive';
 
 import { CsvPipe } from './pipes/csv.pipe';
 import { SlugifyPipe } from './pipes/slugify.pipe';
@@ -82,7 +83,8 @@ const directives = [
   PasswordToggleDirective,
   AnimatedLabelDirective,
   SplitDirective,
-  ReCaptchaDirective
+  ReCaptchaDirective,
+  InputRestrictionDirective
 ];
 
 const pipes = [
