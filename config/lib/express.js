@@ -5,7 +5,6 @@
  */
 var config = require('../config'),
   express = require('express'),
-  fs = require('fs'),
   morgan = require('morgan'),
   logger = require('./logger'),
   bodyParser = require('body-parser'),
@@ -17,11 +16,11 @@ var config = require('../config'),
   methodOverride = require('method-override'),
   cookieParser = require('cookie-parser'),
   helmet = require('helmet'),
+  csp = require('helmet-csp'),
   flash = require('connect-flash'),
   hbs = require('express-hbs'),
   path = require('path'),
   _ = require('lodash'),
-  lusca = require('lusca'),
   vhost = require('vhost');
 
 // Auth servers may not have valid SSL
@@ -87,9 +86,6 @@ var initSession = function (app, config, db) {
       url: config.mongoDB.uri
     })
   }));
-
-  // Add Lusca CSRF Middleware
-  app.use(lusca(config.csrf));
 };
 
 /**
@@ -209,7 +205,10 @@ var initServerConfiguration = function (app, config) {
 var initHelmetHeaders = function (app) {
   // Use helmet to secure Express headers
   var SIX_MONTHS = 15778476000;
-  app.use(helmet.frameguard());
+  app.use(helmet.frameguard({
+    action: 'sameorigin'
+  }));
+  app.use(helmet.hidePoweredBy());
   app.use(helmet.xssFilter());
   app.use(helmet.noSniff());
   app.use(helmet.ieNoOpen());
@@ -218,7 +217,17 @@ var initHelmetHeaders = function (app) {
     includeSubdomains: true,
     force: true
   }));
-  app.disable('x-powered-by');
+  app.use(csp(config.cps));
+
+  // POST any CSP violations
+  app.use('/report-violation', (req, res) => {
+    if (req.body) {
+      console.log('CSP Violation: ', req.body);
+    } else {
+      console.log('CSP Violation: No data received!');
+    }
+    res.status(204).end();
+  });
 };
 
 /**
@@ -303,9 +312,12 @@ var initDatabases = function (cb) {
 
 var enableCORS = function (app) {
   app.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Headers', 'content-type,devicetoken,usertoken');
+    //res.header('Access-Control-Allow-Headers', 'content-type,devicetoken,usertoken');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
     res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
     res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Credentials', true);
+
     if (req.method === 'OPTIONS') {
       res.status(204).end();
     } else {
