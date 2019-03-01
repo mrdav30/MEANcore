@@ -66,6 +66,7 @@ module.exports = {
       childSrc: ["'self'"],
       imgSrc: [
         "'self'",
+		'data:',
         'https://www.google-analytics.com/'
       ],
       reportUri: '/report-violation',
