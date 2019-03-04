@@ -11,5 +11,7 @@ module.exports = function (app) {
   app.route('/:url(api|modules|lib)/*').get(core.renderNotFound);
 
   // Define application route
-  app.route('/*').get(core.renderIndex);
+  // Will first check for webcrawlers to enable server-side rendering
+  app.route('/*').get(core.prerender, core.renderIndex);
+
 };

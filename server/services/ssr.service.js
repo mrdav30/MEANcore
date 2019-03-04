@@ -49,7 +49,7 @@ async function ssr(url) {
   await browser.close();
 
   const ttRenderMs = Date.now() - start;
-  console.info(`Headless rendered page in: ${ttRenderMs}ms`);
+  console.info(`Headless rendered page ${url} in: ${ttRenderMs}ms`);
 
   RENDER_CACHE.set(url, html); // cache rendered page.
 
@@ -59,4 +59,11 @@ async function ssr(url) {
   };
 }
 
-exports.ssr = ssr;
+function clearCache() {
+  RENDER_CACHE.clear();
+}
+
+module.exports = {
+  ssr,
+  clearCache
+};

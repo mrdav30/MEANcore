@@ -22,6 +22,28 @@ var renderNotFound = function (req, res) {
 };
 exports.renderNotFound = renderNotFound;
 
+// check for webcrawlers and prerender
+// otherwise move on to render index
+exports.prerender = async function (req, res, next) {
+  if (!isBot(req.headers['user-agent'])) {
+    return next();
+  } else {
+
+    if (req.query.prerender) {
+      return next();
+    } else {
+      const {
+        html,
+        ttRenderMs
+      } = await ssrService.ssr(`${req.protocol}://${req.get('host')}${req.url}?prerender=true`);
+      // Add Server-Timing! See https://w3c.github.io/server-timing/.
+      res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
+      return res.status(200).send(html + '<!-- SSR -->'); // Serve prerendered page as response.
+    }
+
+  };
+}
+
 /**
  * Render the main application page
  */
