@@ -24,7 +24,9 @@ Before you begin, it's recommend you read about the basic building blocks that a
 * Angular - Angular's [Official Website](https://angular.io/) is a great starting point.
 * Node.js - Start by going through [Node.js Official Website](http://nodejs.org/) and this [StackOverflow Thread](http://stackoverflow.com/questions/2353818/how-do-i-get-started-with-node-js), which should get you going with the Node.js platform in no time.
 
-Checkout our blog [Techievor](https://techievor.com/blog/post/2019/02/28/how-to-install-the-mean-stack-with-meancore-on-windows) built on meancore for a full rundown on the full MEAN stack setup.
+Checkout our blog [Techievor](https://techievor.com) built on meancore for a full rundown on how to setup the MEAN stack with MEANcore:
+* [Windows](https://techievor.com/blog/post/2019/02/28/how-to-install-the-mean-stack-on-windows)
+* [CentOS](https://techievor.com/blog/post/2019/03/03/how-to-install-the-mean-stack-on-centos)
 
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
