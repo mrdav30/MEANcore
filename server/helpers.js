@@ -3,8 +3,9 @@ var fileExists = require('./helpers/file-exists'),
     generateToken = require('./helpers/generate-token'),
     pager = require('./helpers/pager'),
     shiftKeyCase = require('./helpers/shift-key-case'),
-    slugify = require('./helpers/slugify');
-    fileProxy = require('./helpers/file-proxy');
+    slugify = require('./helpers/slugify'),
+    fileProxy = require('./helpers/file-proxy'),
+    isBot = require('./helpers/isBot');
 
 module.exports = {
     fileExists,
@@ -13,5 +14,6 @@ module.exports = {
     pager,
     shiftKeyCase,
     slugify,
-    fileProxy
+    fileProxy,
+    isBot
 };
