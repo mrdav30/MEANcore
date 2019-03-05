@@ -17,6 +17,8 @@ The MEANcore starter kit is a full-stack JavaScript open-source solution, which 
 
 - Scalable architecture with base app template including example components, services and tests
 
+- Server Side Rendering (SSR) for web-crawlers
+
 ## Before You Begin
 Before you begin, it's recommend you read about the basic building blocks that assemble a MEAN application:
 * MongoDB - Go through [MongoDB Official Website](https://www.mongodb.com/) and proceed to their [Official Manual](http://docs.mongodb.org/manual/), which should help you understand NoSQL and MongoDB better.
