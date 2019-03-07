@@ -59,7 +59,7 @@ module.exports.start = function start(callback) {
       var server = (config.secure && config.secure.ssl ? 'https://' : 'http://') + config.host + ':' + config.port;
       // Logging initialization
       console.log('--');
-      console.log(chalk.green(config.app.title));
+      console.log(chalk.green(config.app.appTitle));
       console.log();
       console.log(chalk.green('Environment:     ' + process.env.NODE_ENV));
       console.log(chalk.green('Server:          ' + server));

@@ -4,7 +4,7 @@ var defaultEnvConfig = require('./default');
 
 module.exports = {
   app: {
-    title: defaultEnvConfig.app.title + ' - Test'
+    appTitle: defaultEnvConfig.app.appTitle + ' - Test'
   },
   port: process.env.PORT || 3001,
   splunkUrl: 'https://splunk.acmoore.org:8088/services/collector',
@@ -49,8 +49,8 @@ module.exports = {
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
     format: process.env.LOG_FORMAT || 'dev',
     fileLogger: {
-      directoryPath: process.cwd(),
-      fileName: 'app.log',
+      directoryPath: process.env.LOG_DIR_PATH ||  process.cwd(),
+      fileName: process.env.LOG_FILE || 'app.log',
       maxsize: 10485760,
       maxFiles: 2
     }
@@ -58,7 +58,7 @@ module.exports = {
   uploads: {
     profile: {
       image: {
-        dest: './modules/users/client/img/profile/uploads/',
+        dest: './modules/' + defaultEnvConfig.app.appName + '/img/profile/uploads/',
         limits: {
           fileSize: 100000 // Limit filesize (100kb) for testing purposes
         }

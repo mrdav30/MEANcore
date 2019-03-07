@@ -62,7 +62,7 @@ exports.signUp = function (req, res) {
       user.provider = 'local';
       user.displayName = user.firstName + ' ' + user.lastName;
       var config = req.app.locals.config;
-      user.appName = config.app.name.toLowerCase();
+      user.appName = config.app.appName.toLowerCase();
       // Set IP of a successful signup to prevent logins from unknown IPs.
       user.knownIPAddresses.push(req.connection.remoteAddress);
 

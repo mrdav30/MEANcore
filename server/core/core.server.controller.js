@@ -22,6 +22,23 @@ var renderNotFound = function (req, res) {
 };
 exports.renderNotFound = renderNotFound;
 
+/**
+ * Retrieve req.app.locals.config for front-end app settings
+ */
+exports.retrieveConfig = function (req, res) {
+  var config = req.app.locals.config;
+
+  config.user = req.user || null;
+
+  if (config.user) {
+    // Remove sensitive data
+    config.user.password = undefined;
+    config.user.salt = undefined;
+  }
+
+  res.status(200).send(config);
+}
+
 // check for webcrawlers and prerender
 // otherwise move on to render index
 exports.prerender = async function (req, res, next) {
