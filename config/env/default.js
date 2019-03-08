@@ -2,27 +2,12 @@
 
 module.exports = {
   app: {
-    appTitle: 'MEANcore - MeanStack Web Projects!',
-    appName: process.env.APP_NAME || 'meancore',
+    title: 'MEANcore - MeanStack Web Projects!',
+    name: process.env.APP_NAME || 'meancore',
     description: 'Applications runing on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
-    appBaseUrl: process.env.APP_BASE_URL || '/',
-    imageUploadUrl: null,
-    twitterHandle: null,
-    appDefaultRoute: 'home',
-    defaultPage: 'index.html',
-    MENU_CONFIG: [
-      // {
-      // Label that will appear in app menu
-      //   label: 'Something',
-      // Angular route path
-      //   route: '/ppc',
-      // Roles required to access menu item
-      //   roles: ['Default'],
-      // Permissions required to access menu item
-      //   permission: 'default ppc access'
-      // }
-    ]
+    appBase: process.env.APP_BASE_URL || '/',
+    defaultPage: 'index.html'
   },
   // Config required for Google Analytics
   GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL || '',
@@ -81,7 +66,7 @@ module.exports = {
       childSrc: ["'self'"],
       imgSrc: [
         "'self'",
-        'data:',
+		'data:',
         'https://www.google-analytics.com/'
       ],
       reportUri: '/report-violation',
@@ -105,7 +90,7 @@ module.exports = {
     storage: process.env.UPLOADS_STORAGE || 'local',
     profile: {
       image: {
-        dest: '_content/' + (process.env.APP_NAME || 'meancore') + '/img/profile/uploads/',
+        dest: './modules/users/client/img/profile/uploads/',
         limits: {
           fileSize: 1 * 1024 * 1024 // Max file size in bytes (1 MB)
         }

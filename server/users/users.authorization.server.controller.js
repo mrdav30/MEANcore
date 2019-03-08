@@ -28,9 +28,9 @@ exports.userByID = function (req, res, next, id) {
 /**
  * Require login routing middleware
  */
-exports.requiresLogin = function (req, res, appBaseUrl, next) {
+exports.requiresLogin = function (req, res, appBase, next) {
 	if (!req.isAuthenticated() && !req.apiAuthed) {
-		var redirectUrl = appBaseUrl ? appBaseUrl + 'sign-in' : '/sign-in';
+		var redirectUrl = appBase ? appBase + 'sign-in' : '/sign-in';
 		return res.redirect(redirectUrl);
 	}
 
@@ -40,15 +40,15 @@ exports.requiresLogin = function (req, res, appBaseUrl, next) {
 /**
  * User authorizations routing middleware
  */
-exports.hasAuthorization = function (roles, appBaseUrl) {
+exports.hasAuthorization = function (roles, appBase) {
 	var _this = this;
 
 	return function (req, res, next) {
-		_this.requiresLogin(req, res, appBaseUrl, function () {
+		_this.requiresLogin(req, res, appBase, function () {
 			if (_.intersection(req.user.get('roles'), roles).length) {
 				return next();
 			} else {
-				var redirectUrl = appBaseUrl ? appBaseUrl : '/';
+				var redirectUrl = appBase ? appBase : '/';
 				req.flash('unauthorizedMsg', 'User is not authorized');
 				return res.redirect(redirectUrl);
 			}

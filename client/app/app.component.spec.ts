@@ -23,7 +23,7 @@ describe('AppComponent', () => {
   it(`should have as title 'meancore'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.appTitle).toEqual('meancore');
+    expect(app.title).toEqual('meancore');
   });
 
   it('should render title in a h1 tag', () => {

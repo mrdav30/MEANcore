@@ -10,8 +10,6 @@ module.exports = function (app) {
   // Return a 404 for all undefined api, module or lib routes
   app.route('/:url(api|modules|lib)/*').get(core.renderNotFound);
 
-  app.route('/api/core/config').get(core.retrieveConfig);
-
   // Define application route
   // Will first check for webcrawlers to enable server-side rendering
   app.route('/*').get(core.prerender, core.renderIndex);

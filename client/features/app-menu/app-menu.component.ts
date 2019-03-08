@@ -1,8 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../utils';
 import * as _ from 'lodash';
 
-import { AuthService, ConfigService, MenuConfig } from '../utils';
+import { environment } from '../../environments/environment';
+
+export class MenuConfig { label: string; route: string; roles: string[]; permission: string[]; visible: boolean; }
 
 @Component({
   moduleId: module.id,
@@ -12,8 +15,9 @@ import { AuthService, ConfigService, MenuConfig } from '../utils';
 })
 
 export class AppMenuComponent implements OnInit {
-  public appHome: string;
-  public appLogo: string;
+  public appHome: string = environment.appDefaultRoute;
+  public appBase: string;
+  public appLogo = 'assets/images/logo.png';
   //  UI Config
   public menus: MenuConfig[] = [];
   public visibleMenus: MenuConfig[] = [];
@@ -28,14 +32,10 @@ export class AppMenuComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService,
-    private configService: ConfigService
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
-    this.appHome = this.configService.appHome;
-    this.appLogo = this.configService.appLogo;
-    this.menus = this.configService.MENU_CONFIG;
     this.authService.userChange$.subscribe(user => {
       this.onSetUser(user);
     });

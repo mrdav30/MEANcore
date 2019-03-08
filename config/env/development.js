@@ -4,7 +4,7 @@ var defaultEnvConfig = require('./default');
 
 module.exports = {
   app: {
-    appTitle: defaultEnvConfig.app.appTitle + ' - Development'
+    title: defaultEnvConfig.app.title + ' - Development'
   },
   splunkUrl: 'http://10.16.7.195:8088/services/collector',
   splunkToken: 'replace-with-spunk',
@@ -49,8 +49,8 @@ module.exports = {
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
     format: 'dev',
     fileLogger: {
-      directoryPath: process.env.LOG_DIR_PATH || process.cwd(),
-      fileName: process.env.LOG_FILE || 'app.log',
+      directoryPath: process.cwd(),
+      fileName: 'app.log',
       maxsize: 10485760,
       maxFiles: 2
     }

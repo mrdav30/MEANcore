@@ -41,7 +41,7 @@ var initServerModels = function (config) {
  */
 var initLocalVariables = function (app, config) {
   // Setting application local variables
-  app.locals.title = config.app.appTitle;
+  app.locals.title = config.app.title;
   app.locals.description = config.app.description;
   if (config.secure && config.secure.ssl) {
     app.locals.secure = config.secure.ssl;
@@ -274,8 +274,8 @@ var initErrorRoutes = function (app, config) {
     console.error(err.stack);
 
     // Redirect to error page
-    let appBaseUrl = config.appBaseUrl || '/';
-    res.redirect(appBaseUrl + 'server-error');
+    let appBase = config.appBase || '/';
+    res.redirect(appBase + 'server-error');
   });
 };
 
@@ -364,7 +364,7 @@ var init = function (config, db) {
   // Initialize error routes
   initErrorRoutes(app, config);
 
-  console.log('Loading Completed for: ' + config.app.appName);
+  console.log('Loading Completed for: ' + config.app.name);
   return app;
 };
 
@@ -382,10 +382,10 @@ var initApps = function (db) {
   config.appViewPath = '/server';
 
   // set up static file location
-  config.staticFiles = 'dist/' + config.app.appName + '/';
+  config.staticFiles = 'dist/' + config.app.name + '/';
 
-  if (config.app.appBaseUrl) {
-    rootApp.use(config.app.appBaseUrl, init(config, db));
+  if (config.app.appBase) {
+    rootApp.use(config.app.appBase, init(config, db));
   } else if (config.app.domainPattern) {
     rootApp.use(vhost(config.app.domainPattern, init(config, db)));
   }
