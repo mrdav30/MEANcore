@@ -44,7 +44,7 @@ function validateChanges(req, userUpdates, callback) {
               // User name already exists, provide other possibilities
               var possibleUsername = userUpdates.username || ((userUpdates.email) ? userUpdates.email.split('@')[0] : '');
 
-              User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
+              User.findUniqueUsername(possibleUsername, null, function (err, availableUsername) {
                 cb(true, {
                   userExists: true,
                   availableUsername: availableUsername

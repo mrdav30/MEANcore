@@ -4,6 +4,9 @@ module.exports = function (app) {
   // Root routing
   var core = require('./core.server.controller');
 
+  // Return app configuration
+  app.route('/api/core/config').get(core.retrieveRuntimeConfig);
+
   // Define error pages
   app.route('/server-error').get(core.renderServerError);
 
@@ -13,5 +16,4 @@ module.exports = function (app) {
   // Define application route
   // Will first check for webcrawlers to enable server-side rendering
   app.route('/*').get(core.prerender, core.renderIndex);
-
 };

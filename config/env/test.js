@@ -49,8 +49,8 @@ module.exports = {
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
     format: process.env.LOG_FORMAT || 'dev',
     fileLogger: {
-      directoryPath: process.cwd(),
-      fileName: 'app.log',
+      directoryPath: process.env.LOG_DIR_PATH ||  process.cwd(),
+      fileName: process.env.LOG_FILE || 'app.log',
       maxsize: 10485760,
       maxFiles: 2
     }
@@ -58,7 +58,7 @@ module.exports = {
   uploads: {
     profile: {
       image: {
-        dest: './modules/users/client/img/profile/uploads/',
+        dest: './modules/' + defaultEnvConfig.app.name + '/img/profile/uploads/',
         limits: {
           fileSize: 100000 // Limit filesize (100kb) for testing purposes
         }

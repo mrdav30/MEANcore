@@ -51,7 +51,7 @@ exports.signUp = function (req, res) {
       // User name already exists, provide other possibilities
       var possibleUsername = user.username || ((user.email) ? user.email.split('@')[0] : '');
 
-      User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
+      User.findUniqueUsername(possibleUsername, null, function (err, availableUsername) {
         return res.status(200).send({
           userExists: true,
           possibleUsername: availableUsername
@@ -211,7 +211,7 @@ exports.saveOAuthUserProfile = function (req, providerUserProfile, done) {
         if (!user) {
           var possibleUsername = providerUserProfile.username || ((providerUserProfile.email) ? providerUserProfile.email.split('@')[0] : '');
 
-          User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
+          User.findUniqueUsername(possibleUsername, null, function (err, availableUsername) {
             user = new User({
               firstName: providerUserProfile.firstName,
               lastName: providerUserProfile.lastName,

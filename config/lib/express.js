@@ -9,6 +9,7 @@ var config = require('../config'),
   logger = require('./logger'),
   bodyParser = require('body-parser'),
   session = require('express-session'),
+  mongoose = require('./mongoose'),
   mongoStore = require('connect-mongo')({
     session: session
   }),
@@ -29,11 +30,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 /**
  * Configure the models
  */
-var initServerModels = function (config) {
-  // Globbing routing files
-  config.files.server.models.forEach(function (modelPath) {
-    require(path.resolve(modelPath));
-  });
+var initServerModels = function () {
+  mongoose.loadModels();
 };
 
 /**
@@ -169,15 +167,24 @@ var initHandlebars = function () {
  * Configure view engine
  */
 var initViewEngine = function (app, config) {
+  var serverViewPath = path.resolve(config.serverViewPath ? config.serverViewPath : './');
+  app.set('views', [serverViewPath, config.staticFiles]);
+
+  // server side html
   app.engine('server.view.html', hbs.express4({
     extname: '.server.view.html'
   }));
   app.set('view engine', 'server.view.html');
+
+  //client side html
+  app.engine('html', hbs.express4({
+    extname: 'html'
+  }));
+  app.set('view engine', 'html');
+
   app.engine('js', hbs.express4({
     extname: '.js'
   }));
-  var viewDir = path.resolve(config.appViewPath ? config.appViewPath : './');
-  app.set('views', viewDir);
 };
 
 /**
@@ -274,8 +281,8 @@ var initErrorRoutes = function (app, config) {
     console.error(err.stack);
 
     // Redirect to error page
-    let appBase = config.appBase || '/';
-    res.redirect(appBase + 'server-error');
+    let appBaseUrl = config.appBaseUrl || '/';
+    res.redirect(appBaseUrl + 'server-error');
   });
 };
 
@@ -288,16 +295,6 @@ var configureSocketIO = function (app, db) {
 
   // Return server object
   return server;
-};
-
-/**
- * Connect to all required databases
- *
- **/
-var initDatabases = function (cb) {
-  //uncomment to prepare oracle db connections set in config
-  // oracleQueryService.prepareService(cb);
-  return cb();
 };
 
 var enableCORS = function (app) {
@@ -328,9 +325,6 @@ var init = function (config, db) {
   // Initialize local variables
   initLocalVariables(app, config);
 
-  // Initialize Express session
-  initSession(app, config, db);
-
   // Initialize Express middleware
   initMiddleware(app, config);
 
@@ -349,11 +343,11 @@ var init = function (config, db) {
   // Initialize modules static client routes, before session!
   initClientRoutes(app, config);
 
-  //  Configure mongodb models
-  initServerModels(config);
+  // Initialize Express session
+  initSession(app, config, db);
 
-  // // Initialize Express session
-  // initSession(app, config, db);
+  //  Configure mongodb models
+  initServerModels();
 
   // Initialize Modules configuration
   initServerConfiguration(app, config);
@@ -379,13 +373,13 @@ var initApps = function (db) {
   config.helpers = require(path.resolve('./server/helpers.js'));
 
   // set up view
-  config.appViewPath = '/server';
+  config.serverViewPath = './server';
 
   // set up static file location
   config.staticFiles = 'dist/' + config.app.name + '/';
 
-  if (config.app.appBase) {
-    rootApp.use(config.app.appBase, init(config, db));
+  if (config.app.appBaseUrl) {
+    rootApp.use(config.app.appBaseUrl, init(config, db));
   } else if (config.app.domainPattern) {
     rootApp.use(vhost(config.app.domainPattern, init(config, db)));
   }
@@ -396,11 +390,8 @@ var initApps = function (db) {
 };
 
 module.exports.initAllApps = function (db, callback) {
-  // Initialize databases using query service will be shared accross various modules;
-  initDatabases(function () {
-    var rootApp = initApps(db);
-    if (callback) {
-      callback(rootApp);
-    }
-  });
+  var rootApp = initApps(db);
+  if (callback) {
+    callback(rootApp);
+  }
 };

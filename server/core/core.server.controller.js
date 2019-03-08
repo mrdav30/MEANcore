@@ -3,7 +3,8 @@
 var path = require('path'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
-  ssrService = config.services.ssrService;
+  ssrService = config.services.ssrService,
+  CoreConfig = require('mongoose').model('CoreConfig');
 
 /**
  * Get extention from path
@@ -16,11 +17,34 @@ function getExtention(url) {
  * Render the server not found responses
  */
 var renderNotFound = function (req, res) {
-  res.status(404).json({
-    error: 'Path not found'
+  res.status(404).send({
+    message: 'Path not found'
   });
 };
 exports.renderNotFound = renderNotFound;
+
+/**
+ * Retrieve logged-in user and front-end app settings
+ */
+exports.retrieveRuntimeConfig = function (req, res) {
+  var response = {};
+
+  CoreConfig.getAll(function (err, config) {
+
+    response.config = config || null;
+    response.user = req.user || null;
+
+    if (response.user) {
+      // Remove sensitive data
+      response.user.password = undefined;
+      response.user.salt = undefined;
+    }
+
+    res.status(200).send({
+      config: response
+    });
+  })
+}
 
 // check for webcrawlers and prerender
 // otherwise move on to render index
@@ -28,7 +52,6 @@ exports.prerender = async function (req, res, next) {
   if (!isBot(req.headers['user-agent'])) {
     return next();
   } else {
-
     if (req.query.prerender) {
       return next();
     } else {
@@ -40,7 +63,6 @@ exports.prerender = async function (req, res, next) {
       res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
       return res.status(200).send(html + '<!-- SSR -->'); // Serve prerendered page as response.
     }
-
   };
 }
 
@@ -55,20 +77,9 @@ exports.renderIndex = async function (req, res) {
   if (!config.app.defaultPage || ~exts.indexOf(ext)) { // if not in extentions give 404
     renderNotFound(req, res); // We know its not found
   } else {
-    if (!isBot(req.headers['user-agent'])) {
-      var rootDir = path.normalize(config.staticFiles);
-      res.sendFile(config.app.defaultPage, {
-        root: rootDir
-      });
-    } else {
-      const {
-        html,
-        ttRenderMs
-      } = await ssrService.ssr(`${req.protocol}://${req.get('host')}/index.html`);
-      // Add Server-Timing! See https://w3c.github.io/server-timing/.
-      res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
-      return res.status(200).send(html); // Serve prerendered page as response.
-    };
+    res.render(config.app.defaultPage, config.app, function (err, indexHtml) {
+      res.status(200).send(indexHtml);
+    });
   }
 };
 

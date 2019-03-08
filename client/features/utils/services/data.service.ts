@@ -8,7 +8,7 @@ import { HandleErrorService } from './handle-error.service';
 
 // generic data service to be used as base for other entity services
 export abstract class AbstractRestService {
-    protected appBase = environment.appBaseUrl;
+    protected appBaseUrl = environment.appBaseUrl;
     protected apiBaseUrl =  environment.apiBaseUrl;
 
     constructor(
@@ -17,14 +17,14 @@ export abstract class AbstractRestService {
         protected handleErrorService: HandleErrorService) { }
 
     GetAll(): Observable<{}> {
-        return this.http.get(this.appBase + this.apiBaseUrl + this.actionUrl)
+        return this.http.get(this.appBaseUrl + this.apiBaseUrl + this.actionUrl)
             .pipe(
                 catchError(this.handleErrorService.handleError())
             );
     }
 
     GetById(id: string): Observable<{}> {
-        return this.http.get(this.appBase + this.apiBaseUrl + this.actionUrl + '/' + id)
+        return this.http.get(this.appBaseUrl + this.apiBaseUrl + this.actionUrl + '/' + id)
             .pipe(
                 catchError(this.handleErrorService.handleError())
             );
@@ -33,13 +33,13 @@ export abstract class AbstractRestService {
     Save(entity: any): Observable<{}> {
         if (entity._id) {
             // update
-            return this.http.put(this.appBase + this.apiBaseUrl + this.actionUrl + '/' + entity._id, entity)
+            return this.http.put(this.appBaseUrl + this.apiBaseUrl + this.actionUrl + '/' + entity._id, entity)
                 .pipe(
                     catchError(this.handleErrorService.handleError())
                 );
         } else {
             // create
-            return this.http.post(this.appBase + this.apiBaseUrl + this.actionUrl, entity)
+            return this.http.post(this.appBaseUrl + this.apiBaseUrl + this.actionUrl, entity)
                 .pipe(
                     catchError(this.handleErrorService.handleError())
                 );
@@ -47,7 +47,7 @@ export abstract class AbstractRestService {
     }
 
     Delete(id: string): Observable<{}> {
-        return this.http.delete(this.appBase + this.apiBaseUrl + this.actionUrl + '/' + id)
+        return this.http.delete(this.appBaseUrl + this.apiBaseUrl + this.actionUrl + '/' + id)
             .pipe(
                 catchError(this.handleErrorService.handleError())
             );

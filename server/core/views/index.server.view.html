@@ -1,5 +1,39 @@
-{{!< layout}}
+<!doctype html>
+<html lang="en">
 
-{{#contentFor 'content'}}
-  <section ui-view></section>
-{{/contentFor}}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{title}}</title>
+  <meta NAME="Title" CONTENT="{{title}}">
+  <meta NAME="Keywords" CONTENT="{{keywords}}">
+  <meta NAME="Description" CONTENT="{{description}}">
+  <meta NAME="Subject" CONTENT="{{title}}">
+
+  <meta name="Expires" content="Tue, 01 Jun 1999 19:58:02 GMT">
+  <meta http-equiv="cache-control" content="no-cache" />
+
+  <link rel="icon shortcut" type="image/x-icon" href="./favicon.ico">
+  <base href="/">
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script src="./assets/js/gtag.js"></script>
+</head>
+
+<body>
+  <!--[if lt IE 10]>
+  <p>
+    You are using an <strong>outdated</strong> browser.
+    Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.
+  </p>
+  <![endif]-->
+  <noscript>
+    <p>
+      This page requires JavaScript to work properly. Please enable JavaScript in your browser.
+    </p>
+  </noscript>
+  <app-root></app-root>
+</body>
+
+</html>

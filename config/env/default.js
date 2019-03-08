@@ -6,8 +6,9 @@ module.exports = {
     name: process.env.APP_NAME || 'meancore',
     description: 'Applications runing on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
-    appBase: process.env.APP_BASE_URL || '/',
-    defaultPage: 'index.html'
+    appBaseUrl: process.env.APP_BASE_URL || '/',
+    defaultPage: 'index.html',
+    MENU_CONFIG: []
   },
   // Config required for Google Analytics
   GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL || '',
@@ -66,7 +67,7 @@ module.exports = {
       childSrc: ["'self'"],
       imgSrc: [
         "'self'",
-		'data:',
+        'data:',
         'https://www.google-analytics.com/'
       ],
       reportUri: '/report-violation',
@@ -90,7 +91,7 @@ module.exports = {
     storage: process.env.UPLOADS_STORAGE || 'local',
     profile: {
       image: {
-        dest: './modules/users/client/img/profile/uploads/',
+        dest: '_content/' + (process.env.APP_NAME || 'meancore') + '/img/profile/uploads/',
         limits: {
           fileSize: 1 * 1024 * 1024 // Max file size in bytes (1 MB)
         }

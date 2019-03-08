@@ -15,14 +15,15 @@ const envConfigFile = `import { VERSION } from './version';
 export const environment = {
     production: '${process.env.PRODUCTION}',
     version: VERSION.version + '-' + '${process.env.NODE_ENV}',
+    appName: '${process.env.APP_NAME}',
+    appLogo: '${process.env.APP_LOGO}',
     appDefaultRoute: '${process.env.APP_DEFAULT_ROUTE}',
+    appBaseUrl: '${process.env.APP_BASE_URL}',
     apiBaseUrl: '${process.env.API_BASE_URL}',
+    imageUploadUrl: '${process.env.IMAGE_UPLOAD_URL}',
     googleAnalyticsID: '${process.env.GOOGLE_ANALYTICS_ID}',
     recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
-    twitterHandle: '${process.env.TWITTER_HANDLE}',
-    appName: '${process.env.APP_NAME}',
-    appBaseUrl: '${process.env.APP_BASE_URL}',
-    imageUploadUrl: '${process.env.IMAGE_UPLOAD_URL}'
+    twitterHandle: '${process.env.TWITTER_HANDLE}'
 };
 `;
 
