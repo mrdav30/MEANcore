@@ -17,7 +17,7 @@ export class AppMenuComponent implements OnInit {
   public appHome = environment.appDefaultRoute;
   public appLogo = environment.appLogo;
   //  UI Config
-  public menus: MenuConfig[] = [];
+  public menus: MenuConfig[];
   public visibleMenus: MenuConfig[] = [];
   public showLoginNav = true;
   public showSearchNav = true;
@@ -35,7 +35,7 @@ export class AppMenuComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.menus = this.configService.MENU_CONFIG;
+    this.menus = this.configService.config.menuConfig ? this.configService.config.menuConfig : [];
     this.authService.userChange$.subscribe(user => {
       this.onSetUser(user);
     });

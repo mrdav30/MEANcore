@@ -30,7 +30,7 @@ export class AuthService {
     private authListener: Observer<any>;
 
     constructor(
-        private configService: ConfigService,
+        public configService: ConfigService,
         private http: HttpClient,
         private router: Router,
         private handleErrorService: HandleErrorService

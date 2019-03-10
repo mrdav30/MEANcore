@@ -40,9 +40,7 @@ exports.retrieveRuntimeConfig = function (req, res) {
       response.user.salt = undefined;
     }
 
-    res.status(200).send({
-      config: response
-    });
+    res.status(200).send(response);
   })
 }
 
@@ -77,7 +75,8 @@ exports.renderIndex = async function (req, res) {
   if (!config.app.defaultPage || ~exts.indexOf(ext)) { // if not in extentions give 404
     renderNotFound(req, res); // We know its not found
   } else {
-    res.render(config.app.defaultPage, config.app, function (err, indexHtml) {
+    var indexPath = path.normalize(config.app.defaultPage);
+    res.render(indexPath, config.app, function (err, indexHtml) {
       res.status(200).send(indexHtml);
     });
   }

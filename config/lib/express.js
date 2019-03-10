@@ -373,7 +373,7 @@ var initApps = function (db) {
   config.helpers = require(path.resolve('./server/helpers.js'));
 
   // set up view
-  config.serverViewPath = './server';
+  config.serverViewPath = 'server';
 
   // set up static file location
   config.staticFiles = 'dist/' + config.app.name + '/';

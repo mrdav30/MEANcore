@@ -1,14 +1,16 @@
-import { Injectable } from '@angular/core';
-import { ScriptStore } from './script.store';
+import { Injectable, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
-declare var document: any;
+import { ScriptStore } from './script.store';
 
 @Injectable()
 export class ScriptInjectorService {
 
     private scripts: any = {};
 
-    constructor() {
+    constructor(
+        @Inject(DOCUMENT) private doc: any
+    ) {
         ScriptStore.forEach((script: any) => {
             this.scripts[script.name] = {
                 loaded: false,
@@ -30,7 +32,7 @@ export class ScriptInjectorService {
                 resolve({ script: name, loaded: true, status: 'Already Loaded' });
             } else {
                 // load script
-                const script = document.createElement('script');
+                const script = this.doc.createElement('script');
                 script.type = 'text/javascript';
                 script.async = this.scripts[name].async || false;
                 script.src = this.scripts[name].src;
