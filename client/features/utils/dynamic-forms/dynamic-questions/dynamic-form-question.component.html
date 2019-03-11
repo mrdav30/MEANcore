@@ -1,0 +1,14 @@
+<div [formGroup]="form" class="question">
+  <label [attr.for]="question.key" *ngIf="isNewObject && question.createLabel">{{question.createLabel}}</label>
+  <label [attr.for]="question.key" *ngIf="!isNewObject || !question.createLabel">{{question.label}}</label>
+  <div [ngSwitch]="question.controlType">
+    <div *ngSwitchCase="'readonly'">{{question.value}}</div>
+    <input class="form-control" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.type">
+    <textarea class="form-control" *ngSwitchCase="'textarea'" [formControlName]="question.key" [id]="question.key"></textarea>
+    <input class="form-control" type="checkbox" *ngSwitchCase="'checkbox'" [formControlName]="question.key" [id]="question.key">
+    <select class="form-control" [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key">
+      <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
+    </select>
+  </div>
+  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
+</div>

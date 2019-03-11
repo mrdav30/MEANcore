@@ -13,6 +13,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImageUploadModule } from './image-upload/image-upload.module';
+import { DynamicFormsModule } from './dynamic-forms/dynamic-forms.module';
 
 import { LoadingComponent } from './loading/loading.component';
 import { MessagingComponent } from './messaging/messaging.component';
@@ -74,7 +75,8 @@ const modules = [
   NgbTabsetModule,
   NgbProgressbarModule,
   NgbPaginationModule,
-  ImageUploadModule
+  ImageUploadModule,
+  DynamicFormsModule
 ];
 
 const directives = [

@@ -1,0 +1,30 @@
+/* .hierarchy-item-list {
+  max-height: 60vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.hierarchy-item-badge {
+  color: #fff;
+  background-color: #333;
+}
+
+.hierarchy-item-button {
+  max-width: 73%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.one-line {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.delete-alert {
+  white-space: normal;
+}
+
+.delete-alert > button {
+  float: right;
+} */
