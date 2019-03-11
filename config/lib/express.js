@@ -24,9 +24,6 @@ var config = require('../config'),
   _ = require('lodash'),
   vhost = require('vhost');
 
-// Auth servers may not have valid SSL
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 /**
  * Configure the models
  */
@@ -94,6 +91,9 @@ var initMiddleware = function (app, config) {
   //Should be placed before express.static
   app.use(compress({
     filter: function (req, res) {
+      res.setHeader('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+      res.setHeader('Pragma', 'no-cache');
+      res.removeHeader('ETag');
       return (/json|text|javascript|css|font|svg/).test(res.getHeader('Content-Type'));
     },
     level: 9
