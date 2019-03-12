@@ -2,13 +2,13 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
 import * as _ from 'lodash';
 
-import { QuestionBase } from './dynamic-questions/question-base';
+import { QuestionBase } from './dynamic-questions/models/question-base';
 
 @Component({
   moduleId: module.id,
-  selector: 'app-dynamic-list',
-  templateUrl: `dynamic-list.component.html`,
-  styleUrls: ['dynamic-list.component.css']
+  selector: 'app-df-list',
+  templateUrl: `dynamic-forms-list.component.html`,
+  styleUrls: ['dynamic-forms-list.component.css']
 })
 
 export class DynamicListComponent implements AfterViewInit {

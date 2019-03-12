@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-import { DynamicListComponent } from './dynamic-list.component';
+import { DynamicListComponent } from './dynamic-forms-list.component';
 import { DynamicFormComponent } from './dynamic-form.component';
 import { DynamicFormQuestionComponent } from './dynamic-questions/dynamic-form-question.component';
 

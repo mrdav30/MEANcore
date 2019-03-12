@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AuthGuard } from '../utils';
 
-import { UserAccessControlComponent } from './user-access-control.component';
+import { UserAccessControlComponent } from './uac-dashboard.component';
 
 export const UserAccessControlRoutes: Routes = [
     {

@@ -4,7 +4,7 @@ export class User {
   id: number;
   name: string;
   full_name: string;
-  mail: string;
+  email: string;
   admin: boolean;
   apps: Application[];
   supervisor_id: number;

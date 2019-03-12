@@ -58,6 +58,7 @@ export * from './services/script-injector.service';
 
 export { LoadingInterceptor } from './services/loading.interceptor';
 export { MessagingInterceptor } from './services/messaging.interceptor';
+export { dynamicFormClasses } from './dynamic-forms/dynamic-forms.module';
 
 export { CanDeactivateGuard } from './services/can-deactivate-guard.service';
 

@@ -1,0 +1,10 @@
+<div>
+  <div class="row">
+    <div id="roleList" *ngIf="roles" class="col-md-12">
+      <app-df-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (onItemSelect)="toggleRole($event)"
+        (onListSelect)="toggleList($event)" (onItemCreate)="createRole($event)" (onItemChanges)="modifyRole($event)"
+        (onItemDelete)="deleteRole($event)" (onItemStartEdit)="startEditRole()">
+      </app-df-list>
+    </div>
+  </div>
+</div>

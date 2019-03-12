@@ -4,7 +4,7 @@ import { QuestionBase } from './models/question-base';
 
 @Component({
   moduleId: module.id,
-  selector: 'app-dynamic-form-question',
+  selector: 'app-df-question',
   templateUrl: 'dynamic-form-question.component.html',
   styleUrls: ['dynamic-form-question.component.css']
 })
