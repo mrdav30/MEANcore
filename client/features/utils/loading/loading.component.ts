@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { LoadingService } from '../services/loading.service';
+import { Component, OnDestroy } from '@angular/core';
+import { LoadingService } from './loading.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({

@@ -1,10 +1,11 @@
 .messageContainer {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    font-weight: bold;
-    z-index: 1000000;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  font-weight: bold;
+  z-index: 1000000;
 }
+
 .messageContainer .alert {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }

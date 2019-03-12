@@ -9,12 +9,13 @@ import { HandleErrorService } from './handle-error.service';
 // generic data service to be used as base for other entity services
 export abstract class AbstractRestService {
     protected appBaseUrl = environment.appBaseUrl;
-    protected apiBaseUrl =  environment.apiBaseUrl;
+    protected apiBaseUrl = environment.apiBaseUrl;
 
     constructor(
         protected http: HttpClient,
         protected actionUrl: string,
-        protected handleErrorService: HandleErrorService) { }
+        protected handleErrorService: HandleErrorService
+    ) { }
 
     GetAll(): Observable<{}> {
         return this.http.get(this.appBaseUrl + this.apiBaseUrl + this.actionUrl)
