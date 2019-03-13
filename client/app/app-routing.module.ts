@@ -9,6 +9,7 @@ import { SignInRoutes } from '../features/users/sign-in/sign-in.routes';
 import { RecoverPasswordRoutes } from '../features/users/password/recover/recover-password.routes';
 import { ResetPasswordRoutes } from '../features/users/password/reset/reset-password.routes';
 import { SignUpRoutes } from '../features/users/sign-up/sign-up.routes';
+import { UserAccessControlRoutes } from '../features/user-access-control/uac-dashboard.routes';
 import { HomeRoutes } from '../features/home/home.routes';
 
 export const AppRoutes: Routes = [
@@ -21,6 +22,7 @@ export const AppRoutes: Routes = [
   ...RecoverPasswordRoutes,
   ...ResetPasswordRoutes,
   ...SignUpRoutes,
+  ...UserAccessControlRoutes,
   ...HomeRoutes,
   {
     path: '**',

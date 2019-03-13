@@ -4,11 +4,11 @@ import { QuestionBase } from './models/question-base';
 
 @Component({
   moduleId: module.id,
-  selector: 'app-df-question',
-  templateUrl: 'dynamic-form-question.component.html',
-  styleUrls: ['dynamic-form-question.component.css']
+  selector: 'app-dynamic-question',
+  templateUrl: 'dynamic-question.component.html',
+  styleUrls: ['dynamic-question.component.css']
 })
-export class DynamicFormQuestionComponent {
+export class DynamicQuestionComponent {
   @Input() question: QuestionBase<any>;
   @Input() form: FormGroup;
   @Input() isNewObject: boolean;

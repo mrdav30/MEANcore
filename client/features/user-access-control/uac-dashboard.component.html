@@ -2,23 +2,23 @@
   <div class="row">
 
     <div id="roleList" *ngIf="roles" class="col-md-4">
-      <app-df-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (itemSelect)="onToggleRole($event)"
+      <app-dynamic-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (itemSelect)="onToggleRole($event)"
         (listSelect)="onToggleList($event)" (itemCreate)="onCreateRole($event)" (itemChanges)="onModifyRole($event)"
         (itemDelete)="onDeleteRole($event)" (itemStartEdit)="onStartEditRole()">
-      </app-df-list>
+      </app-dynamic-list>
     </div>
     <div id="userList" *ngIf="selectedRole && usersSelected" class="col-md-4">
-      <app-df-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
+      <app-dynamic-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
         [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)" (itemCreate)="onAddUsersToRole($event, selectedRole)"
         (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
-      </app-df-list>
+      </app-dynamic-list>
     </div>
     <div id="permissionList" *ngIf="selectedRole && permissionsSelected" class="col-md-4">
-      <app-df-list listTitle="{{selectedRole.name}} / Permissions" [items]="selectedRole.permissions" [showCheckboxes]="true"
+      <app-dynamic-list listTitle="{{selectedRole.name}} / Permissions" [items]="selectedRole.permissions" [showCheckboxes]="true"
         [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)" (itemRemove)="onRemovePermissionFromRole($event)"
         (itemCreate)="onCreatePermission($event)" (itemChanges)="onModifyPermission($event)" (itemDelete)="onDeletePermission($event)"
         (itemSelect)="onTogglePermission($event)">
-      </app-df-list>
+      </app-dynamic-list>
     </div>
   </div>
 </div>

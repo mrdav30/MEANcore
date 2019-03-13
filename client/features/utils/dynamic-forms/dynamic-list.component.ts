@@ -6,9 +6,9 @@ import { QuestionBase } from './dynamic-questions/models/question-base';
 
 @Component({
   moduleId: module.id,
-  selector: 'app-df-list',
-  templateUrl: `dynamic-forms-list.component.html`,
-  styleUrls: ['dynamic-forms-list.component.css']
+  selector: 'app-dynamic-list',
+  templateUrl: `dynamic-list.component.html`,
+  styleUrls: ['dynamic-list.component.css']
 })
 
 export class DynamicListComponent implements AfterViewInit {

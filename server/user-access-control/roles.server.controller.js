@@ -1,17 +1,78 @@
 'use strict';
 var async = require('async'),
-  errorHandler = require('../../errors.server.controller.js'),
-  rolesModel = require('./roles.server.model');
+  errorHandler = require('../errors.server.controller'),
+  rolesModel = require('./roles.server.model'),
+  permissionsModel = require('./permissions.server.model'),
+  mongoose = require('mongoose'),
+  User = mongoose.model('User');
 
 exports.getRoles = function (req, res) {
-  rolesModel.getAll(function (err, result) {
+  rolesModel.getAll(function (err, roles) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to retrieve roles'
       });
     }
 
-    res.status(200).send(result);
+    async.waterfall([
+        function (cb) {
+          async.each(roles, (role, done) => {
+            let query = {
+              _id: {
+                $in: _.map(role, (r) => {
+                  return r.permissionIds;
+                })
+              }
+            }
+            permissionsModel.getAll(query, (err, permissions) => {
+              if (err) {
+                return done(err);
+              }
+              role.permissions = permissions ? permissions : [];
+              done(null);
+            });
+          }, (err) => {
+            if (err) {
+              return cb(err);
+            }
+
+            cb(null, roles);
+          });
+        },
+        function (roles, cb) {
+          async.each(roles, (role, done) => {
+            let query = {
+              roles: {
+                $in: _.map(role, (r) => {
+                  return r.name;
+                })
+              }
+            }
+            User.find(query, (err, users) => {
+              if (err) {
+                return done(err);
+              }
+              role.users = users ? users : [];
+              done(null);
+            })
+          }, (err) => {
+            if (err) {
+              return cb(err);
+            }
+
+            cb(null, roles);
+          });
+        },
+      ],
+      function (err, result) {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to retrieve roles'
+          });
+        }
+
+        res.status(200).send(result);
+      });
   });
 };
 

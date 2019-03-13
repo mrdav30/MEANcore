@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import * as _ from 'lodash';
 
-import { dynamicFormClasses } from '../utils';
+import { dynamicQuestionClasses } from '../utils';
 
 import { Role } from './models/role';
 import { Permission } from './models/permission';
@@ -35,28 +35,28 @@ export class UserAccessControlComponent implements OnInit {
     selectedUser: User = null;
     selectedPermission: Permission = null;
     selectedUserAttribute: {} = null;
-    rolesMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
-    usersMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
-    usersReadOnlyMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
-    permissionsMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
+    rolesMetadata: dynamicQuestionClasses.QuestionBase<any>[] = [];
+    usersMetadata: dynamicQuestionClasses.QuestionBase<any>[] = [];
+    usersReadOnlyMetadata: dynamicQuestionClasses.QuestionBase<any>[] = [];
+    permissionsMetadata: dynamicQuestionClasses.QuestionBase<any>[] = [];
 
     constructor(
         private uacService: UserAccessControlService
     ) { }
 
-    async ngOnInit() {
-        await this.uacService.getAllRoles()
-            .then(data => {
+    ngOnInit() {
+        this.uacService.getAllRoles()
+            .then(async (data) => {
                 this.roles = data as Role[];
-            });
 
-        await this.setMetaData();
+                await this.setMetaData();
+            });
     }
 
     setMetaData(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.rolesMetadata = [
-                new dynamicFormClasses.TextboxQuestion({
+                new dynamicQuestionClasses.TextboxQuestion({
                     key: 'name',
                     label: 'Name',
                     value: '',
@@ -66,7 +66,7 @@ export class UserAccessControlComponent implements OnInit {
             ];
 
             this.usersMetadata = [
-                new dynamicFormClasses.DropdownQuestion({
+                new dynamicQuestionClasses.DropdownQuestion({
                     key: 'name',
                     label: 'Username',
                     value: '',
@@ -83,21 +83,21 @@ export class UserAccessControlComponent implements OnInit {
             ];
 
             this.usersReadOnlyMetadata = [
-                new dynamicFormClasses.ReadonlyField({
+                new dynamicQuestionClasses.ReadonlyField({
                     key: 'name',
                     label: 'Username',
                     value: '',
                     required: false,
                     order: 1
                 }),
-                new dynamicFormClasses.ReadonlyField({
+                new dynamicQuestionClasses.ReadonlyField({
                     key: 'full_name',
                     label: 'Full Name',
                     value: '',
                     required: false,
                     order: 2
                 }),
-                new dynamicFormClasses.ReadonlyField({
+                new dynamicQuestionClasses.ReadonlyField({
                     key: 'email',
                     label: 'E-mail',
                     value: '',
@@ -107,7 +107,7 @@ export class UserAccessControlComponent implements OnInit {
             ];
 
             this.permissionsMetadata = [
-                new dynamicFormClasses.TextboxQuestion({
+                new dynamicQuestionClasses.TextboxQuestion({
                     key: 'name',
                     label: 'Name',
                     value: '',

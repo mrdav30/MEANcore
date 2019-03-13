@@ -1,7 +1,7 @@
 'use strict';
 
-var users = require('../controllers/users.controller');
-var roles = require('../controllers/roles.controller');
+var roles = require('./roles.server.controller');
+var permissions = require('./permissions.server.controller');
 
 module.exports = function (app) {
 
@@ -13,7 +13,6 @@ module.exports = function (app) {
     .post(roles.createRole);
 
   app.route('/api/role/:role_id')
-    .get(roles.getRole)
     .put(roles.updateRole)
     .delete(roles.deleteRole);
 
@@ -33,9 +32,9 @@ module.exports = function (app) {
   // Permissions
 
   app.route('/api/permission')
-    .post(apps.createPermission);
+    .post(permissions.createPermission);
 
   app.route('/api/permission/:perm_id')
-    .put(apps.updatePermission)
-    .delete(apps.deletePermission);
+    .put(permissions.updatePermission)
+    .delete(permissions.deletePermission);
 };

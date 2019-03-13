@@ -35,7 +35,7 @@ export class DynamicFormComponent implements OnInit {
 
       _.forEach(keys, (key) => {
         if (_.includes(key, '.')) {
-          const parts = _.chain()
+          const parts = _.chain(key)
             .split('.')
             .reverse()
             .value();

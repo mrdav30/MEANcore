@@ -56,7 +56,7 @@ export * from './services/cached-data.service';
 export * from './services/seo.service';
 export * from './services/script-injector.service';
 
-export { dynamicFormClasses } from './dynamic-forms/dynamic-forms.module';
+export { dynamicQuestionClasses } from './dynamic-forms/dynamic-forms.module';
 
 export { LoadingInterceptor } from './loading/loading.interceptor';
 export { MessagingInterceptor } from './messaging/messaging.interceptor';
