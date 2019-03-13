@@ -1,9 +1,10 @@
 'use strict';
 var async = require('async'),
-  rolesModel = require('./roles.model');
+  errorHandler = require('../../errors.server.controller.js'),
+  rolesModel = require('./roles.server.model');
 
 exports.getRoles = function (req, res) {
-  rolesModel.getRoles(function (err, result) {
+  rolesModel.getAll(function (err, result) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to retrieve roles'
@@ -15,8 +16,7 @@ exports.getRoles = function (req, res) {
 };
 
 exports.createRole = function (req, res) {
-
-  rolesModel.createRole(req.body.role, function (err, result) {
+  rolesModel.create(req.body.role, function (err, result) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to create role'
@@ -28,7 +28,7 @@ exports.createRole = function (req, res) {
 };
 
 exports.updateRole = function (req, res) {
-  rolesModel.updateRole(req.params.role_id, req.body.role, function (err, result) {
+  rolesModel.update(req.params.role_id, req.body.role, function (err, result) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to modify role'
@@ -40,7 +40,7 @@ exports.updateRole = function (req, res) {
 };
 
 exports.deleteRole = function (req, res) {
-  rolesModel.deleteRole(req.params.role_id, function (err, result) {
+  rolesModel.delete(req.params.role_id, function (err, result) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to delete role'
@@ -48,5 +48,85 @@ exports.deleteRole = function (req, res) {
     }
 
     res.status(200).send(result);
+  });
+};
+
+exports.connectPermissionWithRole = function (req, res) {
+  rolesModel.connectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
+    if (err) {
+      return res.status(500).send({
+        error: 'Unable to connect permission'
+      });
+    }
+
+    res.status(200).send(result);
+  });
+};
+
+exports.disconnectPermissionFromRole = function (req, res) {
+  rolesModel.disconnectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
+    if (err) {
+      return res.status(500).send({
+        error: 'Unable to disconnect permission'
+      });
+    }
+
+    res.status(200).send(result);
+  });
+};
+
+exports.addUserToRole = function (req, res) {
+  rolesModel.addUser(req.body.user, req.params.role_id, function (err, result) {
+    if (err) {
+      return res.status(500).send({
+        error: errorHandler.getErrorMessage(err)
+      });
+    }
+
+    res.status(200).send(result);
+  });
+};
+
+exports.addUsersToRole = function (req, res) {
+  let response = {
+    users: [],
+    errors: [],
+    added: 0,
+    failed: 0
+  };
+  async.eachSeries(req.body.users, function (user, callback) {
+    rolesModel.addUser(user, req.params.role_id, function (err, result) {
+      if (err) {
+        response.errors.push({
+          error: err.message,
+          user: user
+        });
+        response.failed++;
+      } else {
+        response.users.push(result.user);
+        response.added++;
+      }
+      callback();
+    });
+  }, function (err) {
+    if (err) {
+      return res.status(500).send({
+        error: errorHandler.getErrorMessage(err)
+      });
+    }
+
+    res.status(200).send(response);
+  });
+};
+
+exports.removeUserFromRole = function (req, res) {
+  rolesModel.removeUser(req.params.user_id, req.params.role_id, function (err, response) {
+    if (err) {
+      return res.status(500).send({
+        error: errorHandler.getErrorMessage(err)
+      });
+    }
+
+    res.status(200).send(response);
   });
 };

@@ -66,13 +66,19 @@ export class UserAccessControlComponent implements OnInit {
             ];
 
             this.usersMetadata = [
-                new dynamicFormClasses.TextboxQuestion({
+                new dynamicFormClasses.DropdownQuestion({
                     key: 'name',
                     label: 'Username',
-                    create_label: 'Username(s) (single instance or comma-separated list)',
                     value: '',
                     required: true,
-                    order: 2
+                    order: 2,
+                    options: _.map(this.roles, (role) => {
+                        return _.forEach(role.users, (user) => {
+                            const obj = {};
+                            obj[user.id] = user.full_name;
+                            return obj;
+                        });
+                    })
                 })
             ];
 
@@ -145,11 +151,6 @@ export class UserAccessControlComponent implements OnInit {
 
             return resolve();
         });
-    }
-
-    findItemByField(arr: any[], key: string, value: string): void {
-        const item = _.find(arr, (i) => i[key] === value);
-        return item ? item : {};
     }
 
     onToggleList(list: any): void {
@@ -279,14 +280,8 @@ export class UserAccessControlComponent implements OnInit {
     onRemovePermissionFromRole(perm: Permission): void {
         this.uacService.disconnectRoleFromPermission(this.selectedRole.id, perm.id)
             .then(() => {
-                let permIndex = -1;
+                const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el.id === perm.id);
 
-                _.forEach(this.selectedRole.permissions, (val, key) => {
-                    if (val.id === perm.id) {
-                        permIndex = key;
-                        return false;
-                    }
-                });
                 if (permIndex >= 0) {
                     this.selectedRole.permissions.splice(permIndex, 1);
                 }

@@ -2,7 +2,6 @@
 
 var users = require('../controllers/users.controller');
 var roles = require('../controllers/roles.controller');
-var apps = require('../controllers/apps.controller');
 
 module.exports = function (app) {
 
@@ -18,14 +17,18 @@ module.exports = function (app) {
     .put(roles.updateRole)
     .delete(roles.deleteRole);
 
-  app.route('/api/role/:role_id/user/')
-    .post(users.addUserToRole);
+  app.route('/api/role/:role_id/permission/:perm_id')
+    .post(roles.connectPermissionWithRole)
+    .delete(roles.disconnectPermissionFromRole);
 
   app.route('/api/role/:role_id/user/:user_id')
-    .delete(users.removeUserFromRole);
+    .post(roles.addUserToRole);
+
+  app.route('/api/role/:role_id/user/:user_id')
+    .delete(roles.removeUserFromRole);
 
   app.route('/api/role/:role_id/users/')
-    .post(users.addUsersToRole);
+    .post(roles.addUsersToRole);
 
   // Permissions
 
@@ -35,8 +38,4 @@ module.exports = function (app) {
   app.route('/api/permission/:perm_id')
     .put(apps.updatePermission)
     .delete(apps.deletePermission);
-
-  app.route('/api/role/:role_id/permission/:perm_id')
-    .post(apps.connectPermissionWithRole)
-    .delete(apps.disconnectPermissionFromRole);
 };

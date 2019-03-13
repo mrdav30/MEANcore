@@ -126,7 +126,7 @@ export class DynamicListComponent implements AfterViewInit {
     return this._getMetadata(item, this.viewingMetadata);
   }
 
-  cleanMetadata(item) {
+  cleanMetadata() {
     return this.itemsMetadata.map((obj) => {
       obj.value = '';
       return obj;
