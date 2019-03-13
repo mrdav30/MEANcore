@@ -3,7 +3,7 @@
 
 import { Injectable } from '@angular/core';
 
-export interface MenuConfig { label: string; route: string; roles: string[]; permissions: string[]; visible: boolean; }
+export interface MenuConfig { label: string; route: string; roles: string[]; permission: string; visible: boolean; }
 
 @Injectable()
 export class ConfigService {
