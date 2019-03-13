@@ -109,6 +109,7 @@
     "@fortawesome/fontawesome-free": "^5.7.2",
     "@types/jasmine": "^3.3.9",
     "@types/jasminewd2": "~2.0.3",
+    "@types/lodash": "^4.14.123",
     "@types/node": "^11.9.4",
     "chalk": "^2.4.2",
     "codelyzer": "~4.5.0",

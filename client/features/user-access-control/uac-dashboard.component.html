@@ -1,9 +1,42 @@
 <div>
   <div class="row">
-    <div id="roleList" *ngIf="roles" class="col-md-12">
-      <app-df-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (onItemSelect)="toggleRole($event)"
-        (onListSelect)="toggleList($event)" (onItemCreate)="createRole($event)" (onItemChanges)="modifyRole($event)"
-        (onItemDelete)="deleteRole($event)" (onItemStartEdit)="startEditRole()">
+
+    <div id="roleList" *ngIf="roles" class="col-md-3">
+      <app-df-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (itemSelect)="onToggleRole($event)"
+        (listSelect)="onToggleList($event)" (itemCreate)="onCreateRole($event)" (itemChanges)="onModifyRole($event)"
+        (itemDelete)="onDeleteRole($event)" (itemStartEdit)="onStartEditRole()">
+      </app-df-list>
+    </div>
+    <div id="userList" *ngIf="selectedRole && usersSelected" class="col-md-3">
+      <app-df-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
+        [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)" (itemCreate)="onAddUsersToRole($event, selectedRole)"
+        (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
+      </app-df-list>
+    </div>
+    <div id="userAttributeList" *ngIf="selectedRole && selectedUser && selectedUser.attributes_arr" class="col-md-3">
+      <app-df-list listTitle="{{selectedUser.name}} Attributes " [items]="selectedUser.attributes_arr" [showCheckboxes]="false"
+        [itemsMetadata]="attributesMetadata" (itemCreate)="onModifyUser($event)" (itemChanges)="onModifyUser($event)"
+        (itemDelete)="onModifyUser($event)" (itemSelect)="onToggleUserAttribute($event)">
+      </app-df-list>
+    </div>
+    <div id="appList" *ngIf="selectedRole && appsSelected" class="col-md-3">
+      <app-df-list listTitle="{{selectedRole.name}} / Applications" [items]="selectedRole.apps" [allItems]="apps"
+        [showCheckboxes]="false" [itemsMetadata]="appsMetadata" (itemSelect)="onToggleApp($event)" (itemCreate)="onCreateApp($event)"
+        (itemChanges)="onModifyApp($event)" (itemDelete)="onDeleteApp($event)" (itemStartEdit)="onStartEditApp()">
+      </app-df-list>
+    </div>
+    <div id="permissionList" *ngIf="selectedRole && appsSelected && selectedApp" class="col-md-3">
+      <app-df-list listTitle="{{selectedRole.name}}/{{selectedApp.name}} Permissions" [items]="findItemByField(selectedRole.apps, 'id', selectedApp.id).permissions"
+        [allItems]="selectedApp.permissions" [showCheckboxes]="true" [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)"
+        (itemRemove)="onRemovePermissionFromRole($event)" (itemCreate)="onCreatePermission($event)" (itemChanges)="onModifyPermission($event)"
+        (itemDelete)="onDeletePermission($event)" (itemSelect)="onTogglePermission($event)">
+      </app-df-list>
+    </div>
+    <div id="permissionAttributeList" *ngIf="selectedRole && appsSelected && selectedApp && selectedPermission" class="col-md-3">
+      <app-df-list listTitle="{{selectedRole.name}}/{{selectedApp.name}}:{{selectedPermission.name}} Attributes "
+        [items]="selectedPermission.attributes" [showCheckboxes]="false" [itemsMetadata]="attributesMetadata"
+        (itemCreate)="onWritePermissionAttribute($event)" (itemChanges)="onWritePermissionAttribute($event)"
+        (itemDelete)="onDeletePermissionAttribute($event)" (itemSelect)="onTogglePermissionAttribute($event)">
       </app-df-list>
     </div>
   </div>

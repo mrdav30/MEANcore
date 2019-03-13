@@ -4,11 +4,10 @@ import * as _ from 'lodash';
 
 import { dynamicFormClasses } from '../utils';
 
-import { Application } from './models/application';
 import { Role } from './models/role';
 import { Permission } from './models/permission';
 import { UserAccessControlService } from './services/user-access-control.service';
-import { keyframes } from '@angular/animations';
+import { User } from './models/user';
 
 enum DashboardState {
     ShowingRoles = 1,
@@ -30,20 +29,16 @@ export class UserAccessControlComponent implements OnInit {
     message: string = null;
     dashState: DashboardState = DashboardState.ShowingRoles;
     roles: Role[];
-    apps: Application[];
     selectedRole: Role = null;
-    appsSelected = false;
     usersSelected = false;
-    selectedUser: string = null;
-    selectedApp: Application = null;
+    permissionsSelected = false;
+    selectedUser: User = null;
     selectedPermission: Permission = null;
-    selectedPermissionAttribute: {} = null;
+    selectedUserAttribute: {} = null;
     rolesMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
     usersMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
     usersReadOnlyMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
-    appsMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
     permissionsMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
-    attributesMetadata: dynamicFormClasses.QuestionBase<any>[] = [];
 
     constructor(
         private uacService: UserAccessControlService
@@ -53,31 +48,7 @@ export class UserAccessControlComponent implements OnInit {
         await this.uacService.getAllRoles()
             .then(data => {
                 this.roles = data as Role[];
-
-                this.appsMetadata = [
-                    new dynamicFormClasses.TextboxQuestion({
-                        key: 'name',
-                        label: 'Name',
-                        value: '',
-                        required: true,
-                        order: 2
-                    }),
-                    new dynamicFormClasses.DropdownQuestion({
-                        key: 'admin_role.id',
-                        label: 'Admin Role',
-                        value: '',
-                        required: false,
-                        order: 3,
-                        options: _.map(this.roles, (role) => {
-                            const obj = {};
-                            obj[role.id] = role.name;
-                            return obj;
-                        })
-                    })
-                ];
             });
-        await this.uacService.getAllApps()
-            .then(data => { this.apps = data as Application[]; });
 
         await this.setMetaData();
     }
@@ -139,122 +110,89 @@ export class UserAccessControlComponent implements OnInit {
                 })
             ];
 
-            this.attributesMetadata = [
-                new dynamicFormClasses.TextboxQuestion({
-                    key: 'name',
-                    label: 'Name',
-                    value: '',
-                    required: true,
-                    order: 1,
-                    hide_on_edit: true
-                }),
-                new dynamicFormClasses.TextareaQuestion({
-                    key: 'value',
-                    label: 'Value',
-                    value: '',
-                    required: true,
-                    order: 2
-                })
-            ];
+            return resolve();
+        });
+    }
+
+    setState(state: DashboardState): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.dashState = state;
+            switch (state) {
+                case DashboardState.ShowingRoles:
+                    this.selectedRole = null;
+                    this.usersSelected = false;
+                    this.selectedUser = null;
+                    this.selectedPermission = null;
+                    break;
+                case DashboardState.ShowingRolesExpanded:
+                    this.usersSelected = false;
+                    this.selectedUser = null;
+                    this.selectedPermission = null;
+                    break;
+                case DashboardState.ShowingUsers:
+                    this.selectedPermission = null;
+                    break;
+                case DashboardState.ShowingUser:
+                    this.usersSelected = true;
+                    this.selectedPermission = null;
+                    break;
+                case DashboardState.ShowingPermissions:
+                    this.usersSelected = false;
+                    this.selectedUser = null;
+                    this.selectedPermission = null;
+                    break;
+            }
 
             return resolve();
         });
     }
 
-    setState(state: DashboardState): void {
-        this.dashState = state;
-        switch (state) {
-            case DashboardState.ShowingRoles:
-                this.selectedRole = null;
-                this.appsSelected = false;
-                this.selectedApp = null;
-                this.usersSelected = false;
-                this.selectedUser = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingRolesExpanded:
-                this.appsSelected = false;
-                this.selectedApp = null;
-                this.usersSelected = false;
-                this.selectedUser = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingUsers:
-                this.appsSelected = false;
-                this.selectedApp = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingUser:
-                this.usersSelected = true;
-                this.appsSelected = false;
-                this.selectedApp = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingApps:
-                this.appsSelected = true;
-                this.selectedApp = null;
-                this.usersSelected = false;
-                this.selectedUser = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingPermissions:
-                this.appsSelected = true;
-                this.usersSelected = false;
-                this.selectedUser = null;
-                this.selectedPermission = null;
-                this.selectedPermissionAttribute = null;
-                break;
-            case DashboardState.ShowingPermissionAttributes:
-                this.appsSelected = true;
-                this.usersSelected = false;
-                this.selectedUser = null;
-                break;
-        }
-    }
-
-    findItemByField(arr: any[], key, value) {
-        const item = _.find(arr, (i) => i[key] === value );
+    findItemByField(arr: any[], key: string, value: string): void {
+        const item = _.find(arr, (i) => i[key] === value);
         return item ? item : {};
     }
 
-    setErrorMessage(section, message) {
+    onToggleList(list: any): void {
+        if (list.name === 'apps') {
+            this.togglePermissions();
+        } else if (list.name === 'users') {
+            this.toggleUsers();
+        }
+    }
+
+    setErrorMessage(section: string, message: string): void {
         this.message = message;
     }
 
-    dismissMessage() {
+    dismissMessage(): void {
         this.message = null;
     }
 
     // === Roles ===
 
-    toggleRole(role) {
+    async onToggleRole(role: Role) {
         if (this.selectedRole === role) {
-            this.setState(DashboardState.ShowingRoles);
+            await this.setState(DashboardState.ShowingRoles);
         } else {
             this.selectedRole = role;
-            this.setState(DashboardState.ShowingRolesExpanded);
+            await this.setState(DashboardState.ShowingRolesExpanded);
         }
     }
 
-    createRole(role) {
+    onCreateRole(role: Role): void {
         this.uacService.createRole(role)
             .then(data => {
                 role.id = data.id;
-                role.apps = [];
                 role.users = [];
+                role.permissions = [];
                 this.roles.unshift(role);
                 this.selectedRole = null;
             }).catch(reason => this.setErrorMessage('Roles', reason));
     }
 
-    modifyRole(role) {
+    onModifyRole(role: Role): void {
         this.uacService.updateRole(role)
-            .then(data => {
+            .then(() => {
                 const roleIndex = _.findIndex(this.roles, (el) => el.id === role.id);
                 if (roleIndex >= 0) {
                     this.roles[roleIndex] = role;
@@ -263,18 +201,166 @@ export class UserAccessControlComponent implements OnInit {
             }).catch(reason => this.setErrorMessage('Roles', reason));
     }
 
-    startEditRole() {
-        this.setState(DashboardState.ShowingRoles);
+    async onStartEditRole() {
+        await this.setState(DashboardState.ShowingRoles);
     }
 
-    deleteRole(role): void {
-        this.uacService.deleteRole(role)
-            .then(data => {
+    onDeleteRole(role: Role): void {
+        this.uacService.deleteRole(role.id)
+            .then(async () => {
                 const roleIndex = _.findIndex(this.roles, (el) => el.id === role.id);
                 if (roleIndex >= 0) {
                     this.roles.splice(roleIndex, 1);
                 }
-                this.setState(DashboardState.ShowingRoles);
+                await this.setState(DashboardState.ShowingRoles);
             }).catch(reason => this.setErrorMessage('Roles', reason));
     }
+
+    // === Permissions ===
+
+    async onTogglePermission(perm: Permission) {
+        await this.setState(DashboardState.ShowingPermissions);
+        const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el.id === perm.id);
+        if (permIndex < 0) {
+            // role does not have permission enabled
+            return;
+        }
+        if (this.selectedPermission !== perm) {
+            this.selectedPermission = this.selectedRole.permissions[permIndex];
+            await this.setState(DashboardState.ShowingPermissionAttributes);
+        }
+    }
+
+    async togglePermissions() {
+        await this.setState(DashboardState.ShowingRolesExpanded);
+        if (this.selectedRole) {
+            this.permissionsSelected = true;
+            await this.setState(DashboardState.ShowingPermissions);
+        }
+    }
+
+    onCreatePermission(perm: Permission): void {
+        this.uacService.createPermission(perm)
+            .then(data => {
+                perm.id = data.permission_id;
+                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
+                this.roles[roleIndex].permissions.unshift(perm);
+            }).catch(reason => this.setErrorMessage('Permission ', reason));
+    }
+
+    onModifyPermission(perm: Permission): void {
+        this.uacService.modifyPermission(perm)
+            .then(() => {
+                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
+                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el.id === perm.id);
+                this.roles[roleIndex].permissions[permIndex].name = perm.name;
+            }).catch(reason => this.setErrorMessage('Permission ', reason));
+    }
+
+    onDeletePermission(perm: Permission): void {
+        this.uacService.deletePermission(perm.id)
+            .then(async () => {
+                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
+                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el.id === perm.id);
+                if (permIndex >= 0) {
+                    this.roles[roleIndex].permissions.splice(permIndex, 1);
+                }
+                await this.setState(DashboardState.ShowingPermissions);
+            }).catch(reason => this.setErrorMessage('Permission ', reason));
+    }
+
+    onAddPermissionToRole(perm: Permission): void {
+        this.uacService.connectRoleWithPermission(this.selectedRole.id, perm.id)
+            .then(() => {
+                this.selectedRole.permissions.push(perm);
+            }).catch(reason => this.setErrorMessage('Permission ', reason));
+    }
+
+    onRemovePermissionFromRole(perm: Permission): void {
+        this.uacService.disconnectRoleFromPermission(this.selectedRole.id, perm.id)
+            .then(() => {
+                let permIndex = -1;
+
+                _.forEach(this.selectedRole.permissions, (val, key) => {
+                    if (val.id === perm.id) {
+                        permIndex = key;
+                        return false;
+                    }
+                });
+                if (permIndex >= 0) {
+                    this.selectedRole.permissions.splice(permIndex, 1);
+                }
+            }).catch(reason => this.setErrorMessage('Permission ', reason));
+    }
+
+    // === Users ===
+
+    async toggleUser() {
+        await this.setState(DashboardState.ShowingUser);
+    }
+
+    async toggleUsers() {
+        await this.setState(DashboardState.ShowingRolesExpanded);
+        if (this.selectedRole) {
+            this.usersSelected = true;
+            await this.setState(DashboardState.ShowingUsers);
+        }
+    }
+
+    onAddUsersToRole(users: string, role: Role) {
+        this.uacService.addUsersToRole(users, role)
+            .then(data => {
+                _.forEach(data.users, (user) => {
+                    role.users.unshift(user);
+                });
+                if (data.errors.length) {
+                    this.setErrorMessage(
+                        'User/Role',
+                        'Unable to add ' + data.failed + ' out of ' + (data.added + data.failed) + ' users to role "' + role.name + '"'
+                    );
+                }
+            }).catch(reason => this.setErrorMessage('User/Role', reason));
+    }
+
+    onRemoveUserFromRole(user: User, role: Role) {
+        this.uacService.removeUserFromRole(user, role)
+            .then(() => {
+                const userIndex = _.findIndex(role.users, (el) => el.id === user.id);
+                if (userIndex >= 0) {
+                    role.users.splice(userIndex, 1);
+                }
+            }).catch(reason => this.setErrorMessage('User/Role', reason));
+    }
+
+    onModifyUser(user: User) {
+        this.uacService.updateUser(user)
+            .then(data => {
+                const userIndex = _.findIndex(this.selectedRole.users, (el) => el.id === user.id);
+                this.selectedRole.users[userIndex].name = data.name;
+            }).catch(reason => this.setErrorMessage('User', reason));
+    }
+
+    onUserSelected(user: User): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (user === this.selectedUser) {
+                this.selectedUser = null;
+                return resolve();
+            }
+            this.selectedUser = user;
+            return resolve();
+        });
+    }
+
+    replaceAllUsers(user: User): Promise<void> {
+        return new Promise((resolve, reject) => {
+            _.forEach(this.roles, (role) => {
+                if (role.users && role.users.length) {
+                    const ind = _.findIndex(role.users, (el) => el.id === user.id);
+                    role.users[ind] = user;
+                }
+            });
+            resolve();
+        });
+    }
+
 }

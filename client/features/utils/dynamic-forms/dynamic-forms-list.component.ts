@@ -64,7 +64,7 @@ export class DynamicListComponent implements AfterViewInit {
           _.forEach(Object.keys(foundItem), (key) => {
             if (Array.isArray(current_item.data[key])) {
               _.forEach(foundItem[key], (el) => {
-                const idx = _.findIndex(current_item.data[key], (i) => i.id === el.id);
+                const idx = _.findIndex(current_item.data[key], (i: any) => i.id === el.id);
                 if (idx >= 0) {
                   current_item.data[key][idx].data = el;
                   current_item.data[key][idx].selected = true;

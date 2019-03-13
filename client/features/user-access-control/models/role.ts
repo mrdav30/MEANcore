@@ -1,9 +1,9 @@
-import { Application } from './application';
+import { Permission } from './permission';
 import { User } from './user';
 
 export class Role {
   id: number;
   name: string;
-  apps: Application[];
+  permissions: Permission[];
   users: User[];
 }
