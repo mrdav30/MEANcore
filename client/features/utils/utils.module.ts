@@ -19,7 +19,6 @@ import { LoadingComponent } from './loading/loading.component';
 import { MessagingComponent } from './messaging/messaging.component';
 import { PasswordValidatorComponent } from './password-validator/password-validator.component';
 
-import { TooltipDirective } from './directives/tooltip.directive';
 import { EqualValidatorDirective } from './directives/equal-validator.directive';
 import { PasswordToggleDirective } from './directives/password-toggle.directive';
 import { AnimatedLabelDirective } from './directives/animated-label.directive';
@@ -82,7 +81,6 @@ const modules = [
 ];
 
 const directives = [
-  TooltipDirective,
   EqualValidatorDirective,
   PasswordToggleDirective,
   AnimatedLabelDirective,
