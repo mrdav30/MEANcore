@@ -62,6 +62,7 @@ module.exports = {
       styleSrc: ["'self'", "'unsafe-inline'"],
       fontSrc: [
         "'self'",
+        'data:',
         'https://fonts.gstatic.com/s/montserrat/'
       ],
       childSrc: ["'self'"],
