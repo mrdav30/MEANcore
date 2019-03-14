@@ -54,7 +54,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     setMetaData(): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.rolesMetadata = [
                 new dynamicQuestionClasses.TextboxQuestion({
                     key: 'name',
@@ -75,7 +75,7 @@ export class UserAccessControlComponent implements OnInit {
                     options: _.map(this.roles, (role) => {
                         return _.forEach(role.users, (user) => {
                             const obj = {};
-                            obj[user.id] = user.full_name;
+                            obj[user._id] = user.full_name;
                             return obj;
                         });
                     })
@@ -121,12 +121,13 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     setState(state: DashboardState): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             this.dashState = state;
             switch (state) {
                 case DashboardState.ShowingRoles:
                     this.selectedRole = null;
                     this.usersSelected = false;
+                    this.permissionsSelected = false;
                     this.selectedUser = null;
                     this.selectedPermission = null;
                     break;
@@ -136,6 +137,7 @@ export class UserAccessControlComponent implements OnInit {
                     this.selectedPermission = null;
                     break;
                 case DashboardState.ShowingUsers:
+                    this.permissionsSelected = false;
                     this.selectedPermission = null;
                     break;
                 case DashboardState.ShowingUser:
@@ -154,7 +156,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onToggleList(list: any): void {
-        if (list.name === 'apps') {
+        if (list.name === 'permissions') {
             this.togglePermissions();
         } else if (list.name === 'users') {
             this.toggleUsers();
@@ -183,7 +185,7 @@ export class UserAccessControlComponent implements OnInit {
     onCreateRole(role: Role): void {
         this.uacService.createRole(role)
             .then(data => {
-                role.id = data.id;
+                role._id = data._id;
                 role.users = [];
                 role.permissions = [];
                 this.roles.unshift(role);
@@ -194,7 +196,7 @@ export class UserAccessControlComponent implements OnInit {
     onModifyRole(role: Role): void {
         this.uacService.updateRole(role)
             .then(() => {
-                const roleIndex = _.findIndex(this.roles, (el) => el.id === role.id);
+                const roleIndex = _.findIndex(this.roles, (el) => el._id === role._id);
                 if (roleIndex >= 0) {
                     this.roles[roleIndex] = role;
                     this.selectedRole = null;
@@ -207,9 +209,9 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onDeleteRole(role: Role): void {
-        this.uacService.deleteRole(role.id)
+        this.uacService.deleteRole(role._id)
             .then(async () => {
-                const roleIndex = _.findIndex(this.roles, (el) => el.id === role.id);
+                const roleIndex = _.findIndex(this.roles, (el) => el._id === role._id);
                 if (roleIndex >= 0) {
                     this.roles.splice(roleIndex, 1);
                 }
@@ -221,7 +223,7 @@ export class UserAccessControlComponent implements OnInit {
 
     async onTogglePermission(perm: Permission) {
         await this.setState(DashboardState.ShowingPermissions);
-        const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el.id === perm.id);
+        const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el._id === perm._id);
         if (permIndex < 0) {
             // role does not have permission enabled
             return;
@@ -243,8 +245,8 @@ export class UserAccessControlComponent implements OnInit {
     onCreatePermission(perm: Permission): void {
         this.uacService.createPermission(perm)
             .then(data => {
-                perm.id = data.permission_id;
-                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
+                perm._id = data._id;
+                const roleIndex = _.findIndex(this.roles, (el) => el._id === this.selectedRole._id);
                 this.roles[roleIndex].permissions.unshift(perm);
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
@@ -252,17 +254,17 @@ export class UserAccessControlComponent implements OnInit {
     onModifyPermission(perm: Permission): void {
         this.uacService.modifyPermission(perm)
             .then(() => {
-                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
-                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el.id === perm.id);
+                const roleIndex = _.findIndex(this.roles, (el) => el._id === this.selectedRole._id);
+                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el._id === perm._id);
                 this.roles[roleIndex].permissions[permIndex].name = perm.name;
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
 
     onDeletePermission(perm: Permission): void {
-        this.uacService.deletePermission(perm.id)
+        this.uacService.deletePermission(perm._id)
             .then(async () => {
-                const roleIndex = _.findIndex(this.roles, (el) => el.id === this.selectedRole.id);
-                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el.id === perm.id);
+                const roleIndex = _.findIndex(this.roles, (el) => el._id === this.selectedRole._id);
+                const permIndex = _.findIndex(this.roles[roleIndex].permissions, (el) => el._id === perm._id);
                 if (permIndex >= 0) {
                     this.roles[roleIndex].permissions.splice(permIndex, 1);
                 }
@@ -271,16 +273,16 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onAddPermissionToRole(perm: Permission): void {
-        this.uacService.connectRoleWithPermission(this.selectedRole.id, perm.id)
+        this.uacService.connectRoleWithPermission(this.selectedRole._id, perm._id)
             .then(() => {
                 this.selectedRole.permissions.push(perm);
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
 
     onRemovePermissionFromRole(perm: Permission): void {
-        this.uacService.disconnectRoleFromPermission(this.selectedRole.id, perm.id)
+        this.uacService.disconnectRoleFromPermission(this.selectedRole._id, perm._id)
             .then(() => {
-                const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el.id === perm.id);
+                const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el._id === perm._id);
 
                 if (permIndex >= 0) {
                     this.selectedRole.permissions.splice(permIndex, 1);
@@ -302,12 +304,10 @@ export class UserAccessControlComponent implements OnInit {
         }
     }
 
-    onAddUsersToRole(users: string, role: Role) {
-        this.uacService.addUsersToRole(users, role)
+    onAddUserToRole(user: User, role: Role) {
+        this.uacService.addUserToRole(user._id, role._id)
             .then(data => {
-                _.forEach(data.users, (user) => {
-                    role.users.unshift(user);
-                });
+                role.users.unshift(user);
                 if (data.errors.length) {
                     this.setErrorMessage(
                         'User/Role',
@@ -318,9 +318,9 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onRemoveUserFromRole(user: User, role: Role) {
-        this.uacService.removeUserFromRole(user, role)
+        this.uacService.removeUserFromRole(user._id, role._id)
             .then(() => {
-                const userIndex = _.findIndex(role.users, (el) => el.id === user.id);
+                const userIndex = _.findIndex(role.users, (el) => el._id === user._id);
                 if (userIndex >= 0) {
                     role.users.splice(userIndex, 1);
                 }
@@ -330,13 +330,13 @@ export class UserAccessControlComponent implements OnInit {
     onModifyUser(user: User) {
         this.uacService.updateUser(user)
             .then(data => {
-                const userIndex = _.findIndex(this.selectedRole.users, (el) => el.id === user.id);
-                this.selectedRole.users[userIndex].name = data.name;
+                const userIndex = _.findIndex(this.selectedRole.users, (el) => el._id === user._id);
+                this.selectedRole.users[userIndex].username = data.username;
             }).catch(reason => this.setErrorMessage('User', reason));
     }
 
     onUserSelected(user: User): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (user === this.selectedUser) {
                 this.selectedUser = null;
                 return resolve();
@@ -347,10 +347,10 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     replaceAllUsers(user: User): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             _.forEach(this.roles, (role) => {
                 if (role.users && role.users.length) {
-                    const ind = _.findIndex(role.users, (el) => el.id === user.id);
+                    const ind = _.findIndex(role.users, (el) => el._id === user._id);
                     role.users[ind] = user;
                 }
             });

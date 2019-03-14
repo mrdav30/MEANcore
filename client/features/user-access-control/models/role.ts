@@ -2,7 +2,7 @@ import { Permission } from './permission';
 import { User } from './user';
 
 export class Role {
-  id: number;
+  _id: string;
   name: string;
   permissions: Permission[];
   users: User[];

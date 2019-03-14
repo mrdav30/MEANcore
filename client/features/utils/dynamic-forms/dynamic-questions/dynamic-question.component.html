@@ -1,6 +1,6 @@
 <div [formGroup]="form" class="question">
-  <label [attr.for]="question.key" *ngIf="isNewObject && question.createLabel">{{question.createLabel}}</label>
-  <label [attr.for]="question.key" *ngIf="!isNewObject || !question.createLabel">{{question.label}}</label>
+  <label [attr.for]="question.key" *ngIf="isNewObject && question.createLabel" class="ml-2">{{question.createLabel}}</label>
+  <label [attr.for]="question.key" *ngIf="!isNewObject || !question.createLabel" class="ml-2">{{question.label}}</label>
   <div [ngSwitch]="question.controlType">
     <div *ngSwitchCase="'readonly'">{{question.value}}</div>
     <input class="form-control" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.type">
@@ -10,5 +10,7 @@
       <option *ngFor="let opt of question.options" [value]="opt.key">{{opt.value}}</option>
     </select>
   </div>
-  <div class="errorMessage" *ngIf="!isValid">{{question.label}} is required</div>
+  <div class="alert alert-danger" *ngIf="!isValid">
+    <span class="ml-2">{{question.label}} is required</span>
+  </div>
 </div>

@@ -21,13 +21,8 @@ module.exports = function (app) {
     .delete(roles.disconnectPermissionFromRole);
 
   app.route('/api/role/:role_id/user/:user_id')
-    .post(roles.addUserToRole);
-
-  app.route('/api/role/:role_id/user/:user_id')
+    .post(roles.addUserToRole)
     .delete(roles.removeUserFromRole);
-
-  app.route('/api/role/:role_id/users/')
-    .post(roles.addUsersToRole);
 
   // Permissions
 

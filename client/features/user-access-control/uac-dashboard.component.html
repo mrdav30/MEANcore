@@ -1,4 +1,4 @@
-<div>
+<div class="container">
   <div class="row">
 
     <div id="roleList" *ngIf="roles" class="col-md-4">
@@ -9,7 +9,7 @@
     </div>
     <div id="userList" *ngIf="selectedRole && usersSelected" class="col-md-4">
       <app-dynamic-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
-        [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)" (itemCreate)="onAddUsersToRole($event, selectedRole)"
+        [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)" (itemCreate)="onAddUserToRole($event, selectedRole)"
         (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
       </app-dynamic-list>
     </div>

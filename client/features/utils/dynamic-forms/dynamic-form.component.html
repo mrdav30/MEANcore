@@ -1,14 +1,13 @@
-<div class="well well-sm">
+<div class="card form-group">
   <form [formGroup]="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-    <div class="form-group">
-      <div *ngFor="let question of questions">
-        <app-dynamic-question *ngIf="(isNewObject && !question.hideOnCreate) || (!isNewObject && !question.hideOnEdit)"
-          [isNewObject]="isNewObject" [question]="question" [form]="form">
-        </app-dynamic-question>
-      </div>
-      <div *ngIf="!isReadOnly">
-        <button type="submit" class="btn btn-sm btn-success" [disabled]="!form.valid">Save</button>
-      </div>
+    <div *ngFor="let question of questions">
+      <app-dynamic-question *ngIf="(isNewObject && !question.hideOnCreate) || (!isNewObject && !question.hideOnEdit)"
+        [isNewObject]="isNewObject" [question]="question" [form]="form">
+      </app-dynamic-question>
+    </div>
+    <div *ngIf="!isReadOnly">
+      <button type="submit" class="btn btn-sm btn-success mr-2 float-right" [disabled]="!form.valid" ngbToolTip="Save"><i
+          class="fas fa-save"></i></button>
     </div>
   </form>
 </div>

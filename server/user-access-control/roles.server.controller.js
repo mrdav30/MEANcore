@@ -1,6 +1,6 @@
 'use strict';
 var async = require('async'),
-  errorHandler = require('../errors.server.controller'),
+  _ = require('lodash'),
   rolesModel = require('./roles.server.model'),
   permissionsModel = require('./permissions.server.model'),
   mongoose = require('mongoose'),
@@ -16,52 +16,60 @@ exports.getRoles = function (req, res) {
 
     async.waterfall([
         function (cb) {
-          async.each(roles, (role, done) => {
-            let query = {
-              _id: {
-                $in: _.map(role, (r) => {
-                  return r.permissionIds;
-                })
+          if (roles.permissions) {
+            async.each(roles, (role, done) => {
+              let query = {
+                _id: {
+                  $in: _.map(role, (r) => {
+                    return r.permissions;
+                  })
+                }
               }
-            }
-            permissionsModel.getAll(query, (err, permissions) => {
+              permissionsModel.getAll(query, (err, permissions) => {
+                if (err) {
+                  return done(err);
+                }
+                role.permissions = permissions ? permissions : [];
+                done(null);
+              });
+            }, (err) => {
               if (err) {
-                return done(err);
+                return cb(err);
               }
-              role.permissions = permissions ? permissions : [];
-              done(null);
-            });
-          }, (err) => {
-            if (err) {
-              return cb(err);
-            }
 
+              cb(null, roles);
+            });
+          } else {
             cb(null, roles);
-          });
+          }
         },
         function (roles, cb) {
-          async.each(roles, (role, done) => {
-            let query = {
-              roles: {
-                $in: _.map(role, (r) => {
-                  return r.name;
-                })
+          if (roles.users) {
+            async.each(roles, (role, done) => {
+              let query = {
+                _id: {
+                  $in: _.map(role, (r) => {
+                    return r.users;
+                  })
+                }
               }
-            }
-            User.find(query, (err, users) => {
+              User.find(query, (err, users) => {
+                if (err) {
+                  return done(err);
+                }
+                role.users = users ? users : [];
+                done(null);
+              })
+            }, (err) => {
               if (err) {
-                return done(err);
+                return cb(err);
               }
-              role.users = users ? users : [];
-              done(null);
-            })
-          }, (err) => {
-            if (err) {
-              return cb(err);
-            }
 
+              cb(null, roles);
+            });
+          } else {
             cb(null, roles);
-          });
+          }
         },
       ],
       function (err, result) {
@@ -137,57 +145,61 @@ exports.disconnectPermissionFromRole = function (req, res) {
 };
 
 exports.addUserToRole = function (req, res) {
-  rolesModel.addUser(req.body.user, req.params.role_id, function (err, result) {
+  rolesModel.addUser(req.params.user_id, req.params.role_id, function (err, role) {
     if (err) {
       return res.status(500).send({
-        error: errorHandler.getErrorMessage(err)
+        error: 'Unable to add user to role'
       });
     }
 
-    res.status(200).send(result);
-  });
-};
+    User.updateOne({
+        _id: mongoose.Types.ObjectId(user_id)
+      }, {
+        $push: {
+          roles: role
+        }
+      },
+      function (err, user) {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to add user to role'
+          });
+        }
 
-exports.addUsersToRole = function (req, res) {
-  let response = {
-    users: [],
-    errors: [],
-    added: 0,
-    failed: 0
-  };
-  async.eachSeries(req.body.users, function (user, callback) {
-    rolesModel.addUser(user, req.params.role_id, function (err, result) {
-      if (err) {
-        response.errors.push({
-          error: err.message,
+        res.status(200).send({
+          role: role,
           user: user
         });
-        response.failed++;
-      } else {
-        response.users.push(result.user);
-        response.added++;
-      }
-      callback();
-    });
-  }, function (err) {
-    if (err) {
-      return res.status(500).send({
-        error: errorHandler.getErrorMessage(err)
       });
-    }
-
-    res.status(200).send(response);
   });
 };
 
 exports.removeUserFromRole = function (req, res) {
-  rolesModel.removeUser(req.params.user_id, req.params.role_id, function (err, response) {
+  rolesModel.removeUser(req.params.user_id, req.params.role_id, function (err, role) {
     if (err) {
       return res.status(500).send({
-        error: errorHandler.getErrorMessage(err)
+        error: 'Unable to remove user from role'
       });
     }
 
-    res.status(200).send(response);
+    User.updateOne({
+        _id: mongoose.Types.ObjectId(user_id)
+      }, {
+        $pullAll: {
+          roles: role
+        }
+      },
+      function (err, user) {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to remove user from role'
+          });
+        }
+
+        res.status(200).send({
+          role: role,
+          user: user
+        });
+      });
   });
 };

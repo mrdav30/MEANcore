@@ -1,50 +1,62 @@
-<div class="panel panel-primary">
-  <div class="panel-heading">
-    <h3 class="panel-title">
+<div class="card">
+  <div class="card-header">
+    <h4 class="card-title float-left">
       <strong>{{listTitle}}</strong>
-    </h3>
-    <div class="btn-group pull-right">
-      <button type="button" *ngIf="!isReadOnly" (click)="toggleCreateItem()" class="btn btn-xs btn-success hierarchy-list-glyph"
-        aria-hidden="true">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-      </button>
-    </div>
+    </h4>
+    <button type="button" *ngIf="!isReadOnly && !creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-success float-right"
+      aria-hidden="true" ngbTooltip="Create">
+      <i class="fas fa-plus" aria-hidden="true"></i>
+    </button>
+    <button type="button" *ngIf="!isReadOnly && creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-secondary float-right"
+      aria-hidden="true" ngbTooltip="Cancel">
+      <i class="fas fa-times" aria-hidden="true"></i>
+    </button>
   </div>
-  <div class="panel-body">
-    <div class="list-group hierarchy-item-list">
+  <div class="card-body">
+    <div class="list-group list-group-flush">
       <app-dynamic-form *ngIf="creatingItem && !createMetadata" (saveForm)="onCreate($event)" [questions]="cleanMetadata()"
         [isNewObject]="true">
       </app-dynamic-form>
       <app-dynamic-form *ngIf="creatingItem && createMetadata" (saveForm)="onCreate($event)" [questions]="getCreateMetadata()"
         [isNewObject]="true">
       </app-dynamic-form>
-      <div *ngFor="let item of allItems" [class.selected]="isSelected(item)" class="list-group-item one-line">
-        <input *ngIf="canShowCheckboxes()" class="checkbox" type="checkbox" [checked]="isChecked(item)" (change)="toggleItemSelection(item)" />
-        <button type="button" class="btn btn-md btn-default hierarchy-item-button" (click)="toggleItem(item)">
+      <div *ngFor="let item of allItems" [class.selected]="isSelected(item)" class="list-group-item text-nowrap text-truncate">
+        <input *ngIf="canShowCheckboxes()" class="align-text-bottom" type="checkbox" [checked]="isChecked(item)"
+          (change)="toggleItemSelection(item)" />
+        <button type="button" class="btn btn-md btn-light" (click)="toggleItem(item)">
           <strong>{{item.name}}</strong>
-          <span *ngIf="hasMultipleLists(item)" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-          <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item) || isReadOnly" class="glyphicon glyphicon-triangle-right"
-            aria-hidden="true"></span>
+          <span *ngIf="hasMultipleLists(item)" aria-hidden="true">
+            <i class="fas fa-caret-down ml-2"></i>
+          </span>
+          <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item) || isReadOnly" aria-hidden="true">
+            <i class="fas fa-caret-right ml-2"></i>
+          </span>
         </button>
-        <button type="button" class="btn btn-xs btn-default" (click)="toggleEditItem(item)">
-          <span *ngIf="!isReadOnly" class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-          <span *ngIf="isReadOnly" class="glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
-        </button>
-        <button type="button" *ngIf="aboutToDeleteItem !== item && !isReadOnly" class="delete close hierarchy-list-glyph"
-          (click)="onDelete(item)">
-          <span>&nbsp;x</span>
-        </button>
-        <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item)" class="badge hierarchy-list-glyph hierarchy-item-badge">{{getFirstListCount(item)}}</span>
-        <div *ngIf="aboutToDeleteItem === item" class="alert alert-info delete-alert" role="alert">
-          Remove <strong>{{item.name}}</strong> from <strong>{{listTitle}}</strong>?
-          <br>
-          <button type="button" class="btn btn-xs btn-danger" (click)="clearAboutToDelete()">no</button>
-          <button type="button" class="btn btn-xs btn-success" (click)="onDelete(item)">yes</button>
+        <div class="btn-group float-right" role="group">
+          <button type="button" class="btn btn-xs btn-secondary" (click)="toggleEditItem(item)">
+            <span *ngIf="!isReadOnly" aria-hidden="true" ngbTooltip="Edit">
+              <i class="fas fa-edit"></i>
+            </span>
+            <span *ngIf="isReadOnly" aria-hidden="true">
+              <i class="fas fa-caret-down"></i>
+            </span>
+          </button>
+          <button type="button" *ngIf="aboutToDeleteItem !== item && !isReadOnly" class="btn btn-xs btn-danger" (click)="onDelete(item)"
+            ngbTooltip="Delete">
+            <i class="fas fa-trash-alt"></i>
+          </button>
         </div>
-        <div *ngIf="isSelected(item) && !editingItem && hasMultipleLists(item)" class="list-group">
-          <button type="button" *ngFor="let list of getLists(item)" class="list-group-item btn btn-default" (click)="toggleList(list)">
-            {{list.name}}
-            <span *ngIf="list.items.length" class="badge hierarchy-list-glyph">{{list.items.length}}</span>
+        <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item)" class="badge badge-pill badge-dark">{{getFirstListCount(item)}}</span>
+        <div *ngIf="aboutToDeleteItem === item" class="alert alert-info" role="alert">
+          <span>Remove <strong>{{item.name}}</strong> from <strong>{{listTitle}}</strong>?</span>
+          <br>
+          <button type="button" class="btn btn-xs btn-danger" (click)="clearAboutToDelete()"><i class="fas fa-times"></i></button>
+          <button type="button" class="btn btn-xs btn-success" (click)="onDelete(item)"><i class="fas fa-check"></i></button>
+        </div>
+        <div *ngIf="isSelected(item) && !editingItem && hasMultipleLists(item)" class="list-group p-1">
+          <button type="button" *ngFor="let list of getLists(item)" class="list-group-item btn btn-light" (click)="toggleList(list)">
+            <span>{{list.name}}</span><i class="fas fa-caret-right ml-2"></i>
+            <span *ngIf="list.items.length" class="badge badge-pill badge-dark ml-2">{{list.items.length}}</span>
           </button>
         </div>
         <div *ngIf="isSelected(item) && editingItem">

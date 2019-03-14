@@ -40,7 +40,7 @@ export class UserAccessControlService {
 
   updateRole(role: Role): Promise<any> {
     return this.http
-      .put('/api/role/' + role.id, { role })
+      .put('/api/role/' + role._id, { role })
       .pipe(
         tap((res: any) => {
           return res;
@@ -50,7 +50,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  deleteRole(role_id: number): Promise<any> {
+  deleteRole(role_id: string): Promise<any> {
     return this.http
       .delete('/api/role/' + role_id)
       .pipe(
@@ -78,7 +78,7 @@ export class UserAccessControlService {
 
   modifyPermission(permission: Permission): Promise<any> {
     return this.http
-      .put('/api/permission/' + permission.id, { permission })
+      .put('/api/permission/' + permission._id, { permission })
       .pipe(
         tap((res: any) => {
           return res;
@@ -88,7 +88,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  deletePermission(perm_id: number): Promise<any> {
+  deletePermission(perm_id: string): Promise<any> {
     return this.http
       .delete('/api/permission/' + perm_id)
       .pipe(
@@ -100,7 +100,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  connectRoleWithPermission(role_id: number, perm_id: number): Promise<any> {
+  connectRoleWithPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
       .post('/api/role/' + role_id + '/permission/' + perm_id, {})
       .pipe(
@@ -112,7 +112,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  disconnectRoleFromPermission(role_id: number, perm_id: number): Promise<any> {
+  disconnectRoleFromPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
       .delete('/api/role/' + role_id + '/permission/' + perm_id)
       .pipe(
@@ -126,9 +126,9 @@ export class UserAccessControlService {
 
   // Users
 
-  addUsersToRole(userlist: string, role: Role): Promise<any> {
+  addUserToRole(user_id: string, role_id: string): Promise<any> {
     return this.http
-      .post('/api/role/' + role.id + '/users', { users: userlist.split(',') })
+      .post('/api/role/' + role_id + '/user/' + user_id, {})
       .pipe(
         tap((res: any) => {
           return res;
@@ -138,9 +138,9 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  removeUserFromRole(user: User, role: Role): Promise<any> {
+  removeUserFromRole(user_id: string, role_id: string): Promise<any> {
     return this.http
-      .delete('/api/role/' + role.id + '/user/' + user.id)
+      .delete('/api/role/' + role_id + '/user/' + user_id)
       .pipe(
         tap((res: any) => {
           return res;

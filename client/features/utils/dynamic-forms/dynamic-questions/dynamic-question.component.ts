@@ -5,8 +5,7 @@ import { QuestionBase } from './models/question-base';
 @Component({
   moduleId: module.id,
   selector: 'app-dynamic-question',
-  templateUrl: 'dynamic-question.component.html',
-  styleUrls: ['dynamic-question.component.css']
+  templateUrl: 'dynamic-question.component.html'
 })
 export class DynamicQuestionComponent {
   @Input() question: QuestionBase<any>;
@@ -14,6 +13,6 @@ export class DynamicQuestionComponent {
   @Input() isNewObject: boolean;
 
   get isValid() {
-    return this.form.controls[this.question.key].valid;
+    return this.form.touched && this.form.controls[this.question.key].valid;
   }
 }
