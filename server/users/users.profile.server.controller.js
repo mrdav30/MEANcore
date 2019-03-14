@@ -5,7 +5,9 @@
  */
 var errorHandler = require('../errors.server.controller.js'),
   _ = require('lodash'),
-  userValidation = require('./users.validation.server');
+  mongoose = require('mongoose'),
+  User = mongoose.model('User'),
+  userValidation = require('./users.validation.service');
 
 /**
  * Update user details
@@ -28,6 +30,20 @@ exports.updateProfile = function (req, res) {
     }
   });
 };
+
+exports.getUsers = function (req, res) {
+  User.find({}).sort({
+    _id: -1
+  }).select('-password -salt').exec(function (err, users) {
+    if (err) {
+      return res.status(500).send({
+        error: 'Unable to retrieve users'
+      });
+    }
+
+    res.status(200).send(users);
+  })
+}
 
 /**
  * Send User

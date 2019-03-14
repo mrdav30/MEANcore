@@ -1,6 +1,18 @@
 'use strict';
 var permissionsModel = require('./permissions.server.model');
 
+exports.getPermissions = function (req, res) {
+  permissionsModel.getAll({}, function (err, result) {
+    if (err) {
+      return res.status(500).send({
+        error: 'Unable to get permissions'
+      });
+    }
+
+    res.status(200).send(result);
+  });
+};
+
 exports.createPermission = function (req, res) {
   permissionsModel.create(req.body.permission, function (err, result) {
     if (err) {

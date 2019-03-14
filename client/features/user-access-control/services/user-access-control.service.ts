@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 
+import { environment } from '../../../environments/environment';
+
+import { HandleErrorService } from '../../utils';
+
 import { Role } from '../models/role';
 import { Permission } from '../models/permission';
 import { User } from '../models/user';
-
-import { HandleErrorService } from '../../utils';
 
 @Injectable()
 export class UserAccessControlService {
@@ -16,7 +18,7 @@ export class UserAccessControlService {
 
   getAllRoles(): Promise<Role[]> {
     return this.http
-      .get('/api/roles')
+      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/roles')
       .pipe(
         tap((res: any) => {
           return res;
@@ -28,7 +30,7 @@ export class UserAccessControlService {
 
   createRole(role: Role): Promise<any> {
     return this.http
-      .post('/api/role/', { role })
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/', { role })
       .pipe(
         tap((res: any) => {
           return res;
@@ -40,7 +42,7 @@ export class UserAccessControlService {
 
   updateRole(role: Role): Promise<any> {
     return this.http
-      .put('/api/role/' + role._id, { role })
+      .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role._id, { role })
       .pipe(
         tap((res: any) => {
           return res;
@@ -52,7 +54,7 @@ export class UserAccessControlService {
 
   deleteRole(role_id: string): Promise<any> {
     return this.http
-      .delete('/api/role/' + role_id)
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id)
       .pipe(
         tap((res: any) => {
           return res;
@@ -64,9 +66,21 @@ export class UserAccessControlService {
 
   // Permissions
 
+  getAllPermissions(): Promise<Permission[]> {
+    return this.http
+      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permissions')
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
   createPermission(permission: Permission): Promise<any> {
     return this.http
-      .post('/api/permission', { permission })
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission', { permission })
       .pipe(
         tap((res: any) => {
           return res;
@@ -78,7 +92,7 @@ export class UserAccessControlService {
 
   modifyPermission(permission: Permission): Promise<any> {
     return this.http
-      .put('/api/permission/' + permission._id, { permission })
+      .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission/' + permission._id, { permission })
       .pipe(
         tap((res: any) => {
           return res;
@@ -90,7 +104,7 @@ export class UserAccessControlService {
 
   deletePermission(perm_id: string): Promise<any> {
     return this.http
-      .delete('/api/permission/' + perm_id)
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission/' + perm_id)
       .pipe(
         tap((res: any) => {
           return res;
@@ -102,7 +116,7 @@ export class UserAccessControlService {
 
   connectRoleWithPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
-      .post('/api/role/' + role_id + '/permission/' + perm_id, {})
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id, {})
       .pipe(
         tap((res: any) => {
           return res;
@@ -114,7 +128,7 @@ export class UserAccessControlService {
 
   disconnectRoleFromPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
-      .delete('/api/role/' + role_id + '/permission/' + perm_id)
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id)
       .pipe(
         tap((res: any) => {
           return res;
@@ -126,9 +140,21 @@ export class UserAccessControlService {
 
   // Users
 
+  getAllUsers(): Promise<User[]> {
+    return this.http
+      .get(environment.appBaseUrl + environment.apiBaseUrl + '/users')
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
   addUserToRole(user_id: string, role_id: string): Promise<any> {
     return this.http
-      .post('/api/role/' + role_id + '/user/' + user_id, {})
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/user/' + user_id, {})
       .pipe(
         tap((res: any) => {
           return res;
@@ -140,7 +166,7 @@ export class UserAccessControlService {
 
   removeUserFromRole(user_id: string, role_id: string): Promise<any> {
     return this.http
-      .delete('/api/role/' + role_id + '/user/' + user_id)
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/user/' + user_id)
       .pipe(
         tap((res: any) => {
           return res;
@@ -152,7 +178,7 @@ export class UserAccessControlService {
 
   updateUser(user: User): Promise<User> {
     return this.http
-      .put('/api/user', { user })
+      .put(environment.appBaseUrl + environment.apiBaseUrl + '/user', { user })
       .pipe(
         tap((res: any) => {
           return res;

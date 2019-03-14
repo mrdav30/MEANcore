@@ -47,7 +47,7 @@ export class DynamicListComponent implements AfterViewInit {
     });
   }
 
-  refreshDisplayItems() {
+  refreshDisplayItems(): void {
     this.displayItems = [];
     if (this.items && this.allItems) {
       // items = subset of allItems
@@ -56,14 +56,14 @@ export class DynamicListComponent implements AfterViewInit {
           data: item,
           selected: false
         };
-        const foundIndex = _.findIndex(this.items, (i) => i.id === current_item.data.id);
+        const foundIndex = _.findIndex(this.items, (i) => i._id === current_item.data._id);
         if (foundIndex >= 0) {
           // existing item in items list
           const foundItem = this.items[foundIndex];
           _.forEach(Object.keys(foundItem), (key) => {
             if (Array.isArray(current_item.data[key])) {
               _.forEach(foundItem[key], (el) => {
-                const idx = _.findIndex(current_item.data[key], (i: any) => i.id === el.id);
+                const idx = _.findIndex(current_item.data[key], (i: any) => i._id === el._id);
                 if (idx >= 0) {
                   current_item.data[key][idx].data = el;
                   current_item.data[key][idx].selected = true;
@@ -101,11 +101,11 @@ export class DynamicListComponent implements AfterViewInit {
     return this.showCheckboxes && this.allItems.length > 0;
   }
 
-  _getMetadata(item, meta) {
-    return meta.map((obj) => {
-      const parts = obj.key.split('.');
+  _getMetadata(item: any, meta: any): any[] {
+    return _.map(meta, (obj) => {
+      const parts = _.split(obj.key, '.');
       let val = item;
-      parts.forEach(part => {
+      _.forEach(parts, (part) => {
         val = val[part];
       });
       obj.value = val;
@@ -113,26 +113,26 @@ export class DynamicListComponent implements AfterViewInit {
     });
   }
 
-  getMetadata(item) {
+  getMetadata(item: any): any[] {
     return this._getMetadata(item, this.itemsMetadata);
   }
 
-  getCreateMetadata() {
+  getCreateMetadata(): any[] {
     return this._getMetadata(null, this.createMetadata);
   }
 
-  getViewMetadata(item) {
+  getViewMetadata(item: any): any[] {
     return this._getMetadata(item, this.viewingMetadata);
   }
 
-  cleanMetadata() {
-    return this.itemsMetadata.map((obj) => {
+  cleanMetadata(): any[] {
+    return _.map(this.itemsMetadata, (obj) => {
       obj.value = '';
       return obj;
     });
   }
 
-  toggleItem(item) {
+  toggleItem(item: any): void {
     this.clearAboutToDelete();
     if (this.isSelected(item) && !this.editingItem) {
       this.itemSelect.emit(this.selectedItem);
@@ -144,7 +144,7 @@ export class DynamicListComponent implements AfterViewInit {
     }
   }
 
-  toggleItemSelection(item) {
+  toggleItemSelection(item: any): void {
     this.clearAboutToDelete();
     // Set timeout to allow selection to propagate
     setTimeout(() => {
@@ -156,7 +156,7 @@ export class DynamicListComponent implements AfterViewInit {
     });
   }
 
-  toggleCreateItem() {
+  toggleCreateItem(): void {
     // TODO validation if editing
     this.clearAboutToDelete();
     this.selectedItem = false;
@@ -166,7 +166,7 @@ export class DynamicListComponent implements AfterViewInit {
     }
   }
 
-  toggleEditItem(item) {
+  toggleEditItem(item: any): void {
     this.clearAboutToDelete();
     this.editingItem = !this.editingItem;
     if (this.editingItem) {
@@ -178,28 +178,28 @@ export class DynamicListComponent implements AfterViewInit {
     }
   }
 
-  isSelected(item) {
+  isSelected(item: any): boolean {
     return this.selectedItem === item;
   }
 
-  isChecked(item) {
+  isChecked(item: any): boolean {
     if (!this.items) {
       return false;
     }
     return this.items.findIndex(i => i.id === item.id) >= 0;
   }
 
-  onCreate(item) {
+  onCreate(item: any): void {
     this.itemCreate.emit(item);
     this.creatingItem = false;
   }
 
-  onModify(item) {
+  onModify(item: any): void {
     this.itemChanges.emit(item);
     this.editingItem = false;
   }
 
-  onDelete(item) {
+  onDelete(item: any): void {
     if (!this.aboutToDeleteItem || this.aboutToDeleteItem !== item) {
       this.aboutToDeleteItem = item;
     } else if (this.aboutToDeleteItem === item) {
@@ -208,17 +208,17 @@ export class DynamicListComponent implements AfterViewInit {
     }
   }
 
-  clearAboutToDelete() {
+  clearAboutToDelete(): void {
     this.aboutToDeleteItem = null;
   }
 
-  getLists(item) {
+  getLists(item: any): any[] {
     const keys: any[] = Object.keys(item);
     const arrayKeys = _.filter(keys, (key) => Array.isArray(item[key]));
     return _.map(arrayKeys, (key) => ({ name: key, items: item[key] }));
   }
 
-  getFirstListCount(item) {
+  getFirstListCount(item: any): number {
     const lists = this.getLists(item);
     if (lists.length > 0) {
       const el = this.items.find(i => i.id === item.id);
@@ -230,11 +230,11 @@ export class DynamicListComponent implements AfterViewInit {
     return 0;
   }
 
-  hasMultipleLists(item) {
+  hasMultipleLists(item: any): boolean {
     return this.getLists(item).length > 1;
   }
 
-  toggleList(list) {
+  toggleList(list: any): void {
     if (this.selectedList === list) {
       this.listSelect.emit(this.selectedList);
       this.selectedList = [];

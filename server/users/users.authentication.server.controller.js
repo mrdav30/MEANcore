@@ -9,7 +9,7 @@ var async = require('async'),
   mongoose = require('mongoose'),
   passport = require('passport'),
   User = mongoose.model('User'),
-  userValidation = require('./users.validation.server');
+  userValidation = require('./users.validation.service');
 
 exports.validateUser = function (req, res) {
   var usernameOrEmail = String(req.body.usernameOrEmail).toLowerCase();

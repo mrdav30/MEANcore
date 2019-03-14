@@ -14,10 +14,10 @@
       </app-dynamic-list>
     </div>
     <div id="permissionList" *ngIf="selectedRole && permissionsSelected" class="col-md-4">
-      <app-dynamic-list listTitle="{{selectedRole.name}} / Permissions" [items]="selectedRole.permissions" [showCheckboxes]="true"
-        [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)" (itemRemove)="onRemovePermissionFromRole($event)"
-        (itemCreate)="onCreatePermission($event)" (itemChanges)="onModifyPermission($event)" (itemDelete)="onDeletePermission($event)"
-        (itemSelect)="onTogglePermission($event)">
+      <app-dynamic-list listTitle="{{selectedRole.name}} / Permissions" [items]="selectedRole.permissions" [allItems]="permissions"
+        [showCheckboxes]="true" [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)"
+        (itemRemove)="onRemovePermissionFromRole($event)" (itemCreate)="onCreatePermission($event)" (itemChanges)="onModifyPermission($event)"
+        (itemDelete)="onDeletePermission($event)" (itemSelect)="onTogglePermission($event)">
       </app-dynamic-list>
     </div>
   </div>

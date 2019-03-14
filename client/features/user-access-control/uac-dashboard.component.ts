@@ -29,6 +29,8 @@ export class UserAccessControlComponent implements OnInit {
     message: string = null;
     dashState: DashboardState = DashboardState.ShowingRoles;
     roles: Role[];
+    permissions: Permission[];
+    users: User[];
     selectedRole: Role = null;
     usersSelected = false;
     permissionsSelected = false;
@@ -44,12 +46,26 @@ export class UserAccessControlComponent implements OnInit {
         private uacService: UserAccessControlService
     ) { }
 
-    ngOnInit() {
-        this.uacService.getAllRoles()
-            .then(async (data) => {
-                this.roles = data as Role[];
+    async ngOnInit(): Promise<void> {
+        await this.getData();
 
-                await this.setMetaData();
+        await this.setMetaData();
+    }
+
+    async getData(): Promise<void> {
+        await this.uacService.getAllRoles()
+            .then((data) => {
+                this.roles = data as Role[];
+            });
+
+        await this.uacService.getAllPermissions()
+            .then((data) => {
+                this.permissions = data as Permission[];
+            });
+
+        await this.uacService.getAllUsers()
+            .then((data) => {
+                this.users = data as User[];
             });
     }
 
@@ -67,31 +83,31 @@ export class UserAccessControlComponent implements OnInit {
 
             this.usersMetadata = [
                 new dynamicQuestionClasses.DropdownQuestion({
-                    key: 'name',
+                    key: '_id',
                     label: 'Username',
                     value: '',
                     required: true,
-                    order: 2,
-                    options: _.map(this.roles, (role) => {
-                        return _.forEach(role.users, (user) => {
-                            const obj = {};
-                            obj[user._id] = user.full_name;
-                            return obj;
-                        });
+                    order: 1,
+                    options: _.map(this.users, (user) => {
+                        const obj = {
+                            key: user._id,
+                            value: user.displayName
+                        };
+                        return obj;
                     })
                 })
             ];
 
             this.usersReadOnlyMetadata = [
                 new dynamicQuestionClasses.ReadonlyField({
-                    key: 'name',
+                    key: 'username',
                     label: 'Username',
                     value: '',
                     required: false,
                     order: 1
                 }),
                 new dynamicQuestionClasses.ReadonlyField({
-                    key: 'full_name',
+                    key: 'displayName',
                     label: 'Full Name',
                     value: '',
                     required: false,
@@ -173,7 +189,7 @@ export class UserAccessControlComponent implements OnInit {
 
     // === Roles ===
 
-    async onToggleRole(role: Role) {
+    async onToggleRole(role: Role): Promise<void> {
         if (this.selectedRole === role) {
             await this.setState(DashboardState.ShowingRoles);
         } else {
@@ -204,7 +220,7 @@ export class UserAccessControlComponent implements OnInit {
             }).catch(reason => this.setErrorMessage('Roles', reason));
     }
 
-    async onStartEditRole() {
+    async onStartEditRole(): Promise<void> {
         await this.setState(DashboardState.ShowingRoles);
     }
 
@@ -221,7 +237,7 @@ export class UserAccessControlComponent implements OnInit {
 
     // === Permissions ===
 
-    async onTogglePermission(perm: Permission) {
+    async onTogglePermission(perm: Permission): Promise<void> {
         await this.setState(DashboardState.ShowingPermissions);
         const permIndex = _.findIndex(this.selectedRole.permissions, (el) => el._id === perm._id);
         if (permIndex < 0) {
@@ -234,7 +250,7 @@ export class UserAccessControlComponent implements OnInit {
         }
     }
 
-    async togglePermissions() {
+    async togglePermissions(): Promise<void> {
         await this.setState(DashboardState.ShowingRolesExpanded);
         if (this.selectedRole) {
             this.permissionsSelected = true;
@@ -292,11 +308,11 @@ export class UserAccessControlComponent implements OnInit {
 
     // === Users ===
 
-    async toggleUser() {
+    async toggleUser(): Promise<void> {
         await this.setState(DashboardState.ShowingUser);
     }
 
-    async toggleUsers() {
+    async toggleUsers(): Promise<void> {
         await this.setState(DashboardState.ShowingRolesExpanded);
         if (this.selectedRole) {
             this.usersSelected = true;
@@ -304,20 +320,14 @@ export class UserAccessControlComponent implements OnInit {
         }
     }
 
-    onAddUserToRole(user: User, role: Role) {
+    onAddUserToRole(user: User, role: Role): void {
         this.uacService.addUserToRole(user._id, role._id)
-            .then(data => {
-                role.users.unshift(user);
-                if (data.errors.length) {
-                    this.setErrorMessage(
-                        'User/Role',
-                        'Unable to add ' + data.failed + ' out of ' + (data.added + data.failed) + ' users to role "' + role.name + '"'
-                    );
-                }
+            .then((data) => {
+                role.users.unshift(data.user);
             }).catch(reason => this.setErrorMessage('User/Role', reason));
     }
 
-    onRemoveUserFromRole(user: User, role: Role) {
+    onRemoveUserFromRole(user: User, role: Role): void {
         this.uacService.removeUserFromRole(user._id, role._id)
             .then(() => {
                 const userIndex = _.findIndex(role.users, (el) => el._id === user._id);
@@ -327,7 +337,7 @@ export class UserAccessControlComponent implements OnInit {
             }).catch(reason => this.setErrorMessage('User/Role', reason));
     }
 
-    onModifyUser(user: User) {
+    onModifyUser(user: User): void {
         this.uacService.updateUser(user)
             .then(data => {
                 const userIndex = _.findIndex(this.selectedRole.users, (el) => el._id === user._id);
@@ -345,17 +355,4 @@ export class UserAccessControlComponent implements OnInit {
             return resolve();
         });
     }
-
-    replaceAllUsers(user: User): Promise<void> {
-        return new Promise((resolve) => {
-            _.forEach(this.roles, (role) => {
-                if (role.users && role.users.length) {
-                    const ind = _.findIndex(role.users, (el) => el._id === user._id);
-                    role.users[ind] = user;
-                }
-            });
-            resolve();
-        });
-    }
-
 }

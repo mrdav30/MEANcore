@@ -9,10 +9,10 @@ var rolesSchema = new Schema({
     trim: true
   },
   users: {
-    type: [Number]
+    type: [String]
   },
   permissions: {
-    type: [Number]
+    type: [String]
   }
 });
 var Roles = mongoose.model('Roles', rolesSchema);
@@ -120,7 +120,7 @@ function disconnectPermission(role_id, perm_id, callback) {
 };
 
 function addUser(user_id, role_id, callback) {
-  Roles.updateOne({
+  Roles.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(role_id)
     }, {
       $push: {
@@ -129,7 +129,7 @@ function addUser(user_id, role_id, callback) {
     },
     function (err, role) {
       if (err) {
-        return cb(err.name + ': ' + err.message);
+        return callback(err.name + ': ' + err.message);
       }
 
       callback(null, role);
@@ -137,7 +137,7 @@ function addUser(user_id, role_id, callback) {
 };
 
 function removeUser(user_id, role_id, callback) {
-  Roles.updateOne({
+  Roles.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(role_id)
     }, {
       $pullAll: {

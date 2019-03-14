@@ -10,19 +10,17 @@ exports.getRoles = function (req, res) {
   rolesModel.getAll(function (err, roles) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to retrieve roles'
+        message: 'Unable to retrieve roles'
       });
     }
 
     async.waterfall([
         function (cb) {
-          if (roles.permissions) {
-            async.each(roles, (role, done) => {
+          async.each(roles, (role, done) => {
+            if (role.get('permissions').length) {
               let query = {
                 _id: {
-                  $in: _.map(role, (r) => {
-                    return r.permissions;
-                  })
+                  $in: _.map(role.get('permissions'))
                 }
               }
               permissionsModel.getAll(query, (err, permissions) => {
@@ -32,50 +30,50 @@ exports.getRoles = function (req, res) {
                 role.permissions = permissions ? permissions : [];
                 done(null);
               });
-            }, (err) => {
-              if (err) {
-                return cb(err);
-              }
+            } else {
+              done(null);
+            }
+          }, (err) => {
+            if (err) {
+              return cb(err);
+            }
 
-              cb(null, roles);
-            });
-          } else {
             cb(null, roles);
-          }
+          });
         },
         function (roles, cb) {
-          if (roles.users) {
-            async.each(roles, (role, done) => {
+          async.each(roles, (role, done) => {
+            if (role.get('users').length) {
               let query = {
                 _id: {
-                  $in: _.map(role, (r) => {
-                    return r.users;
-                  })
+                  $in: _.map(role.get('users'))
                 }
               }
-              User.find(query, (err, users) => {
+              User.find(query).select(
+                '_id username displayName email'
+              ).exec((err, users) => {
                 if (err) {
                   return done(err);
                 }
-                role.users = users ? users : [];
+                role.users = users ? users.toObject() : [];
                 done(null);
               })
-            }, (err) => {
-              if (err) {
-                return cb(err);
-              }
+            } else {
+              done(null);
+            }
+          }, (err) => {
+            if (err) {
+              return cb(err);
+            }
 
-              cb(null, roles);
-            });
-          } else {
             cb(null, roles);
-          }
+          });
         },
       ],
       function (err, result) {
         if (err) {
           return res.status(500).send({
-            error: 'Unable to retrieve roles'
+            message: 'Unable to retrieve roles'
           });
         }
 
@@ -88,7 +86,7 @@ exports.createRole = function (req, res) {
   rolesModel.create(req.body.role, function (err, result) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to create role'
+        message: 'Unable to create role'
       });
     }
 
@@ -100,7 +98,7 @@ exports.updateRole = function (req, res) {
   rolesModel.update(req.params.role_id, req.body.role, function (err, result) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to modify role'
+        message: 'Unable to modify role'
       });
     }
 
@@ -112,7 +110,7 @@ exports.deleteRole = function (req, res) {
   rolesModel.delete(req.params.role_id, function (err, result) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to delete role'
+        message: 'Unable to delete role'
       });
     }
 
@@ -124,7 +122,7 @@ exports.connectPermissionWithRole = function (req, res) {
   rolesModel.connectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to connect permission'
+        message: 'Unable to connect permission'
       });
     }
 
@@ -136,7 +134,7 @@ exports.disconnectPermissionFromRole = function (req, res) {
   rolesModel.disconnectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to disconnect permission'
+        message: 'Unable to disconnect permission'
       });
     }
 
@@ -148,26 +146,29 @@ exports.addUserToRole = function (req, res) {
   rolesModel.addUser(req.params.user_id, req.params.role_id, function (err, role) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to add user to role'
+        message: 'Unable to add user to role'
       });
     }
 
-    User.updateOne({
-        _id: mongoose.Types.ObjectId(user_id)
+    User.findOneAndUpdate({
+        _id: mongoose.Types.ObjectId(req.params.user_id)
       }, {
         $push: {
-          roles: role
+          roles: role.get('name')
         }
       },
       function (err, user) {
         if (err) {
           return res.status(500).send({
-            error: 'Unable to add user to role'
+            message: 'Unable to add user to role'
           });
         }
 
+        // remove sensitive data
+        delete user.password;
+        delete user.salt;
+
         res.status(200).send({
-          role: role,
           user: user
         });
       });
@@ -178,12 +179,12 @@ exports.removeUserFromRole = function (req, res) {
   rolesModel.removeUser(req.params.user_id, req.params.role_id, function (err, role) {
     if (err) {
       return res.status(500).send({
-        error: 'Unable to remove user from role'
+        message: 'Unable to remove user from role'
       });
     }
 
-    User.updateOne({
-        _id: mongoose.Types.ObjectId(user_id)
+    User.findOneAndUpdate({
+        _id: mongoose.Types.ObjectId(req.params.user_id)
       }, {
         $pullAll: {
           roles: role
@@ -192,9 +193,13 @@ exports.removeUserFromRole = function (req, res) {
       function (err, user) {
         if (err) {
           return res.status(500).send({
-            error: 'Unable to remove user from role'
+            message: 'Unable to remove user from role'
           });
         }
+
+        // remove sensitive data
+        delete user.password;
+        delete user.salt;
 
         res.status(200).send({
           role: role,
