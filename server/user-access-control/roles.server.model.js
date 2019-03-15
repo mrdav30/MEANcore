@@ -12,7 +12,7 @@ var rolesSchema = new Schema({
   users: {
     type: [String]
   },
-  permissions: {
+  features: {
     type: [String]
   }
 });

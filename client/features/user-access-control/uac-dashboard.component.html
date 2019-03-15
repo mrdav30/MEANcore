@@ -1,21 +1,27 @@
 <div class="container">
   <div class="row">
 
-    <div id="roleList" *ngIf="roles" class="col-md-4">
+    <div id="roleList" *ngIf="roles" class="col-sm-4">
       <app-dynamic-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (itemSelect)="onToggleRole($event)"
         (listSelect)="onToggleList($event)" (itemCreate)="onCreateRole($event)" (itemChanges)="onModifyRole($event)"
         (itemDelete)="onDeleteRole($event)" (itemStartEdit)="onStartEditRole()">
       </app-dynamic-list>
     </div>
-    <div id="userList" *ngIf="selectedRole && usersSelected" class="col-md-4">
-      <app-dynamic-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
-        [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)" (itemCreate)="onAddUserToRole($event, selectedRole)"
-        (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
+    <div id="userList" *ngIf="selectedRole && usersSelected" class="col-sm-4">
+      <app-dynamic-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [allItems]="users"
+        [itemsMetadata]="usersMetadata" [showCheckboxes]="true" [viewingMetadata]="usersReadOnlyMetadata" (itemSelect)="onUserSelected($event)"
+        (itemCreate)="onAddUserToRole($event, selectedRole)" (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
       </app-dynamic-list>
     </div>
-    <div id="permissionList" *ngIf="selectedRole && permissionsSelected" class="col-md-4">
-      <app-dynamic-list listTitle="{{selectedRole.name}} / Permissions" [items]="selectedRole.permissions" [allItems]="permissions"
-        [showCheckboxes]="true" [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)"
+    <div id="featureList" *ngIf="selectedRole && featuresSelected" class="col-sm-4">
+      <app-dynamic-list listTitle="{{selectedRole.name}} / Features" [items]="selectedRole.features" [allItems]="features"
+        [showCheckboxes]="false" [itemsMetadata]="featuresMetadata" (itemSelect)="toggleFeature($event)" (itemCreate)="onCreateFeature($event)"
+        (itemChanges)="onModifyFeature($event)" (itemDelete)="onDeleteFeature($event)" (itemStartEdit)="startEditFeature()">
+      </app-dynamic-list>
+    </div>
+    <div id="permissionList" *ngIf="selectedRole && featuresSelected && selectedFeature" class="col-sm-4">
+      <app-dynamic-list listTitle="{{selectedRole.name}}/{{selectedFeature.name}} Permissions" [items]="findItemByField(selectedRole.features, '_id', selectedFeature._id).permissions"
+        [allItems]="selectedFeature.permissions" [showCheckboxes]="true" [itemsMetadata]="permissionsMetadata" (itemAdd)="onAddPermissionToRole($event)"
         (itemRemove)="onRemovePermissionFromRole($event)" (itemCreate)="onCreatePermission($event)" (itemChanges)="onModifyPermission($event)"
         (itemDelete)="onDeletePermission($event)" (itemSelect)="onTogglePermission($event)">
       </app-dynamic-list>

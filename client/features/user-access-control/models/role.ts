@@ -1,9 +1,9 @@
-import { Permission } from './permission';
+import { Feature } from './feature';
 import { User } from './user';
 
 export class Role {
   _id: string;
   name: string;
-  permissions: Permission[];
+  features: Feature[];
   users: User[];
 }

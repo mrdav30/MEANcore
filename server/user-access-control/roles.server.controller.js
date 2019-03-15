@@ -2,7 +2,7 @@
 var async = require('async'),
   _ = require('lodash'),
   rolesModel = require('./roles.server.model'),
-  permissionsModel = require('./permissions.server.model'),
+  featuresModel = require('./features.server.model'),
   mongoose = require('mongoose'),
   User = mongoose.model('User');
 
@@ -17,16 +17,16 @@ exports.getRoles = function (req, res) {
     async.waterfall([
         function (cb) {
           async.each(roles, (role, done) => {
-            if (role.permissions.length) {
-              permissionsModel.getAll({
+            if (role.features.length) {
+              featuresModel.getAll({
                 _id: {
-                  $in: _.map(role.permissions)
+                  $in: _.map(role.features)
                 }
-              }, (err, permissions) => {
+              }, (err, features) => {
                 if (err) {
                   return done(err);
                 }
-                role.permissions = permissions ? permissions : [];
+                role.features = features ? features : [];
                 done(null);
               });
             } else {

@@ -6,13 +6,14 @@ import { environment } from '../../../environments/environment';
 
 import { HandleErrorService } from '../../utils';
 
-import { Role } from '../models/role';
-import { Permission } from '../models/permission';
-import { User } from '../models/user';
+import { Role, Permission, User, Feature } from '../index';
 
 @Injectable()
 export class UserAccessControlService {
-  constructor(private http: HttpClient, protected handleErrorService: HandleErrorService) { }
+  constructor(
+    private http: HttpClient,
+    private handleErrorService: HandleErrorService
+  ) { }
 
   // Roles
 
@@ -64,11 +65,11 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  // Permissions
+  // Features
 
-  getAllPermissions(): Promise<Permission[]> {
+  getAllFeatures(): Promise<Feature[]> {
     return this.http
-      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permissions')
+      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/features')
       .pipe(
         tap((res: any) => {
           return res;
@@ -78,9 +79,47 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  createPermission(permission: Permission): Promise<any> {
+  createFeature(feature: Feature): Promise<any> {
     return this.http
-      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission', { permission })
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/', { feature })
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
+  updateFeature(feature: Feature): Promise<any> {
+    return this.http
+      .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature._id, { feature })
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
+  deleteFeature(feature_id: string): Promise<any> {
+    return this.http
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id)
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
+  // Permissions
+
+  createPermission(feature_id: string, permission: Permission): Promise<any> {
+    return this.http
+      .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id + '/permission', { permission })
       .pipe(
         tap((res: any) => {
           return res;
@@ -102,9 +141,9 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  deletePermission(perm_id: string): Promise<any> {
+  deletePermission(feature_id: string, perm_id: string): Promise<any> {
     return this.http
-      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission/' + perm_id)
+      .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id + '/permission/' + perm_id)
       .pipe(
         tap((res: any) => {
           return res;

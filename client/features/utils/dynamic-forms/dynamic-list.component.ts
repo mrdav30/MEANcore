@@ -33,7 +33,7 @@ export class DynamicListComponent implements AfterViewInit {
   selectedList: any = null;
   editingItem = false;
   creatingItem = false;
-  displayItems: any[];  // { item: ?, selected: ? }
+  displayItems: any[];
   aboutToDeleteItem: any = false;
 
   ngAfterViewInit(): void {
@@ -43,58 +43,7 @@ export class DynamicListComponent implements AfterViewInit {
         this.items = [];
       }
       this.allItems = this.allItems.sort((i1, i2) => i1.name.localeCompare(i2.name));
-      // this.refreshDisplayItems();
     });
-  }
-
-  refreshDisplayItems(): void {
-    this.displayItems = [];
-    if (this.items && this.allItems) {
-      // items = subset of allItems
-      _.forEach(this.allItems, (item) => {
-        const current_item = {
-          data: item,
-          selected: false
-        };
-        const foundIndex = _.findIndex(this.items, (i) => i._id === current_item.data._id);
-        if (foundIndex >= 0) {
-          // existing item in items list
-          const foundItem = this.items[foundIndex];
-          _.forEach(Object.keys(foundItem), (key) => {
-            if (Array.isArray(current_item.data[key])) {
-              _.forEach(foundItem[key], (el) => {
-                const idx = _.findIndex(current_item.data[key], (i: any) => i._id === el._id);
-                if (idx >= 0) {
-                  current_item.data[key][idx].data = el;
-                  current_item.data[key][idx].selected = true;
-                }
-              });
-            } else {
-              current_item.data[key] = foundItem[key];
-            }
-          });
-
-          current_item.selected = true;
-
-          // TODO: REVIEW? -> marking existing item list items as selected for badge display
-          /*var lists = this.getLists(current_item);
-          lists.forEach(list => {
-            current_item[list.name] = list.items.map(v => {
-              v._selected = true;
-              return v;
-            });
-          });*/
-
-        } else { // nonexisting item on items list
-          current_item.selected = false;
-        }
-
-        this.displayItems.push(current_item);
-      });
-    } else {
-      const list = this.items ? this.items : this.allItems;
-      this.displayItems = _.map(list, (i) => ({ data: i, selected: false }));
-    }
   }
 
   canShowCheckboxes(): boolean {

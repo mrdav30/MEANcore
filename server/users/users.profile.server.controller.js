@@ -31,10 +31,17 @@ exports.updateProfile = function (req, res) {
   });
 };
 
+/**
+ * Get all users for uac dashboard
+ */
 exports.getUsers = function (req, res) {
-  User.find({}).sort({
-    _id: -1
-  }).select('-password -salt').exec(function (err, users) {
+  User.aggregate([{
+    $project: {
+      name: "$username",
+      displayName: 1,
+      email: 1
+    }
+  }]).exec(function (err, users) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to retrieve users'
