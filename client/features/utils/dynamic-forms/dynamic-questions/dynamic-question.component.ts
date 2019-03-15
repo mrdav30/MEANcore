@@ -12,7 +12,17 @@ export class DynamicQuestionComponent {
   @Input() form: FormGroup;
   @Input() isNewObject: boolean;
 
-  get isValid() {
-    return this.form.touched && this.form.controls[this.question.key].valid;
+  get isValid(): boolean {
+    if (this.question.required) {
+      if (this.form.controls[this.question.key].untouched) {
+        return true;
+      } else if (this.form.controls[this.question.key].value && this.form.controls[this.question.key].valid) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
   }
 }

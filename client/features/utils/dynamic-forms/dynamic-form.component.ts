@@ -17,6 +17,7 @@ export class DynamicFormComponent implements OnInit {
   @Input() questions: QuestionBase<any>[] = [];
   @Input() isReadOnly: boolean;
   @Input() isNewObject: boolean;
+  @Output() closeForm = new EventEmitter();
   @Output() saveForm = new EventEmitter();
   form: FormGroup;
   payLoad = '';
@@ -27,6 +28,10 @@ export class DynamicFormComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.questionControlService.toFormGroup(this.questions);
+  }
+
+  onClose() {
+    this.closeForm.emit(false);
   }
 
   onSubmit() {

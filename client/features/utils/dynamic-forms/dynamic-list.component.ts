@@ -133,7 +133,7 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   toggleItem(item: any): void {
-    this.clearAboutToDelete();
+    this.aboutToDeleteItem = null;
     if (this.isSelected(item) && !this.editingItem) {
       this.itemSelect.emit(this.selectedItem);
       this.selectedItem = null;
@@ -145,7 +145,7 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   toggleItemSelection(item: any): void {
-    this.clearAboutToDelete();
+    this.aboutToDeleteItem = null;
     // Set timeout to allow selection to propagate
     setTimeout(() => {
       if (!this.isChecked(item)) {
@@ -158,7 +158,7 @@ export class DynamicListComponent implements AfterViewInit {
 
   toggleCreateItem(): void {
     // TODO validation if editing
-    this.clearAboutToDelete();
+    this.aboutToDeleteItem = null;
     this.selectedItem = false;
     this.creatingItem = !this.creatingItem;
     if (this.creatingItem) {
@@ -167,15 +167,11 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   toggleEditItem(item: any): void {
-    this.clearAboutToDelete();
-    this.editingItem = !this.editingItem;
-    if (this.editingItem) {
-      this.creatingItem = false;
-      this.itemStartEdit.emit();
-      this.selectedItem = item;
-    } else {
-      this.selectedItem = null;
-    }
+    this.aboutToDeleteItem = null;
+    this.editingItem = true;
+    this.creatingItem = false;
+    this.itemStartEdit.emit();
+    this.selectedItem = item;
   }
 
   isSelected(item: any): boolean {
@@ -186,11 +182,17 @@ export class DynamicListComponent implements AfterViewInit {
     if (!this.items) {
       return false;
     }
-    return this.items.findIndex(i => i.id === item.id) >= 0;
+    return _.findIndex(this.items, (i) => i._id === item._id) >= 0;
   }
 
   onCreate(item: any): void {
     this.itemCreate.emit(item);
+    this.creatingItem = false;
+  }
+
+  onCloseForm(): void {
+    this.selectedItem = null;
+    this.editingItem = false;
     this.creatingItem = false;
   }
 
@@ -200,16 +202,14 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   onDelete(item: any): void {
+    this.selectedItem = null;
+    this.editingItem = false;
     if (!this.aboutToDeleteItem || this.aboutToDeleteItem !== item) {
       this.aboutToDeleteItem = item;
     } else if (this.aboutToDeleteItem === item) {
-      this.clearAboutToDelete();
+      this.aboutToDeleteItem = null;
       this.itemDelete.emit(item);
     }
-  }
-
-  clearAboutToDelete(): void {
-    this.aboutToDeleteItem = null;
   }
 
   getLists(item: any): any[] {
@@ -221,7 +221,7 @@ export class DynamicListComponent implements AfterViewInit {
   getFirstListCount(item: any): number {
     const lists = this.getLists(item);
     if (lists.length > 0) {
-      const el = this.items.find(i => i.id === item.id);
+      const el = _.find(this.items, (i) => i._id === item._id);
       if (el && el[lists[0].name]) {
         return el[lists[0].name].length;
       }

@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
 var rolesSchema = new Schema({
   name: {
     type: String,
+    unique: true,
     trim: true
   },
   users: {
@@ -35,7 +36,7 @@ module.exports = service;
 function getAll(callback) {
   Roles.find({}).sort({
     _id: -1
-  }).exec((err, roles) => {
+  }).lean().exec((err, roles) => {
     if (err) {
       return callback(err);
     }
@@ -93,12 +94,12 @@ function connectPermission(role_id, perm_id, callback) {
         permissions: perm_id
       }
     },
-    function (err, role) {
+    function (err) {
       if (err) {
         return callback(err.name + ': ' + err.message);
       }
 
-      callback(null, role)
+      callback(null)
     });
 };
 
@@ -106,16 +107,16 @@ function disconnectPermission(role_id, perm_id, callback) {
   Roles.updateOne({
       _id: mongoose.Types.ObjectId(role_id)
     }, {
-      $pullAll: {
+      $pull: {
         permissions: perm_id
       }
     },
-    function (err, role) {
+    function (err) {
       if (err) {
         return callback(err.name + ': ' + err.message);
       }
 
-      callback(null, role)
+      callback(null)
     });
 };
 

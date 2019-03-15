@@ -91,7 +91,7 @@ export class UserAccessControlComponent implements OnInit {
                     options: _.map(this.users, (user) => {
                         const obj = {
                             key: user._id,
-                            value: user.displayName
+                            value: user.name
                         };
                         return obj;
                     })
@@ -100,7 +100,7 @@ export class UserAccessControlComponent implements OnInit {
 
             this.usersReadOnlyMetadata = [
                 new dynamicQuestionClasses.ReadonlyField({
-                    key: 'username',
+                    key: 'name',
                     label: 'Username',
                     value: '',
                     required: false,
@@ -262,8 +262,7 @@ export class UserAccessControlComponent implements OnInit {
         this.uacService.createPermission(perm)
             .then(data => {
                 perm._id = data._id;
-                const roleIndex = _.findIndex(this.roles, (el) => el._id === this.selectedRole._id);
-                this.roles[roleIndex].permissions.unshift(perm);
+                this.permissions.unshift(perm);
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
 
@@ -284,6 +283,7 @@ export class UserAccessControlComponent implements OnInit {
                 if (permIndex >= 0) {
                     this.roles[roleIndex].permissions.splice(permIndex, 1);
                 }
+                this.permissions.splice(permIndex, 1);
                 await this.setState(DashboardState.ShowingPermissions);
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
@@ -341,7 +341,7 @@ export class UserAccessControlComponent implements OnInit {
         this.uacService.updateUser(user)
             .then(data => {
                 const userIndex = _.findIndex(this.selectedRole.users, (el) => el._id === user._id);
-                this.selectedRole.users[userIndex].username = data.username;
+                this.selectedRole.users[userIndex].name = data.name;
             }).catch(reason => this.setErrorMessage('User', reason));
     }
 

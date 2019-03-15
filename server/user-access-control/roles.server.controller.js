@@ -17,13 +17,12 @@ exports.getRoles = function (req, res) {
     async.waterfall([
         function (cb) {
           async.each(roles, (role, done) => {
-            if (role.get('permissions').length) {
-              let query = {
+            if (role.permissions.length) {
+              permissionsModel.getAll({
                 _id: {
-                  $in: _.map(role.get('permissions'))
+                  $in: _.map(role.permissions)
                 }
-              }
-              permissionsModel.getAll(query, (err, permissions) => {
+              }, (err, permissions) => {
                 if (err) {
                   return done(err);
                 }
@@ -43,21 +42,29 @@ exports.getRoles = function (req, res) {
         },
         function (roles, cb) {
           async.each(roles, (role, done) => {
-            if (role.get('users').length) {
-              let query = {
-                _id: {
-                  $in: _.map(role.get('users'))
-                }
-              }
-              User.find(query).select(
-                '_id username displayName email'
-              ).exec((err, users) => {
-                if (err) {
-                  return done(err);
-                }
-                role.users = users ? users.toObject() : [];
-                done(null);
-              })
+            if (role.users.length) {
+              User.aggregate([{
+                  $match: {
+                    _id: {
+                      $in: _.map(role.users, (id) => {
+                        return new mongoose.Types.ObjectId(id);
+                      })
+                    }
+                  }
+                }, {
+                  $project: {
+                    name: "$username",
+                    displayName: 1,
+                    email: 1
+                  }
+                }])
+                .exec((err, users) => {
+                  if (err) {
+                    return done(err);
+                  }
+                  role.users = users;
+                  done(null);
+                })
             } else {
               done(null);
             }
@@ -68,7 +75,7 @@ exports.getRoles = function (req, res) {
 
             cb(null, roles);
           });
-        },
+        }
       ],
       function (err, result) {
         if (err) {
@@ -119,26 +126,26 @@ exports.deleteRole = function (req, res) {
 };
 
 exports.connectPermissionWithRole = function (req, res) {
-  rolesModel.connectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
+  rolesModel.connectPermission(req.params.role_id, req.params.perm_id, function (err) {
     if (err) {
       return res.status(500).send({
         message: 'Unable to connect permission'
       });
     }
 
-    res.status(200).send(result);
+    res.status(200).send();
   });
 };
 
 exports.disconnectPermissionFromRole = function (req, res) {
-  rolesModel.disconnectPermission(req.params.role_id, req.params.perm_id, function (err, result) {
+  rolesModel.disconnectPermission(req.params.role_id, req.params.perm_id, function (err) {
     if (err) {
       return res.status(500).send({
         message: 'Unable to disconnect permission'
       });
     }
 
-    res.status(200).send(result);
+    res.status(200).send();
   });
 };
 

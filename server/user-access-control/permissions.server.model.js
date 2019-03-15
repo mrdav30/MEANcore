@@ -6,6 +6,7 @@ var mongoose = require('mongoose'),
 var permissionsSchema = new Schema({
   name: {
     type: String,
+    unique: true,
     trim: true
   }
 });
@@ -21,13 +22,14 @@ service.delete = _delete;
 module.exports = service;
 
 function getAll(query, callback) {
-  Permissions.find(query).exec(function (err, permissions) {
-    if (err) {
-      return callback(err.name + ': ' + err.message);
-    }
+  Permissions.find(query).lean()
+    .exec(function (err, permissions) {
+      if (err) {
+        return callback(err.name + ': ' + err.message);
+      }
 
-    callback(null, permissions);
-  });
+      callback(null, permissions);
+    });
 }
 
 function create(permissionParam, callback) {
