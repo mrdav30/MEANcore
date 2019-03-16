@@ -12,10 +12,11 @@ var rolesSchema = new Schema({
   users: {
     type: [String]
   },
-  features: {
+  permissions: {
     type: [String]
   }
 });
+
 var Roles = mongoose.model('Roles', rolesSchema);
 
 var service = {};
@@ -32,8 +33,9 @@ service.removeUser = removeUser;
 module.exports = service;
 
 
-// get roles + permissions/users
+// get roles + permissions
 function getAll(callback) {
+
   Roles.find({}).sort({
     _id: -1
   }).lean().exec((err, roles) => {
@@ -42,7 +44,7 @@ function getAll(callback) {
     }
 
     callback(null, roles);
-  });
+  })
 };
 
 function create(roleParam, callback) {
@@ -141,7 +143,7 @@ function removeUser(user_id, role_id, callback) {
   Roles.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(role_id)
     }, {
-      $pullAll: {
+      $pull: {
         users: user_id
       }
     },

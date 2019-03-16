@@ -1,7 +1,8 @@
 'use strict';
 var mongoose = require('mongoose'),
+  Schema = mongoose.Schema,
   _ = require('lodash'),
-  Schema = mongoose.Schema;
+  async = require('async');
 
 var featuresSchema = new Schema({
   name: {
@@ -21,7 +22,7 @@ var featuresSchema = new Schema({
 
 var permissionsSchema = new Schema({
   featureId: {
-    type: Number
+    type: String
   },
   name: {
     type: String,
@@ -33,7 +34,8 @@ permissionsSchema.index({
   name: 1
 }, {
   unique: true
-})
+});
+
 var Features = mongoose.model('Features', featuresSchema);
 var Permissions = mongoose.model('Permissions', permissionsSchema);
 
@@ -56,7 +58,33 @@ function getAllFeatures(query, callback) {
         return callback(err.name + ': ' + err.message);
       }
 
-      callback(null, features);
+      async.each(features, (feature, done) => {
+        if (feature.permissions.length) {
+          Permissions.find({
+              _id: {
+                $in: _.map(feature.permissions, (id) => {
+                  return new mongoose.Types.ObjectId(id);
+                })
+              }
+            }).lean()
+            .exec((err, permissions) => {
+              if (err) {
+                return done(err);
+              }
+
+              feature.permissions = permissions;
+              done(null)
+            })
+        } else {
+          done(null)
+        }
+      }, (err) => {
+        if (err) {
+          return callback(err.name + ': ' + err.message);
+        }
+
+        callback(null, features);
+      })
     });
 }
 
@@ -101,6 +129,7 @@ function _deleteFeature(_id, callback) {
     });
 };
 
+// Permissions
 
 function createPermission(feature_id, permissionsParam, callback) {
   permissionsParam.featureId = feature_id;
@@ -147,27 +176,27 @@ function updatePermission(_id, permissionsParam, callback) {
 
 function _deletePermission(feature_id, perm_id, callback) {
   Features.updateOne({
-    _id: mongoose.Types.ObjectId(feature_id)
-  }, {
-    $pull: {
-      permissions: perm_id
-    }
-  },
-  function (err) {
-    if (err) {
-      return callback(err.name + ': ' + err.message);
-    }
-
-    Permissions.deleteOne({
-      _id: mongoose.Types.ObjectId(perm_id),
-      featureId: feature_id
+      _id: mongoose.Types.ObjectId(feature_id)
+    }, {
+      $pull: {
+        permissions: perm_id
+      }
     },
     function (err) {
       if (err) {
         return callback(err.name + ': ' + err.message);
       }
 
-      callback(null)
+      Permissions.deleteOne({
+          _id: mongoose.Types.ObjectId(perm_id),
+          featureId: feature_id
+        },
+        function (err) {
+          if (err) {
+            return callback(err.name + ': ' + err.message);
+          }
+
+          callback(null)
+        });
     });
-  });
 };

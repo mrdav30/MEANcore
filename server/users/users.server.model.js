@@ -96,6 +96,13 @@ var UserSchema = new Schema({
   strict: false //set to strict to allow modules to override user schema for account settings
 });
 
+UserSchema.index({
+  _id: 1,
+  roles: 1
+}, {
+  unique: true
+});
+
 /**
  * Hook a pre save method to hash the password
  */

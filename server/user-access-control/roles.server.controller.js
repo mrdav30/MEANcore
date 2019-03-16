@@ -1,9 +1,6 @@
 'use strict';
-var async = require('async'),
-  _ = require('lodash'),
+var mongoose = require('mongoose'),
   rolesModel = require('./roles.server.model'),
-  featuresModel = require('./features.server.model'),
-  mongoose = require('mongoose'),
   User = mongoose.model('User');
 
 exports.getRoles = function (req, res) {
@@ -14,78 +11,7 @@ exports.getRoles = function (req, res) {
       });
     }
 
-    async.waterfall([
-        function (cb) {
-          async.each(roles, (role, done) => {
-            if (role.features.length) {
-              featuresModel.getAll({
-                _id: {
-                  $in: _.map(role.features)
-                }
-              }, (err, features) => {
-                if (err) {
-                  return done(err);
-                }
-                role.features = features ? features : [];
-                done(null);
-              });
-            } else {
-              done(null);
-            }
-          }, (err) => {
-            if (err) {
-              return cb(err);
-            }
-
-            cb(null, roles);
-          });
-        },
-        function (roles, cb) {
-          async.each(roles, (role, done) => {
-            if (role.users.length) {
-              User.aggregate([{
-                  $match: {
-                    _id: {
-                      $in: _.map(role.users, (id) => {
-                        return new mongoose.Types.ObjectId(id);
-                      })
-                    }
-                  }
-                }, {
-                  $project: {
-                    name: "$username",
-                    displayName: 1,
-                    email: 1
-                  }
-                }])
-                .exec((err, users) => {
-                  if (err) {
-                    return done(err);
-                  }
-                  role.users = users;
-                  done(null);
-                })
-            } else {
-              done(null);
-            }
-          }, (err) => {
-            if (err) {
-              return cb(err);
-            }
-
-            cb(null, roles);
-          });
-        }
-      ],
-      function (err, result) {
-        if (err) {
-          return res.status(500).send({
-            message: 'Unable to retrieve roles'
-          });
-        }
-
-        res.status(200).send(result);
-      });
+    res.status(200).send(roles);
   });
 };
 
@@ -157,27 +83,43 @@ exports.addUserToRole = function (req, res) {
       });
     }
 
-    User.findOneAndUpdate({
+    User.updateOne({
         _id: mongoose.Types.ObjectId(req.params.user_id)
       }, {
         $push: {
           roles: role.get('name')
         }
       },
-      function (err, user) {
+      function (err) {
         if (err) {
           return res.status(500).send({
             message: 'Unable to add user to role'
           });
         }
 
-        // remove sensitive data
-        delete user.password;
-        delete user.salt;
+        User.aggregate([{
+            $match: {
+              _id: mongoose.Types.ObjectId(req.params.user_id)
+            }
+          }, {
+            $project: {
+              name: "$username",
+              displayName: 1,
+              email: 1
+            }
+          }])
+          .exec(
+            function (err, user) {
+              if (err) {
+                return res.status(500).send({
+                  message: 'Unable to add user to role'
+                });
+              }
 
-        res.status(200).send({
-          user: user
-        });
+              res.status(200).send({
+                user: user[0]
+              });
+            });
       });
   });
 };
@@ -190,28 +132,21 @@ exports.removeUserFromRole = function (req, res) {
       });
     }
 
-    User.findOneAndUpdate({
+    User.updateOne({
         _id: mongoose.Types.ObjectId(req.params.user_id)
       }, {
-        $pullAll: {
-          roles: role
+        $pull: {
+          roles: role.name
         }
       },
-      function (err, user) {
+      function (err) {
         if (err) {
           return res.status(500).send({
             message: 'Unable to remove user from role'
           });
         }
 
-        // remove sensitive data
-        delete user.password;
-        delete user.salt;
-
-        res.status(200).send({
-          role: role,
-          user: user
-        });
+        res.status(200).send();
       });
   });
 };

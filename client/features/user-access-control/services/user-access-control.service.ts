@@ -15,6 +15,20 @@ export class UserAccessControlService {
     private handleErrorService: HandleErrorService
   ) { }
 
+  // UAC viewmodel
+
+  getViewModel(): Promise<any> {
+    return this.http
+      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/view')
+      .pipe(
+        tap((res: any) => {
+          return res;
+        }),
+        catchError(this.handleErrorService.handleError())
+      )
+      .toPromise();
+  }
+
   // Roles
 
   getAllRoles(): Promise<Role[]> {

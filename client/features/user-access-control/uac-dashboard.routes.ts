@@ -7,10 +7,8 @@ import { UserAccessControlComponent } from './uac-dashboard.component';
 export const UserAccessControlRoutes: Routes = [
     {
         path: 'uac',
+        data: { roles: ['admin'] },
         component: UserAccessControlComponent,
-        canActivate: [AuthGuard],
-        data: {
-            uac_admin_only: true
-        }
+        canActivate: [AuthGuard]
     }
 ];

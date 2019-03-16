@@ -55,7 +55,7 @@ exports.deleteFeature = function (req, res) {
 
 
 exports.createPermission = function(req, res) {
-  featuresModel.createPermission(req.param.feature_id, req.body.permission, function(err, result) {
+  featuresModel.createPermission(req.params.feature_id, req.body.permission, function(err, result) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to create permission'

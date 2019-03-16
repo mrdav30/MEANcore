@@ -19,6 +19,7 @@ export class DynamicListComponent implements AfterViewInit {
   @Input() createMetadata: QuestionBase<any>[];
   @Input() showCheckboxes: boolean;
   @Input() isReadOnly: boolean;
+  @Input() isToggle: boolean;
   @Output() itemSelect = new EventEmitter();
   @Output() itemView = new EventEmitter();
   @Output() listSelect = new EventEmitter();
@@ -96,13 +97,13 @@ export class DynamicListComponent implements AfterViewInit {
   toggleItemSelection(item: any): void {
     this.aboutToDeleteItem = null;
     // Set timeout to allow selection to propagate
-    setTimeout(() => {
-      if (!this.isChecked(item)) {
-        this.itemAdd.emit(item);
-      } else {
-        this.itemRemove.emit(item);
-      }
-    });
+    //  setTimeout(() => {
+    if (!this.isChecked(item)) {
+      this.itemAdd.emit(item);
+    } else {
+      this.itemRemove.emit(item);
+    }
+    // });
   }
 
   toggleCreateItem(): void {

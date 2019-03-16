@@ -32,27 +32,6 @@ exports.updateProfile = function (req, res) {
 };
 
 /**
- * Get all users for uac dashboard
- */
-exports.getUsers = function (req, res) {
-  User.aggregate([{
-    $project: {
-      name: "$username",
-      displayName: 1,
-      email: 1
-    }
-  }]).exec(function (err, users) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to retrieve users'
-      });
-    }
-
-    res.status(200).send(users);
-  })
-}
-
-/**
  * Send User
  */
 exports.me = function (req, res) {
