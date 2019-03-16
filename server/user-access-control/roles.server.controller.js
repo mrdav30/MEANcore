@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
   User = mongoose.model('User');
 
 exports.getRoles = function (req, res) {
-  rolesModel.getAll(function (err, roles) {
+  rolesModel.getAll({}, function (err, roles) {
     if (err) {
       return res.status(500).send({
         message: 'Unable to retrieve roles'
@@ -93,7 +93,7 @@ exports.addUserToRole = function (req, res) {
       function (err) {
         if (err) {
           return res.status(500).send({
-            message: 'Unable to add user to role'
+            message: 'Unable to add role to user'
           });
         }
 
@@ -142,7 +142,7 @@ exports.removeUserFromRole = function (req, res) {
       function (err) {
         if (err) {
           return res.status(500).send({
-            message: 'Unable to remove user from role'
+            message: 'Unable to remove role from user'
           });
         }
 

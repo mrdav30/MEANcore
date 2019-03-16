@@ -307,7 +307,8 @@ export class UserAccessControlComponent implements OnInit {
         this.uacService.updateFeature(feature).then(data => {
             const featureIndex = _.findIndex(this.features, (f) => f._id === feature._id);
             if (featureIndex >= 0) {
-                this.features[featureIndex] = data as Feature;
+                this.features[featureIndex].name = feature.name;
+                this.features[featureIndex].route = feature.route;
             }
         }).catch(reason => this.setErrorMessage('Feature ', reason));
     }
@@ -316,8 +317,8 @@ export class UserAccessControlComponent implements OnInit {
         await this.setState(DashboardState.ShowingFeatures);
     }
 
-    onDeleteFeature(feature): void {
-        this.uacService.deleteFeature(feature).then(() => {
+    onDeleteFeature(feature: Feature): void {
+        this.uacService.deleteFeature(feature._id).then(() => {
             const featureIndex = _.findIndex(this.features, (f) => f._id === feature._id);
             if (featureIndex >= 0) {
                 this.features.splice(featureIndex, 1);
@@ -372,7 +373,6 @@ export class UserAccessControlComponent implements OnInit {
                 if (permIndex >= 0) {
                     this.features[featureIndex].permissions.splice(permIndex, 1);
                 }
-                this.permissions.splice(permIndex, 1);
                 await this.setState(DashboardState.ShowingPermissions);
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }

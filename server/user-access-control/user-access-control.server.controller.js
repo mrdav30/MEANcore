@@ -11,7 +11,7 @@ exports.getUACViewModel = function (req, res) {
 
   async.waterfall([
       function (cb) {
-        rolesModel.getAll(function (err, roles) {
+        rolesModel.getAll({}, function (err, roles) {
           if (err) {
             cb(err);
           }

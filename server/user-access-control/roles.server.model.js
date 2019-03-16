@@ -33,10 +33,10 @@ service.removeUser = removeUser;
 module.exports = service;
 
 
-// get roles + permissions
-function getAll(callback) {
+// get roles
+function getAll(query, callback) {
 
-  Roles.find({}).sort({
+  Roles.find(query).sort({
     _id: -1
   }).lean().exec((err, roles) => {
     if (err) {

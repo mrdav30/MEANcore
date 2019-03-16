@@ -45,6 +45,7 @@ service.getAllFeatures = getAllFeatures;
 service.createFeature = createFeature;
 service.updateFeature = updateFeature;
 service.deleteFeature = _deleteFeature;
+service.getAllPermissions = getAllPermissions;
 service.createPermission = createPermission;
 service.updatePermission = updatePermission;
 service.deletePermission = _deletePermission;
@@ -130,6 +131,18 @@ function _deleteFeature(_id, callback) {
 };
 
 // Permissions
+
+function getAllPermissions(query, callback){
+  Permissions.find(query).lean()
+  .exec((err, permissions) => {
+    if (err) {
+      return callback(err);
+    }
+
+    feature.permissions = permissions;
+    callback(null)
+  })
+}
 
 function createPermission(feature_id, permissionsParam, callback) {
   permissionsParam.featureId = feature_id;

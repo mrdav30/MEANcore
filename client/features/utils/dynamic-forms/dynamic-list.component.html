@@ -42,7 +42,7 @@
             aria-hidden="true">
             <i class="fas fa-caret-down"></i>
           </button>
-          <button type="button" *ngIf="aboutToDeleteItem !== item && !isReadOnly" class="btn btn-xs btn-danger" (click)="onDelete(item)"
+          <button type="button" *ngIf="aboutToDeleteItem !== item" class="btn btn-xs btn-danger" (click)="onDelete(item)"
             ngbTooltip="Delete">
             <i class="fas fa-trash-alt"></i>
           </button>
