@@ -60,7 +60,7 @@ export class AppMenuComponent implements OnInit {
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
-    const userPermissions = this.user && this.user.permissions ? this.user.permissions : [];
+    const userPermissions = this.user && this.user.rolePermissions ? this.user.rolePermissions : [];
     this.visibleMenus = _.filter(this.menus, (menu) => {
       return _.intersection(userRoles, menu.roles).length ? true : false ||
         _.includes(userPermissions as string, _.toLower(menu.permission as string));

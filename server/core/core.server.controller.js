@@ -4,7 +4,7 @@ var path = require('path'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
   ssrService = config.services.ssrService,
-  CoreConfig = require('mongoose').model('CoreConfig');
+  featuresController = require('../user-access-control/features.server.controller');
 
 /**
  * Get extention from path
@@ -27,13 +27,16 @@ exports.renderNotFound = renderNotFound;
  * Retrieve logged-in user and front-end app settings
  */
 exports.retrieveRuntimeConfig = function (req, res) {
-  var response = {};
+  var response = {
+    user: {},
+    config: {}
+  };
 
-  CoreConfig.getAll(function (err, config) {
+  featuresController.getMenuConfiguration((err, features) => {
+    response.config.menuConfig = features ? features : null;
 
-    response.config = config || null;
+
     response.user = req.user || null;
-
     if (response.user) {
       // Remove sensitive data
       response.user.password = undefined;

@@ -4,8 +4,11 @@
  * Module dependencies.
  */
 var passport = require('passport'),
-  User = require('mongoose').model('User'),
-  path = require('path');
+  path = require('path'),
+  _ = require('lodash'),
+  mongoose = require('mongoose'),
+  User = mongoose.model('User'),
+  Roles = mongoose.model('Roles');
 
 /**
  * Module init function.
@@ -22,11 +25,36 @@ module.exports = function (app) {
   passport.deserializeUser(function (id, done) {
     User.findOne({
         _id: id
-	  })
-	  // Only retrieve values required for auth
+      })
+      // Only retrieve values required for auth
       .select('username displayName email appName provider roles knownIPAddresses password salt')
       .exec(function (err, user) {
-        done(err, user);
+        // Get users role info based on assigned roles
+        Roles.find({
+            name: {
+              $in: _.map(user.roles, (name) => {
+                return name;
+              })
+            }
+          })
+          .select('name permissions')
+          .lean()
+          .exec((err, roles) => {
+            if (err) {
+              return done(err);
+            }
+            
+            const permissions = _.chain(roles)
+              .map('permissions')
+              .flatten()
+              .uniq()
+              .value();
+
+            user.set('permissions', permissions, {
+              strict: false
+            });
+            done(err, user);
+          })
       });
   });
 

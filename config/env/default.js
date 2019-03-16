@@ -7,8 +7,7 @@ module.exports = {
     description: 'Applications runing on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
     appBaseUrl: process.env.APP_BASE_URL || '/',
-    defaultPage: 'index.html',
-    MENU_CONFIG: []
+    defaultPage: 'index.html'
   },
   // Config required for Google Analytics
   GOOGLE_CLIENT_EMAIL: process.env.GOOGLE_CLIENT_EMAIL || '',

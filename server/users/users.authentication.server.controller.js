@@ -108,8 +108,8 @@ exports.signIn = function (req, res, next) {
       });
     } else {
       async.series([
+        // Set last known IP of a successful login to prevent logins from unknown IPs.
         function (done) {
-          // Set last known IP of a successful login to prevent logins from unknown IPs.
           var knownIPAddresses = user.get('knownIPAddresses') ? user.get('knownIPAddresses') : [];
           if (!knownIPAddresses.includes(req.connection.remoteAddress)) {
             user.knownIPAddresses.push(req.connection.remoteAddress);
@@ -121,6 +121,10 @@ exports.signIn = function (req, res, next) {
               done(err);
             });
           } else {
+            // Remove sensitive data before login
+            user.password = undefined;
+            user.salt = undefined;
+
             done(null);
           }
         }
@@ -130,10 +134,6 @@ exports.signIn = function (req, res, next) {
             message: errorHandler.getErrorMessage(err)
           });
         }
-
-        // Remove sensitive data before login
-        user.password = undefined;
-        user.salt = undefined;
 
         req.login(user, function (err) {
           if (err) {

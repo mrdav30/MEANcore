@@ -14,7 +14,7 @@
       </li>
       <ng-template ngFor let-menu [ngForOf]="visibleMenus">
         <li class="nav-item">
-          <a routerLink="{{menu.route}}" routerLinkActive="active-link" class="nav-link">{{menu.label}}</a>
+          <a routerLink="{{menu.route}}" routerLinkActive="active-link" class="nav-link">{{menu.name}}</a>
         </li>
       </ng-template>
     </ul>
