@@ -8,6 +8,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
+import { UnauthorizedComponent } from '../features/unauthorized/unauthorized.component';
 import { PageNotFoundComponent } from '../features/page-not-found/page-not-found.component';
 
 import { HomeModule } from '../features/home/home.module';
@@ -38,6 +39,7 @@ export function init_app(appLoadService: AppLoadService) {
 @NgModule({
   declarations: [
     AppComponent,
+    UnauthorizedComponent,
     PageNotFoundComponent
   ],
   imports: [

@@ -11,6 +11,7 @@ import { ResetPasswordRoutes } from '../features/users/password/reset/reset-pass
 import { SignUpRoutes } from '../features/users/sign-up/sign-up.routes';
 import { UserAccessControlRoutes } from '../features/user-access-control/uac-dashboard.routes';
 import { HomeRoutes } from '../features/home/home.routes';
+import { UnauthorizedComponent } from 'features/unauthorized/unauthorized.component';
 
 export const AppRoutes: Routes = [
   {
@@ -25,8 +26,12 @@ export const AppRoutes: Routes = [
   ...UserAccessControlRoutes,
   ...HomeRoutes,
   {
+    path: 'unauthorized',
+    component: UnauthorizedComponent
+  },
+  {
     path: '**',
-    component: PageNotFoundComponent,
+    component: PageNotFoundComponent
   }
 ];
 

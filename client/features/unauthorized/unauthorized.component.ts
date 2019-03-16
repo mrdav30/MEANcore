@@ -5,10 +5,10 @@ import { environment } from '../../environments/environment';
 
 @Component({
     moduleId: module.id,
-    selector: 'app-page-not-found',
-    templateUrl: `page-not-found.component.html`,
+    selector: 'app-unauthorized',
+    templateUrl: `unauthorized.component.html`,
 })
-export class PageNotFoundComponent implements OnInit {
+export class UnauthorizedComponent implements OnInit {
     public url: string;
 
     // tslint:disable-next-line
