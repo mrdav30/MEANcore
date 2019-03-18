@@ -48,7 +48,7 @@ var initLocalVariables = function (app, config) {
   // Passing entire config to app locals
   app.locals.config = config;
 
-  // if behind a proxy
+  // if behind a proxy, such as nginx...
   if (config.proxy) {
     app.set('trust proxy', 'loopback');
   }
@@ -238,7 +238,7 @@ var initClientRoutes = function (app, config) {
 
   // in development mode files are loaded from node_modules
   app.use('/node_modules', express.static(path.resolve(config.staticFiles + '../../node_modules/'), {
-    maxAge: '30d', // Cache node modules in development as well as they are not updated that frequantly.
+    maxAge: '30d', // Cache node modules in development as well as they are not updated that frequently.
     index: false,
     setHeaders: function (res, path, stat) {
       res.setHeader('Cache-Control', '');

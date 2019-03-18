@@ -7,6 +7,7 @@ module.exports = {
     description: 'Applications runing on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
     appBaseUrl: process.env.APP_BASE_URL || '/',
+    apiBaseUrl: process.env.API_BASE_URL || 'api',
     defaultPage: 'index.html'
   },
   // Config required for Google Analytics
@@ -87,13 +88,17 @@ module.exports = {
     }
   },
   uploads: {
-    // Storage can be 'local' or 's3'
-    storage: process.env.UPLOADS_STORAGE || 'local',
-    profile: {
-      image: {
-        dest: '_content/' + (process.env.APP_NAME || 'meancore') + '/img/profile/uploads/',
-        limits: {
-          fileSize: 1 * 1024 * 1024 // Max file size in bytes (1 MB)
+    images: {
+      baseUrl: process.env.IMAGE_BASE_URL || '/uploads/images',
+      uploadRepository: process.env.IMAGE_STORAGE || '_content/image-uploads/_tempDir/',
+      limits: {
+        fileSize: 1 * 1024 * 1024 // Max file size in bytes (1 MB)
+      },
+      options: {
+        profile: {
+          finalDest: 'profile',
+          maxAge: (24 * 60 * 60 * 30) * 1000, // 30 days in milliseconds
+          index: false
         }
       }
     }

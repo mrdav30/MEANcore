@@ -19,6 +19,10 @@ export class ImageUploadComponent implements OnInit {
     @Input()
     public imageHeight = 200;
 
+    // Type of input that matches config
+    @Input()
+    public uploadType = '';
+
     @Input()
     public currentUrl = '';
 
@@ -27,7 +31,7 @@ export class ImageUploadComponent implements OnInit {
 
     constructor() {
         this.uploader = new FileUploader({
-            url: environment.appBaseUrl + environment.apiBaseUrl + environment.imageUploadUrl,
+            url: environment.appBaseUrl + environment.apiBaseUrl + '/image-upload?upload=' + this.uploadType,
             disableMultipart: false,
             autoUpload: true,
             itemAlias: 'upload'
