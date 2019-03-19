@@ -17,8 +17,6 @@ The MEANcore starter kit is a full-stack JavaScript open-source solution, which 
 
 - Scalable architecture with base app template including example components, services and tests
 
-- Server Side Rendering (SSR) for web-crawlers
-
 ## Before You Begin
 Before you begin, it's recommend you read about the basic building blocks that assemble a MEAN application:
 * MongoDB - Go through [MongoDB Official Website](https://www.mongodb.com/) and proceed to their [Official Manual](http://docs.mongodb.org/manual/), which should help you understand NoSQL and MongoDB better.
@@ -38,7 +36,7 @@ Make sure you have installed all of the following prerequisites on your developm
 
 # Getting started
 
-1. Go to project folder and create a .env file to setup your environment 
+1. Go to project folder and create a .env file to setup your environment
 ```
 NODE_ENV='development'
 PRODUCTION=false
@@ -48,11 +46,13 @@ HOST_SECURE=
 PROXY=
 
 APP_NAME='meancore'
+APP_LOGO='assets/images/logo.png'
+APP_DEFAULT_ROUTE='home'
 APP_BASE_URL='/'
 API_BASE_URL='api'
-APP_DEFAULT_ROUTE='home'
-IMAGE_UPLOAD_URL='/admin/upload'
-TWITTER_HANDLE=
+IMAGE_BASE_URL='/image-uploads'
+IMAGE_STORAGE='./_content/image-uploads/'
+TWITTER_HANDLE=''
 
 SESSION_SECRET='MEANCORE'
 SESSION_KEY='meancore-key'
@@ -81,7 +81,7 @@ MAILER_TEST=true
 
 3. Then launch development server, and open `localhost:4200` in your browser:
  ```bash
- npm start:dev
+ npm run start:dev
  ```
 
 # Project structure
@@ -122,14 +122,14 @@ Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
 npm run config                | Produces angular environment configuration from .env
 npm run version               | Generates version control information based on projects package.json
-npm start:dev                 | Builds client and runs development ng server on `http://localhost:4200/` using proxy config for express endpoints to `http://localhost:3000/`
-npm start:prod                | Builds client for prod and runs production express server 
+npm run start:dev                 | Builds client and runs development ng server on `http://localhost:4200/` using proxy config for express endpoints to `http://localhost:3000/`
+npm run start:prod            | Builds client for prod and runs production express server
 npm run client:dev            | Run development ng server on `http://localhost:4200/` only
 npm run server:dev            | Run development express server only on `http://localhost:3000/`
-npm run server:prod           | Run production express server only 
+npm run server:prod           | Run production express server only
 npm run build:dev             | Lint code and build app for development in `dist/` folder
 npm run build:prod            | Lint code and build app for production in `dist/` folder
-npm test:client               | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
+npm run test:client           | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
 npm run test                  | Lint code and run unit tests once for continuous integration
 npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
 npm run lint:client           | Lint client code
@@ -137,7 +137,7 @@ npm run lint:server           | Lint server code
 
 ## Development server
 
-Run `npm start:dev` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
+Run `npm run start:dev` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
 any of the source files.
 You should not use `ng serve` directly, as it does not use the backend express configuration.
 
@@ -195,6 +195,10 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - [Moment.js](https://momentjs.com/)
 - [Lodash](https://lodash.com)
 - [Async](https://caolan.github.io/async/)
+- [Passport.js](http://www.passportjs.org/)
+- [Puppeteer](https://github.com/GoogleChrome/puppeteer)
+- [Jimp](https://github.com/oliver-moran/jimp)
+- [PngQuant](https://pngquant.org/)
 
 ## Contributing
 Pull requests are from the community! Just be sure to read the [contributing](https://github.com/mrdav30/MEANcore/blob/master/CONTRIBUTING.MD) doc to get started.
@@ -204,4 +208,4 @@ Special thanks to the [MEAN.JS](https://github.com/meanjs/mean) team for the har
 
 # License
 
-[License](https://github.com/mrdav30/MEANcore/blob/master/LICENSE.MD) 
+[License](https://github.com/mrdav30/MEANcore/blob/master/LICENSE.MD)
