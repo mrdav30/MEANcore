@@ -1,7 +1,5 @@
 'use strict';
 
-var fs = require('fs');
-
 module.exports = {
   secure: {
     ssl: process.env.HOST_SECURE || false,

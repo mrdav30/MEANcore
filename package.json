@@ -93,6 +93,7 @@
     "passport-local": "~1.0.0",
     "passport-paypal-openidconnect": "^0.1.1",
     "passport-twitter": "~1.0.4",
+    "pngquant": "^2.0.1",
     "puppeteer": "^1.12.2",
     "request-promise": "^4.2.2",
     "rxjs": "^6.4.0",

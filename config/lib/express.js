@@ -255,6 +255,16 @@ var initClientRoutes = function (app, config) {
       res.setHeader('Pragma', '');
     }
   }));
+
+  // Setting the app router and static folder for image paths
+  let imageOptions = _.map(config.uploads.images.options),
+    defaultRoute = config.app.appBaseUrl + config.app.apiBaseUrl + config.uploads.images.baseUrl;
+  _.forEach(imageOptions, (option) => {
+    app.use(defaultRoute + '/' + option.finalDest, express.static(path.resolve(config.uploads.images.uploadRepository + option.finalDest), {
+      maxAge: option.maxAge,
+      index: option.index
+    }));
+  })
 };
 
 /**

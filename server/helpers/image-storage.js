@@ -4,6 +4,7 @@ var _ = require('lodash'),
   path = require('path'),
   config = require(path.resolve('./config/config')),
   Jimp = require('jimp'),
+  PngQuant = require('pngquant'),
   crypto = require('crypto'),
   mkdirp = require('mkdirp'),
   concat = require('concat-stream'),
@@ -11,7 +12,7 @@ var _ = require('lodash'),
 
 // Configure UPLOAD_PATH
 // process.env.IMAGE_STORAGE contains _content/image-uploads
-var UPLOAD_PATH = path.resolve(__dirname, '..', config.uploads.images.uploadRepository);
+var UPLOAD_PATH = path.resolve(config.uploads.images.uploadRepository + '/_tempDir');
 
 // create a multer storage engine
 var ImageStorage = function (options) {
@@ -30,9 +31,9 @@ var ImageStorage = function (options) {
       output: 'png',
       greyscale: false,
       quality: 70,
-      square: true,
+      square: false,
       threshold: 500,
-      responsive: false,
+      responsive: false
     };
 
     // extend default options with passed options
@@ -75,10 +76,10 @@ var ImageStorage = function (options) {
     });
 
     // set the upload path
-    this.uploadPath = this.options.responsive ? path.join(UPLOAD_PATH, this.options.base, 'responsive') : UPLOAD_PATH;
+    this.uploadPath = this.options.responsive ? path.join(UPLOAD_PATH, 'responsive') : UPLOAD_PATH;
 
     // set the upload base url
-    this.uploadBaseUrl = this.options.responsive ? path.join(baseUrl, this.options.base, 'responsive') : baseUrl;
+    this.uploadBaseUrl = this.options.responsive ? path.join(baseUrl, 'responsive') : baseUrl;
 
     if (this.options.storage == 'local') {
       // if upload path does not exist, create the upload path structure
@@ -138,7 +139,7 @@ var ImageStorage = function (options) {
 
     var filename = this._generateRandomFilename();
 
-    var mime = Jimp.MIME_PNG;
+    //var mime = Jimp.MIME_PNG;
 
     // create a clone of the Jimp image
     var clone = image.clone();
@@ -162,7 +163,13 @@ var ImageStorage = function (options) {
 
     // auto scale the image dimensions to fit the threshold requirement
     if (threshold && square > threshold) {
-      clone = (square == width) ? clone.resize(threshold, Jimp.AUTO) : clone.resize(Jimp.AUTO, threshold);
+      clone = (square == width) ? clone.resize(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER) : clone.resize(Jimp.AUTO, threshold, Jimp.RESIZE_BEZIER);
+      //clone.scaleToFit(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+      //(square == width) ? clone.resize(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER) : clone.resize(Jimp.AUTO, threshold, Jimp.RESIZE_BEZIER);
+      //clone.scaleToFit(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+      //(square == width) ? clone.resize(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER) : clone.resize(Jimp.AUTO, threshold, Jimp.RESIZE_BEZIER);
+      //clone.scaleToFit(threshold, Jimp.AUTO, Jimp.RESIZE_BEZIER)
+      //(square == width) ? clone.resize(threshold, Jimp.AUTO) : clone.resize(Jimp.AUTO, threshold);
     }
 
     // crop the image to a square if enabled
@@ -182,7 +189,9 @@ var ImageStorage = function (options) {
     }
 
     // set the image output quality
-    clone = clone.quality(this.options.quality);
+    if(mime === Jimp.MIME_JPEG){
+        clone = clone.quality(this.options.quality);
+    }
 
     if (this.options.responsive) {
 
@@ -234,8 +243,12 @@ var ImageStorage = function (options) {
       // get the buffer of the Jimp image using the output mime type
       current.image.getBuffer(mime, function (err, buffer) {
         if (that.options.storage == 'local') {
-          // create a read stream from the buffer and pipe it to the output stream
-          streamifier.createReadStream(buffer).pipe(current.stream);
+          if (mime === Jimp.MIME_PNG) {
+            var pngQuanter = new PngQuant([256, '--quality', that.options.quality]);
+            streamifier.createReadStream(buffer).pipe(pngQuanter).pipe(current.stream);
+          } else {
+            streamifier.createReadStream(buffer).pipe(current.stream);
+          }
         }
       });
     });
@@ -272,7 +285,7 @@ var ImageStorage = function (options) {
   ImageStorage.prototype._removeFile = function (req, file, cb) {
 
     var matches, pathsplit;
-    var filename = file.filename;
+    var filename = file.originalname;
     var _path = path.join(this.uploadPath, filename);
     var paths = [];
 

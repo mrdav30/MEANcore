@@ -20,6 +20,7 @@ export const environment = {
     appDefaultRoute: '${process.env.APP_DEFAULT_ROUTE}',
     appBaseUrl: '${process.env.APP_BASE_URL}',
     apiBaseUrl: '${process.env.API_BASE_URL}',
+    imageBaseUrl: '${process.env.IMAGE_BASE_URL}',
     googleAnalyticsID: '${process.env.GOOGLE_ANALYTICS_ID}',
     recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
     twitterHandle: '${process.env.TWITTER_HANDLE}'

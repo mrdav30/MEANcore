@@ -57,8 +57,8 @@ module.exports = {
   },
   uploads: {
     images: {
-      baseUrl: process.env.IMAGE_BASE_URL || '/uploads/images',
-      uploadRepository: process.env.IMAGE_STORAGE || '_content/image-uploads/_tempDir/',
+      baseUrl: process.env.IMAGE_BASE_URL || '/image-uploads',
+      uploadRepository: process.env.IMAGE_STORAGE || './_content/image-uploads/',
       limits: {
         fileSize: 100000 // Limit filesize (100kb) for testing purposes
       }
