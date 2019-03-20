@@ -1,13 +1,13 @@
 import { QuestionBase } from './question-base';
 
-import * as _ from 'lodash';
+import { get } from 'lodash';
 
 export class DropdownQuestion extends QuestionBase<string> {
   controlType = 'dropdown';
-  selectOptions: {key: string, value: string}[] = [];
+  selectOptions: { key: string, value: string }[] = [];
 
   constructor(options: {} = {}) {
     super(options);
-    this.selectOptions = _.get(options, 'options') || [];
+    this.selectOptions = get(options, 'options') || [];
   }
 }

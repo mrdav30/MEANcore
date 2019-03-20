@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import * as _ from 'lodash';
+import { forEach, includes, chain } from 'lodash';
 
 import { QuestionBase } from './dynamic-questions/models/question-base';
 import { QuestionControlService } from './dynamic-questions/services/question-control.service';
@@ -38,14 +38,14 @@ export class DynamicFormComponent implements OnInit {
     if (this.object) {
       const keys: any[] = Object.keys(this.form.value);
 
-      _.forEach(keys, (key) => {
-        if (_.includes(key, '.')) {
-          const parts = _.chain(key)
+      forEach(keys, (key) => {
+        if (includes(key, '.')) {
+          const parts = chain(key)
             .split('.')
             .reverse()
             .value();
           let obj = this.form.value[key];
-          _.forEach(parts, (part, index, array) => {
+          forEach(parts, (part, index, array) => {
             if (index === array.length - 1) {
               this.object[part] = obj;
             } else {

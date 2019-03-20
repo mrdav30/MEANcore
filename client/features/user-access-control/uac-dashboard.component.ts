@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import * as _ from 'lodash';
+import { map, find, findIndex } from 'lodash';
 
 import { dynamicQuestionClasses } from '../utils';
 
@@ -95,7 +95,7 @@ export class UserAccessControlComponent implements OnInit {
                     value: '',
                     required: true,
                     order: 1,
-                    options: _.map(this.users, (user) => {
+                    options: map(this.users, (user) => {
                         const obj = {
                             key: user._id,
                             value: user.name
@@ -201,7 +201,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     findItemByField(arr: any[], key: string, value: any) {
-        const item = _.find(arr, (i) => i[key] === value);
+        const item = find(arr, (i) => i[key] === value);
         return item ? item : {};
     }
 
@@ -225,7 +225,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onCreateRole(role: Role): void {
-        const roleIndex = _.findIndex(this.roles, (el) => el.name === role.name);
+        const roleIndex = findIndex(this.roles, (el) => el.name === role.name);
         if (roleIndex >= 0) {
             return this.setErrorMessage('Roles', 'Role already exists');
         } else {
@@ -243,7 +243,7 @@ export class UserAccessControlComponent implements OnInit {
     onModifyRole(role: Role): void {
         this.uacService.updateRole(role)
             .then(() => {
-                const roleIndex = _.findIndex(this.roles, (el) => el._id === role._id);
+                const roleIndex = findIndex(this.roles, (el) => el._id === role._id);
                 if (roleIndex >= 0) {
                     this.roles[roleIndex] = role;
                     this.selectedRole = null;
@@ -258,7 +258,7 @@ export class UserAccessControlComponent implements OnInit {
     onDeleteRole(role: Role): void {
         this.uacService.deleteRole(role._id)
             .then(async () => {
-                const roleIndex = _.findIndex(this.roles, (el) => el._id === role._id);
+                const roleIndex = findIndex(this.roles, (el) => el._id === role._id);
                 if (roleIndex >= 0) {
                     this.roles.splice(roleIndex, 1);
                 }
@@ -271,7 +271,7 @@ export class UserAccessControlComponent implements OnInit {
     async toggleFeature(feature: Feature): Promise<void> {
         await this.setState(DashboardState.ShowingFeatures);
         if (this.selectedFeature !== feature) {
-            const featureIndex = _.findIndex(this.features, (f) => f._id === feature._id);
+            const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
             if (featureIndex >= 0) {
                 this.selectedFeature = this.features[featureIndex];
             } else {
@@ -290,7 +290,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onCreateFeature(feature: Feature): void {
-        const featureIndex = _.findIndex(this.features, (el) => el.name === feature.name);
+        const featureIndex = findIndex(this.features, (el) => el.name === feature.name);
         if (featureIndex >= 0) {
             return this.setErrorMessage('Feature', 'Feature already exists');
         } else {
@@ -305,7 +305,7 @@ export class UserAccessControlComponent implements OnInit {
 
     onModifyFeature(feature: Feature): void {
         this.uacService.updateFeature(feature).then(data => {
-            const featureIndex = _.findIndex(this.features, (f) => f._id === feature._id);
+            const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
             if (featureIndex >= 0) {
                 this.features[featureIndex].name = feature.name;
                 this.features[featureIndex].route = feature.route;
@@ -319,7 +319,7 @@ export class UserAccessControlComponent implements OnInit {
 
     onDeleteFeature(feature: Feature): void {
         this.uacService.deleteFeature(feature._id).then(() => {
-            const featureIndex = _.findIndex(this.features, (f) => f._id === feature._id);
+            const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
             if (featureIndex >= 0) {
                 this.features.splice(featureIndex, 1);
             }
@@ -330,8 +330,8 @@ export class UserAccessControlComponent implements OnInit {
 
     async onTogglePermission(perm: Permission): Promise<void> {
         await this.setState(DashboardState.ShowingPermissions);
-        const featureIndex = _.findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
-        const permIndex = _.findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
+        const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
+        const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
         if (permIndex < 0) {
             // role does not have permission enabled
             return;
@@ -343,14 +343,14 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onCreatePermission(perm: Permission): void {
-        const permIndex = _.findIndex(this.selectedFeature.permissions, (el) => el.name === perm.name);
+        const permIndex = findIndex(this.selectedFeature.permissions, (el) => el.name === perm.name);
         if (permIndex >= 0) {
             return this.setErrorMessage('Permission', 'Permission already exists');
         } else {
             this.uacService.createPermission(this.selectedFeature._id, perm)
                 .then(data => {
                     perm._id = data._id;
-                    const featureIndex = _.findIndex(this.features, (f) => f._id === this.selectedFeature._id);
+                    const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
                     this.features[featureIndex].permissions.unshift(perm);
                 }).catch(reason => this.setErrorMessage('Permission ', reason));
         }
@@ -359,8 +359,8 @@ export class UserAccessControlComponent implements OnInit {
     onModifyPermission(perm: Permission): void {
         this.uacService.modifyPermission(perm)
             .then(() => {
-                const featureIndex = _.findIndex(this.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = _.findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
+                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
                 this.features[featureIndex].permissions[permIndex].name = perm.name;
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
@@ -368,8 +368,8 @@ export class UserAccessControlComponent implements OnInit {
     onDeletePermission(perm: Permission): void {
         this.uacService.deletePermission(this.selectedFeature._id, perm._id)
             .then(async () => {
-                const featureIndex = _.findIndex(this.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = _.findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
+                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
                 if (permIndex >= 0) {
                     this.features[featureIndex].permissions.splice(permIndex, 1);
                 }
@@ -380,7 +380,7 @@ export class UserAccessControlComponent implements OnInit {
     onAddPermissionToRole(perm: Permission): void {
         this.uacService.connectRoleWithPermission(this.selectedRole._id, perm._id)
             .then(() => {
-                const featureIndex = _.findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
+                const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
                 if (featureIndex < 0) {
                     const newFeature = {
                         _id: this.selectedFeature._id,
@@ -398,8 +398,8 @@ export class UserAccessControlComponent implements OnInit {
     onRemovePermissionFromRole(perm: Permission): void {
         this.uacService.disconnectRoleFromPermission(this.selectedRole._id, perm._id)
             .then(() => {
-                const featureIndex = _.findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = _.findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
+                const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
                 if (permIndex >= 0) {
                     this.selectedRole.features[featureIndex].permissions.splice(permIndex, 1);
                 }
@@ -419,7 +419,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onAddUserToRole(user: User, role: Role): void {
-        const userIndex = _.findIndex(this.selectedRole.users, (el) => el._id === user._id);
+        const userIndex = findIndex(this.selectedRole.users, (el) => el._id === user._id);
         if (userIndex >= 0) {
             return this.setErrorMessage('User/Role', 'User already attached to role');
         } else {
@@ -433,7 +433,7 @@ export class UserAccessControlComponent implements OnInit {
     onRemoveUserFromRole(user: User, role: Role): void {
         this.uacService.removeUserFromRole(user._id, role._id)
             .then(() => {
-                const userIndex = _.findIndex(role.users, (el) => el._id === user._id);
+                const userIndex = findIndex(role.users, (el) => el._id === user._id);
                 if (userIndex >= 0) {
                     role.users.splice(userIndex, 1);
                 }

@@ -1,6 +1,7 @@
 
 import { Component, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
-import * as _ from 'lodash';
+
+import { map, split, forEach, findIndex, filter, find } from 'lodash';
 
 import { QuestionBase } from './dynamic-questions/models/question-base';
 
@@ -52,10 +53,10 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   _getMetadata(item: any, meta: any): any[] {
-    return _.map(meta, (obj) => {
-      const parts = _.split(obj.key, '.');
+    return map(meta, (obj) => {
+      const parts = split(obj.key, '.');
       let val = item;
-      _.forEach(parts, (part) => {
+      forEach(parts, (part) => {
         val = val[part];
       });
       obj.value = val;
@@ -76,7 +77,7 @@ export class DynamicListComponent implements AfterViewInit {
   }
 
   cleanMetadata(): any[] {
-    return _.map(this.itemsMetadata, (obj) => {
+    return map(this.itemsMetadata, (obj) => {
       obj.value = '';
       return obj;
     });
@@ -132,7 +133,7 @@ export class DynamicListComponent implements AfterViewInit {
     if (!this.items) {
       return false;
     }
-    return _.findIndex(this.items, (i) => i._id === item._id) >= 0;
+    return findIndex(this.items, (i) => i._id === item._id) >= 0;
   }
 
   onCreate(item: any): void {
@@ -164,14 +165,14 @@ export class DynamicListComponent implements AfterViewInit {
 
   getLists(item: any): any[] {
     const keys: any[] = Object.keys(item);
-    const arrayKeys = _.filter(keys, (key) => Array.isArray(item[key]));
-    return _.map(arrayKeys, (key) => ({ name: key, items: item[key] }));
+    const arrayKeys = filter(keys, (key) => Array.isArray(item[key]));
+    return map(arrayKeys, (key) => ({ name: key, items: item[key] }));
   }
 
   getFirstListCount(item: any): number {
     const lists = this.getLists(item);
     if (lists.length > 0) {
-      const el = _.find(this.items, (i) => i._id === item._id);
+      const el = find(this.items, (i) => i._id === item._id);
       if (el && el[lists[0].name]) {
         return el[lists[0].name].length;
       }

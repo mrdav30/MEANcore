@@ -3,8 +3,6 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../utils';
 
-import * as _ from 'lodash';
-
 @Component({
     moduleId: module.id,
     selector: 'app-home',

@@ -1,6 +1,7 @@
 import { Directive, HostListener, forwardRef, Renderer2, ElementRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import * as _ from 'lodash';
+
+import { chain, trim } from 'lodash';
 
 const noop = () => { };  // tslint:disable-line
 
@@ -28,7 +29,7 @@ export class SplitDirective implements ControlValueAccessor {
     input(value: any) {
         if (value) {
             this.onChange(
-                _.chain(value)
+                chain(value)
                     .split(',')
                     .filter((el) => {
                         // filter out null values
@@ -36,7 +37,7 @@ export class SplitDirective implements ControlValueAccessor {
                     })
                     .map((tag: string) => {
                         // trim whitespace
-                        return _.trim(tag);
+                        return trim(tag);
                     })
                     .value()
             );

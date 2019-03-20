@@ -21,9 +21,9 @@ export class UserAccessControlService {
     return this.http
       .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/view')
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
+        // tap((res: any) => {
+        //   return res;
+        // }),
         catchError(this.handleErrorService.handleError())
       )
       .toPromise();

@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../utils';
-import * as _ from 'lodash';
+import { filter, intersection } from 'lodash';
 
 import { environment } from '../../environments/environment';
 import { ConfigService, MenuConfig } from '../utils';
@@ -60,10 +60,8 @@ export class AppMenuComponent implements OnInit {
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
-    const userPermissions = this.user && this.user.rolePermissions ? this.user.rolePermissions : [];
-    this.visibleMenus = _.filter(this.menus, (menu) => {
-      return _.intersection(userRoles, menu.roles).length ? true : false ||
-        _.includes(userPermissions as string, _.toLower(menu.permission as string));
+    this.visibleMenus = filter(this.menus, (menu) => {
+      return intersection(userRoles, menu.roles).length ? true : false;
     });
   }
 
