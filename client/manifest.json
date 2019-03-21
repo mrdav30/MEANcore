@@ -1,0 +1,14 @@
+{
+    "name": "meancore",
+    "short_name": "meancore",
+    "start_url": ".",
+    "display": "browser",
+    "background_color": "#fff",
+    "theme_color": "#000",
+    "description": "Applications runing on mean stack!",
+    "icons": [{
+      "src": "/client/assets/images/icon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }]
+  }
