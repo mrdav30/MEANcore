@@ -25,6 +25,7 @@ import { AnimatedLabelDirective } from './directives/animated-label.directive';
 import { SplitDirective } from './directives/split.directive';
 import { ReCaptchaDirective } from './directives/recaptcha.directive';
 import { InputRestrictionDirective } from './directives/input-restriction.directive';
+import { DeferLoadDirective } from './directives/defer-load.directive';
 
 import { CsvPipe } from './pipes/csv.pipe';
 import { SlugifyPipe } from './pipes/slugify.pipe';
@@ -86,7 +87,8 @@ const directives = [
   AnimatedLabelDirective,
   SplitDirective,
   ReCaptchaDirective,
-  InputRestrictionDirective
+  InputRestrictionDirective,
+  DeferLoadDirective
 ];
 
 const pipes = [
