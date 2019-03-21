@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import * as _ from 'lodash';
 
 import { MessagingService } from './messaging.service';
 

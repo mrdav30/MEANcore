@@ -48,7 +48,7 @@ function getData(startDate, endDate, dimensions, metrics, filters, callback) {
       var result = _.map(data.rows, function (row) {
         var rowdoc = {};
         for (var i = 0; i < data.columnHeaders.length; i++) {
-          var name = data.columnHeaders[i].name.replace(/^ga:/, '');
+          var name = _.replace(data.columnHeaders[i].name, /^ga:/, '');
           rowdoc[name] = row[i];
         }
         return rowdoc;

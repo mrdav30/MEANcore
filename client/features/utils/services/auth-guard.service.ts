@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateChild } from '@angular/router';
 import { AuthService } from './auth.service';
-import * as _ from 'lodash';
+
+import { intersection } from 'lodash';
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
@@ -31,14 +32,14 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
     // route is role based
     if (routeData.roles) {
-      if (!_.intersection(routeData.roles, user.roles).length) {
+      if (!intersection(routeData.roles, user.roles).length) {
         this.router.navigate(['/unauthorized']);
         return false;
       }
     }
 
     // route is permission based
-    if (routeData.permissions && !_.intersection(routeData.permissions, user.permissions).length) {
+    if (routeData.permissions && !intersection(routeData.permissions, user.permissions).length) {
       this.router.navigate(['/unauthorized']);
       return false;
     }

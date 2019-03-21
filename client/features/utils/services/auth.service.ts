@@ -3,7 +3,8 @@ import { Observable, Observer } from 'rxjs';
 import { catchError, share, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import * as _ from 'lodash';
+
+import { find, filter, some, every } from 'lodash';
 
 import { environment } from '../../../environments/environment';
 
@@ -130,14 +131,14 @@ export class AuthService {
     hasPermission(permission): boolean {
         permission = permission.toLowerCase();
         const permissions = this.user.permission_data[environment.appName];
-        return !!_.find(permissions, (p) => p.name === permission);
+        return !!find(permissions, (p) => p.name === permission);
     }
 
     checkPermission(permission, attributes): any {
         permission = permission.toLowerCase();
-        const permissions = _.filter(this.user.permission_data[environment.appName], (p) => p.name === permission);
-        return _.some(permissions, (p) => {
-            return _.every(Object.keys(attributes), (key) => {
+        const permissions = filter(this.user.permission_data[environment.appName], (p) => p.name === permission);
+        return some(permissions, (p) => {
+            return every(Object.keys(attributes), (key) => {
                 const attr = attributes[key];
                 return !p.attributes || !p.attributes[key] || p.attributes[key].indexOf(attr) !== -1;
             });
