@@ -20,7 +20,7 @@
     "version": "node version.ts",
     "build:dev": "npm run config && npm run version && ng build",
     "build:prod": "npm run config && npm run version && ng build --prod --aot ",
-    "client:dev": "ng serve --aot --progress=false --proxy-config proxy.conf.js",
+    "client:dev": "npm run build:dev && ng serve --aot --progress=false --proxy-config proxy.conf.js",
     "server:dev": "nodemon server.js",
     "start:dev": "npm run build:dev && npm-run-all -p client:dev server:dev",
     "server:prod": "node server.js",
