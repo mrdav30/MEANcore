@@ -7,6 +7,6 @@ export class Feature {
 
 export class Permission {
     _id: string;
-    perm_id: number;
+    perm_id: string;
     name: string;
 }

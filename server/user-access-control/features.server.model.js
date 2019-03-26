@@ -16,7 +16,7 @@ var featuresSchema = new Schema({
   },
   permissions: [{
     perm_id: {
-      type: Number
+      type: String
     },
     name: {
       type: String,

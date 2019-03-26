@@ -62,7 +62,23 @@ exports.deleteRole = function (req, res) {
         });
       }
 
-      res.status(200).send();
+      User.updateMany({
+        roles: {
+          $in: req.params.role_id
+        }
+      }, {
+        $pull: {
+          roles: req.params.role_id
+        }
+      }, (err) => {
+        if (err) {
+          return res.status(500).send({
+            message: 'Unable to remove role from user'
+          });
+        }
+
+        res.status(200).send();
+      })
     });
 };
 

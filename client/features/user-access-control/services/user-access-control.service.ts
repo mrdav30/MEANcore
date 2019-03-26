@@ -105,7 +105,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  deletePermission(feature_id: string, perm_id: number): Promise<any> {
+  deletePermission(feature_id: string, perm_id: string): Promise<any> {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id + '/permission/' + perm_id)
       .pipe(
@@ -114,7 +114,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  connectRoleWithPermission(role_id: string, perm_id: number): Promise<any> {
+  connectRoleWithPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id, {})
       .pipe(
@@ -123,7 +123,7 @@ export class UserAccessControlService {
       .toPromise();
   }
 
-  disconnectRoleFromPermission(role_id: string, perm_id: number): Promise<any> {
+  disconnectRoleFromPermission(role_id: string, perm_id: string): Promise<any> {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id)
       .pipe(

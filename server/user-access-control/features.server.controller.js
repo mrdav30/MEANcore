@@ -9,20 +9,6 @@ var async = require('async'),
 
 // Features
 
-exports.getFeatures = function (req, res) {
-  Features.find()
-    .lean()
-    .exec(function (err, features) {
-      if (err) {
-        return res.status(500).send({
-          error: 'Unable to get features'
-        });
-      }
-
-      res.status(200).send(features);
-    });
-};
-
 exports.createFeature = function (req, res) {
   Features(featuresParam).save(function (err, feature) {
     if (err) {
@@ -87,7 +73,6 @@ exports.deleteFeature = function (req, res) {
 
 // Feature Permissions
 
-
 exports.createPermission = function (req, res) {
   var permissionParms = req.body.permission;
   SequenceCounter.getValueForNextSequence('perm_id', (err, counter) => {
@@ -99,7 +84,7 @@ exports.createPermission = function (req, res) {
 
     permissionParms.perm_id = counter;
 
-    Features.updateOne({
+    Features.findOneAndUpdate({
         _id: mongoose.Types.ObjectId(req.params.feature_id)
       }, {
         $addToSet: {
@@ -113,7 +98,9 @@ exports.createPermission = function (req, res) {
           });
         }
 
-        res.status(200).send();
+        res.status(200).send({
+          perm_id: permissionParms.perm_id
+        });
       });
   });
 };
@@ -135,7 +122,7 @@ exports.updatePermission = function (req, res) {
         });
       }
 
-      res.status(200).send(result);
+      res.status(200).send();
     });
 };
 
@@ -144,7 +131,9 @@ exports.deletePermission = function (req, res) {
       _id: mongoose.Types.ObjectId(req.params.feature_id)
     }, {
       $pull: {
-        permissions: req.params.perm_id
+        permissions: {
+          perm_id: req.params.perm_id
+        }
       }
     },
     function (err) {

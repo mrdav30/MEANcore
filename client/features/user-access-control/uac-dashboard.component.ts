@@ -131,7 +131,7 @@ export class UserAccessControlComponent implements OnInit {
 
             this.permissionsMetadata = [
                 new dynamicQuestionClasses.TextboxQuestion({
-                    key: 'name',
+                    key: 'perm_id',
                     label: 'Name',
                     value: '',
                     required: true,
@@ -305,7 +305,7 @@ export class UserAccessControlComponent implements OnInit {
 
     onModifyFeature(feature: Feature): void {
         this.uacService.updateFeature(feature)
-            .then(data => {
+            .then(() => {
                 const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
                 if (featureIndex >= 0) {
                     this.features[featureIndex].name = feature.name;
@@ -350,7 +350,8 @@ export class UserAccessControlComponent implements OnInit {
             return this.setErrorMessage('Permission', 'Permission already exists');
         } else {
             this.uacService.createPermission(this.selectedFeature._id, perm)
-                .then(() => {
+                .then((data) => {
+                    perm.perm_id = data.perm_id;
                     const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
                     this.features[featureIndex].permissions.unshift(perm);
                 }).catch(reason => this.setErrorMessage('Permission ', reason));
@@ -425,8 +426,9 @@ export class UserAccessControlComponent implements OnInit {
             return this.setErrorMessage('User/Role', 'User already attached to role');
         } else {
             this.uacService.addUserToRole(user._id, role._id)
-                .then((data) => {
-                    role.users.unshift(data.user);
+                .then(() => {
+                    user = find(this.users, (el) => el._id === user._id);
+                    role.users.unshift(user);
                 }).catch(reason => this.setErrorMessage('User/Role', reason));
         }
     }

@@ -1,6 +1,6 @@
 'use strict';
 
-// A relational database sequence is a database product that creates unique values by getting 
+// A relational database sequence is a database product that creates unique values by getting
 // an auto increment with a value which could be of a step of 1, 2, and so on.
 // This model attempts to recreate this feature in MongoDb.
 
@@ -25,9 +25,9 @@ sequenceCounterSchema.statics.getValueForNextSequence = function (sequenceOfName
     }
   }, {
     upsert: true,
-    returnNewDocument: true
+    returnOriginal: false
   }, (err, doc) => {
-    if (err) {
+    if (err || !doc.value) {
       return callback(err);
     }
 
@@ -36,24 +36,3 @@ sequenceCounterSchema.statics.getValueForNextSequence = function (sequenceOfName
 };
 
 mongoose.model('SequenceCounter', sequenceCounterSchema);
-
-// //  Increment the value of the sequence_value field of the counter collection
-// exports.getValueForNextSequence = function (sequenceOfName, callback) {
-//   SequenceCounter.findAndModify({
-//     query: {
-//       _id: sequenceOfName
-//     },
-//     update: {
-//       $inc: {
-//         seq: 1
-//       }
-//     },
-//     new: true
-//   }, (err, doc) => {
-//     if(err){
-//       return callback(err);
-//     }
-
-//     callback(null, doc.sequence_value);
-//   });
-// };

@@ -32,8 +32,6 @@ module.exports = function (app) {
     .delete(roles.removeUserFromRole);
 
   // Features
-  app.route('/api/uac/features').get(features.getFeatures);
-
   app.route('/api/uac/feature').post(features.createFeature);
 
   app.route('/api/uac/feature/:feature_id')

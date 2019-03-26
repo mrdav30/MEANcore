@@ -10,7 +10,7 @@ var rolesSchema = new Schema({
     trim: true
   },
   featurePermissions: {
-    type: [Number]
+    type: [String]
   }
 });
 

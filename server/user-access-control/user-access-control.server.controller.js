@@ -29,7 +29,7 @@ exports.getUACViewModel = function (req, res) {
         async.each(roles, (role, done) => {
           if (role.featurePermissions.length) {
             Features.find({
-                permissions: {
+                'permissions.perm_id': {
                   $in: _.map(role.featurePermissions)
                 }
               })
@@ -40,8 +40,7 @@ exports.getUACViewModel = function (req, res) {
                 }
                 role.features = _.forEach(features, (feature) => {
                   return _.remove(feature.permissions, (permission) => {
-                    const _id = permission._id.toString();
-                    return !_.includes(role.featurePermissions, _id)
+                    return !_.includes(role.featurePermissions, permission.perm_id)
                   });
                 })
                 delete role.featurePermissions;
@@ -147,7 +146,7 @@ exports.getMenuConfiguration = function (callback) {
       async.each(features, (feature, done) => {
         if (feature.permissions.length) {
           Roles.find({
-              permissions: {
+              featurePermissions: {
                 $in: _.map(feature.permissions, (permission) => {
                   return permission.perm_id
                 })
