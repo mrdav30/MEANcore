@@ -64,6 +64,7 @@
     "express-hbs": "^2.0.2",
     "express-session": "^1.15.6",
     "fs-extra": "^7.0.1",
+    "generate-password": "^1.4.1",
     "git-describe": "^4.0.4",
     "googleapis": "^37.1.0",
     "helmet": "^3.8.2",

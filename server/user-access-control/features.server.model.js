@@ -1,7 +1,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-  Schema = mongoose.Schema;
+  Schema = mongoose.Schema,
+  chalk = require('chalk');
 
 var featuresSchema = new Schema({
   name: {
@@ -25,5 +26,87 @@ var featuresSchema = new Schema({
     }
   }]
 });
+
+/**
+ * Seeds the Features collection with document (Feature)
+ * and provided options.
+ */
+featuresSchema.statics.seed = function (doc, options) {
+  var Features = mongoose.model('Features'),
+    SequenceCounter = mongoose.model('SequenceCounter');
+
+  return new Promise(function (resolve, reject) {
+
+    skipDocument()
+      .then(add)
+      .then(function (response) {
+        return resolve(response);
+      })
+      .catch(function (err) {
+        return reject(err);
+      });
+
+    function skipDocument() {
+      return new Promise(function (resolve, reject) {
+        Features
+          .findOne({
+            name: doc.name
+          })
+          .exec(function (err, existing) {
+            if (err) {
+              return reject(err);
+            }
+
+            if (!existing) {
+              return resolve(false);
+            }
+
+            if (existing && !options.overwrite) {
+              return resolve(true);
+            }
+
+            // Remove User (overwrite)
+
+            existing.remove(function (err) {
+              if (err) {
+                return reject(err);
+              }
+
+              return resolve(false);
+            });
+          });
+      });
+    }
+
+    function add(skip) {
+      return new Promise(function (resolve, reject) {
+
+        if (skip) {
+          return resolve({
+            message: chalk.yellow('Database Seeding: Feature\t\t' + doc.name + ' skipped')
+          });
+        }
+
+        var feature = new Feature(doc);
+
+        _.forEach(feature.permissions, (permission) => {
+          permission.perm_id = SequenceCounter.getValueForNextSequence('perm_id');
+        });
+
+        feature.save(function (err) {
+          if (err) {
+            return reject(err);
+          }
+
+          return resolve({
+            message: 'Database Seeding: Feature\t\t' + feature.name + ' added'
+          });
+        });
+
+      });
+    }
+
+  });
+}
 
 mongoose.model('Features', featuresSchema);
