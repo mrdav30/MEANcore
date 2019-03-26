@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../utils';
-import { filter, intersection } from 'lodash';
+import { filter, intersection, map } from 'lodash';
 
 import { environment } from '../../environments/environment';
 import { ConfigService, MenuConfig } from '../utils';
@@ -56,7 +56,9 @@ export class AppMenuComponent implements OnInit {
   }
 
   setMenuUI(): void {
-    let userRoles = this.user && this.user.roles ? this.user.roles : ['user'];
+    let userRoles = this.user && this.user.roles ? map(this.user.roles, (role) => {
+      return role.name;
+    }) : ['user'];
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }

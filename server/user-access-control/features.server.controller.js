@@ -1,146 +1,176 @@
 'use strict';
+
 var async = require('async'),
   _ = require('lodash'),
-  featuresModel = require('./features.server.model'),
-  Roles = require('mongoose').model('Roles');
+  mongoose = require('mongoose'),
+  SequenceCounter = mongoose.model('SequenceCounter'),
+  Features = mongoose.model('Features'),
+  Roles = mongoose.model('Roles');
 
 // Features
 
 exports.getFeatures = function (req, res) {
-  featuresModel.getAllFeatures({}, function (err, result) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to get features'
-      });
-    }
+  Features.find()
+    .lean()
+    .exec(function (err, features) {
+      if (err) {
+        return res.status(500).send({
+          error: 'Unable to get features'
+        });
+      }
 
-    res.status(200).send(result);
-  });
+      res.status(200).send(features);
+    });
 };
 
 exports.createFeature = function (req, res) {
-  featuresModel.createFeature(req.body.feature, function (err, result) {
+  Features(featuresParam).save(function (err, feature) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to create feature'
       });
     }
 
-    res.status(200).send(result);
+    res.status(200).send(feature);
   });
 };
 
 exports.updateFeature = function (req, res) {
-  featuresModel.updateFeature(req.params.feature_id, req.body.feature, function (err) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to update feature'
-      });
-    }
+  // fields to update
+  var set = _.omit(req.body.feature, '_id');
 
-    res.status(200).send();
-  });
+  Features.updateOne({
+      _id: mongoose.Types.ObjectId(req.params.feature_id)
+    }, {
+      $set: set
+    },
+    function (err) {
+      if (err) {
+        return res.status(500).send({
+          error: 'Unable to update feature'
+        });
+      }
+
+      res.status(200).send();
+    });
 };
 
 exports.deleteFeature = function (req, res) {
-  featuresModel.deleteFeature(req.params.feature_id, function (err, result) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to delete feature'
-      });
-    }
+  Features.findOneAndDelete({
+      _id: mongoose.Types.ObjectId(req.params.feature_id)
+    },
+    function (err, feature) {
+      if (err) {
+        return res.status(500).send({
+          error: 'Unable to delete feature'
+        });
+      }
 
-    res.status(200).send(result);
-  });
+      // delete feature permissions from any assigned roles
+      Roles.updateMany({
+        featurePermissions: {
+          $in: _.map(feature.get('permissions'), (permission) => {
+            return permission.perm_id;
+          })
+        }
+      }, (err) => {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to delete feature permissions from roles'
+          });
+        }
+
+        res.status(200).send();
+      })
+    });
 };
 
 // Feature Permissions
 
 
 exports.createPermission = function (req, res) {
-  featuresModel.createPermission(req.params.feature_id, req.body.permission, function (err, result) {
+  var permissionParms = req.body.permission;
+  SequenceCounter.getValueForNextSequence('perm_id', (err, counter) => {
     if (err) {
       return res.status(500).send({
         error: 'Unable to create permission'
       });
     }
 
-    res.status(200).send(result);
+    permissionParms.perm_id = counter;
+
+    Features.updateOne({
+        _id: mongoose.Types.ObjectId(req.params.feature_id)
+      }, {
+        $addToSet: {
+          permissions: permissionParms
+        }
+      },
+      function (err) {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to create permission'
+          });
+        }
+
+        res.status(200).send();
+      });
   });
 };
 
 exports.updatePermission = function (req, res) {
-  featuresModel.updatePermission(req.params.permission_id, req.body.permission, function (err, result) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to update permission'
-      });
-    }
+  Features.updateOne({
+      permissions: {
+        $in: {
+          perm_id: req.params.permission_id
+        }
+      }
+    }, {
+      $set: req.body.permission
+    },
+    function (err) {
+      if (err) {
+        return res.status(500).send({
+          error: 'Unable to update permission'
+        });
+      }
 
-    res.status(200).send(result);
-  });
+      res.status(200).send(result);
+    });
 };
 
 exports.deletePermission = function (req, res) {
-  featuresModel.deletePermission(req.params.feature_id, req.params.perm_id, function (err, result) {
-    if (err) {
-      return res.status(500).send({
-        error: 'Unable to delete permission'
-      });
-    }
-
-    Roles.updateMany({
-      permissions: {
-        $in: req.params.perm_id
-      }
+  Features.updateOne({
+      _id: mongoose.Types.ObjectId(req.params.feature_id)
     }, {
       $pull: {
         permissions: req.params.perm_id
       }
-    }, (err) => {
+    },
+    function (err) {
       if (err) {
         return res.status(500).send({
-          error: 'Unable to delete permission from roles'
+          error: 'Unable to delete permission'
         });
       }
 
-      res.status(200).send();
-    })
-  });
-};
+      // pull permission from any assigned roles
+      Roles.updateMany({
+        permissions: {
+          $in: req.params.perm_id
+        }
+      }, {
+        $pull: {
+          permissions: req.params.perm_id
+        }
+      }, (err) => {
+        if (err) {
+          return res.status(500).send({
+            error: 'Unable to delete permission from roles'
+          });
+        }
 
-function getMenuConfiguration(callback) {
-  featuresModel.getAllFeatures({}, (err, features) => {
-    async.each(features, (feature, done) => {
-      if (feature.permissions.length) {
-        Roles.find({
-            permissions: {
-              $in: _.map(feature.permissions, (permission) => {
-                return permission._id
-              })
-            }
-          }).select('name')
-          .exec((err, roles) => {
-            if (err) {
-              return done(err);
-            }
-
-            feature.roles = _.map(roles, (role) => {
-              return role.name;
-            });
-            delete feature.permissions;
-            done(null);
-          })
-      } else {
-        done(null);
-      }
-    }, (err) => {
-      if (err) {
-        return callback(err);
-      }
-
-      callback(null, features);
+        res.status(200).send();
+      })
     });
-  });
 };
-exports.getMenuConfiguration = getMenuConfiguration;

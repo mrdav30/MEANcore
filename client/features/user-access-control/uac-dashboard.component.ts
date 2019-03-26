@@ -304,13 +304,14 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onModifyFeature(feature: Feature): void {
-        this.uacService.updateFeature(feature).then(data => {
-            const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
-            if (featureIndex >= 0) {
-                this.features[featureIndex].name = feature.name;
-                this.features[featureIndex].route = feature.route;
-            }
-        }).catch(reason => this.setErrorMessage('Feature ', reason));
+        this.uacService.updateFeature(feature)
+            .then(data => {
+                const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
+                if (featureIndex >= 0) {
+                    this.features[featureIndex].name = feature.name;
+                    this.features[featureIndex].route = feature.route;
+                }
+            }).catch(reason => this.setErrorMessage('Feature ', reason));
     }
 
     async startEditFeature(): Promise<void> {
@@ -318,12 +319,13 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onDeleteFeature(feature: Feature): void {
-        this.uacService.deleteFeature(feature._id).then(() => {
-            const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
-            if (featureIndex >= 0) {
-                this.features.splice(featureIndex, 1);
-            }
-        }).catch(reason => this.setErrorMessage('Feature ', reason));
+        this.uacService.deleteFeature(feature._id)
+            .then(() => {
+                const featureIndex = findIndex(this.features, (f) => f._id === feature._id);
+                if (featureIndex >= 0) {
+                    this.features.splice(featureIndex, 1);
+                }
+            }).catch(reason => this.setErrorMessage('Feature ', reason));
     }
 
     // === Permissions ===
@@ -331,7 +333,7 @@ export class UserAccessControlComponent implements OnInit {
     async onTogglePermission(perm: Permission): Promise<void> {
         await this.setState(DashboardState.ShowingPermissions);
         const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
-        const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
+        const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el.perm_id === perm.perm_id);
         if (permIndex < 0) {
             // role does not have permission enabled
             return;
@@ -348,8 +350,7 @@ export class UserAccessControlComponent implements OnInit {
             return this.setErrorMessage('Permission', 'Permission already exists');
         } else {
             this.uacService.createPermission(this.selectedFeature._id, perm)
-                .then(data => {
-                    perm._id = data._id;
+                .then(() => {
                     const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
                     this.features[featureIndex].permissions.unshift(perm);
                 }).catch(reason => this.setErrorMessage('Permission ', reason));
@@ -360,16 +361,16 @@ export class UserAccessControlComponent implements OnInit {
         this.uacService.modifyPermission(perm)
             .then(() => {
                 const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el.perm_id === perm.perm_id);
                 this.features[featureIndex].permissions[permIndex].name = perm.name;
             }).catch(reason => this.setErrorMessage('Permission ', reason));
     }
 
     onDeletePermission(perm: Permission): void {
-        this.uacService.deletePermission(this.selectedFeature._id, perm._id)
+        this.uacService.deletePermission(this.selectedFeature._id, perm.perm_id)
             .then(async () => {
                 const featureIndex = findIndex(this.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const permIndex = findIndex(this.features[featureIndex].permissions, (el) => el.perm_id === perm.perm_id);
                 if (permIndex >= 0) {
                     this.features[featureIndex].permissions.splice(permIndex, 1);
                 }
@@ -378,7 +379,7 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onAddPermissionToRole(perm: Permission): void {
-        this.uacService.connectRoleWithPermission(this.selectedRole._id, perm._id)
+        this.uacService.connectRoleWithPermission(this.selectedRole._id, perm.perm_id)
             .then(() => {
                 const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
                 if (featureIndex < 0) {
@@ -396,10 +397,10 @@ export class UserAccessControlComponent implements OnInit {
     }
 
     onRemovePermissionFromRole(perm: Permission): void {
-        this.uacService.disconnectRoleFromPermission(this.selectedRole._id, perm._id)
+        this.uacService.disconnectRoleFromPermission(this.selectedRole._id, perm.perm_id)
             .then(() => {
                 const featureIndex = findIndex(this.selectedRole.features, (f) => f._id === this.selectedFeature._id);
-                const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el._id === perm._id);
+                const permIndex = findIndex(this.selectedRole.features[featureIndex].permissions, (el) => el.perm_id === perm.perm_id);
                 if (permIndex >= 0) {
                     this.selectedRole.features[featureIndex].permissions.splice(permIndex, 1);
                 }

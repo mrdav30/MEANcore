@@ -6,7 +6,8 @@ import { environment } from '../../../environments/environment';
 
 import { HandleErrorService } from '../../utils';
 
-import { Role, Permission, User, Feature } from '../index';
+import { Role, User, Feature, Permission } from '../index';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class UserAccessControlService {
@@ -21,36 +22,18 @@ export class UserAccessControlService {
     return this.http
       .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/view')
       .pipe(
-        // tap((res: any) => {
-        //   return res;
-        // }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
   // Roles
 
-  getAllRoles(): Promise<Role[]> {
-    return this.http
-      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/roles')
-      .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
-      )
-      .toPromise();
-  }
-
   createRole(role: Role): Promise<any> {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/', { role })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -59,10 +42,7 @@ export class UserAccessControlService {
     return this.http
       .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role._id, { role })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -71,36 +51,18 @@ export class UserAccessControlService {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id)
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
   // Features
 
-  getAllFeatures(): Promise<Feature[]> {
-    return this.http
-      .get(environment.appBaseUrl + environment.apiBaseUrl + '/uac/features')
-      .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
-      )
-      .toPromise();
-  }
-
   createFeature(feature: Feature): Promise<any> {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/', { feature })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -109,10 +71,7 @@ export class UserAccessControlService {
     return this.http
       .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature._id, { feature })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -121,10 +80,7 @@ export class UserAccessControlService {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id)
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -135,10 +91,7 @@ export class UserAccessControlService {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id + '/permission', { permission })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -147,72 +100,45 @@ export class UserAccessControlService {
     return this.http
       .put(environment.appBaseUrl + environment.apiBaseUrl + '/uac/permission/' + permission._id, { permission })
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
-  deletePermission(feature_id: string, perm_id: string): Promise<any> {
+  deletePermission(feature_id: string, perm_id: number): Promise<any> {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/feature/' + feature_id + '/permission/' + perm_id)
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
-  connectRoleWithPermission(role_id: string, perm_id: string): Promise<any> {
+  connectRoleWithPermission(role_id: string, perm_id: number): Promise<any> {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id, {})
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
-  disconnectRoleFromPermission(role_id: string, perm_id: string): Promise<any> {
+  disconnectRoleFromPermission(role_id: string, perm_id: number): Promise<any> {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/permission/' + perm_id)
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
 
   // Users
 
-  getAllUsers(): Promise<User[]> {
-    return this.http
-      .get(environment.appBaseUrl + environment.apiBaseUrl + '/users')
-      .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
-      )
-      .toPromise();
-  }
-
   addUserToRole(user_id: string, role_id: string): Promise<any> {
     return this.http
       .post(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/user/' + user_id, {})
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }
@@ -221,22 +147,7 @@ export class UserAccessControlService {
     return this.http
       .delete(environment.appBaseUrl + environment.apiBaseUrl + '/uac/role/' + role_id + '/user/' + user_id)
       .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
-      )
-      .toPromise();
-  }
-
-  updateUser(user: User): Promise<User> {
-    return this.http
-      .put(environment.appBaseUrl + environment.apiBaseUrl + '/user', { user })
-      .pipe(
-        tap((res: any) => {
-          return res;
-        }),
-        catchError(this.handleErrorService.handleError())
+        catchError(this.handleErrorService.handleError<any>())
       )
       .toPromise();
   }

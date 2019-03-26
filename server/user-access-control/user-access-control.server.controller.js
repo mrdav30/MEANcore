@@ -2,45 +2,53 @@
 var async = require('async'),
   _ = require('lodash'),
   errorHandler = require('../errors.server.controller'),
-  rolesModel = require('./roles.server.model'),
-  featuresModel = require('./features.server.model'),
   mongoose = require('mongoose'),
+  Roles = mongoose.model('Roles'),
+  Features = mongoose.model('Features'),
   User = mongoose.model('User');
 
+// Configure view model for UAC dashboard
 exports.getUACViewModel = function (req, res) {
-
   async.waterfall([
+      //retrieve all roles
       function (cb) {
-        rolesModel.getAll({}, function (err, roles) {
-          if (err) {
-            cb(err);
-          }
+        Roles.find().sort({
+            _id: -1
+          })
+          .lean()
+          .exec((err, roles) => {
+            if (err) {
+              cb(err);
+            }
 
-          cb(null, roles);
-        });
+            cb(null, roles);
+          });
       },
       function (roles, cb) {
+        // retrieve each roles assigned features based on permissions
         async.each(roles, (role, done) => {
-          if (role.permissions.length) {
-            featuresModel.getAllFeatures({
-              permissions: {
-                $in: _.map(role.permissions)
-              }
-            }, (err, features) => {
-              if (err) {
-                return done(err);
-              }
-              role.features = _.forEach(features, (feature) => {
-                return _.remove(feature.permissions, (permission) => {
-                  const _id = permission._id.toString();
-                  return !_.includes(role.permissions, _id)
-                });
+          if (role.featurePermissions.length) {
+            Features.find({
+                permissions: {
+                  $in: _.map(role.featurePermissions)
+                }
               })
-              delete role.permissions;
-              done(null);
-            });
+              .lean()
+              .exec((err, features) => {
+                if (err) {
+                  return done(err);
+                }
+                role.features = _.forEach(features, (feature) => {
+                  return _.remove(feature.permissions, (permission) => {
+                    const _id = permission._id.toString();
+                    return !_.includes(role.featurePermissions, _id)
+                  });
+                })
+                delete role.featurePermissions;
+                done(null);
+              });
           } else {
-            delete role.permissions;
+            delete role.featurePermissions;
             role.features = [];
             done(null);
           }
@@ -53,35 +61,29 @@ exports.getUACViewModel = function (req, res) {
         });
       },
       function (roles, cb) {
+        // For each role, retrieve every assigned user
         async.each(roles, (role, done) => {
-          if (role.users.length) {
-            User.aggregate([{
-                $match: {
-                  _id: {
-                    $in: _.map(role.users, (id) => {
-                      return new mongoose.Types.ObjectId(id);
-                    })
-                  }
+          User.aggregate([{
+              $match: {
+                roles: {
+                  $all: [role._id.toString()]
                 }
-              }, {
-                $project: {
-                  name: "$username",
-                  displayName: 1,
-                  email: 1
-                }
-              }])
-              .exec((err, users) => {
-                if (err) {
-                  return done(err);
-                }
+              }
+            }, {
+              $project: {
+                name: '$username',
+                displayName: 1,
+                email: 1
+              }
+            }])
+            .exec((err, users) => {
+              if (err) {
+                return done(err);
+              }
 
-                role.users = users ? users : [];
-                done(null);
-              })
-          } else {
-            role.users = [];
-            done(null);
-          }
+              role.users = users ? users : [];
+              done(null);
+            });
         }, (err) => {
           if (err) {
             return cb(err);
@@ -91,13 +93,15 @@ exports.getUACViewModel = function (req, res) {
         });
       },
       function (roles, cb) {
-        featuresModel.getAllFeatures({}, function (err, features) {
-          if (err) {
-            cb(err);
-          }
+        Features.find()
+          .lean()
+          .exec((err, features) => {
+            if (err) {
+              cb(err);
+            }
 
-          cb(null, roles, features);
-        });
+            cb(null, roles, features);
+          });
       },
       function (roles, features, cb) {
         User.aggregate([{
@@ -112,10 +116,10 @@ exports.getUACViewModel = function (req, res) {
           }
 
           cb(null, {
-              roles: roles, 
-              features: features, 
-              users: users
-            })
+            roles: roles,
+            features: features,
+            users: users
+          })
         })
       }
     ],
@@ -128,5 +132,47 @@ exports.getUACViewModel = function (req, res) {
 
       res.status(200).send(result);
     });
+};
 
+exports.getMenuConfiguration = function (callback) {
+  Features.find()
+    .lean()
+    .exec(function (err, features) {
+      if (err) {
+        return res.status(500).send({
+          error: 'Unable to retrieve menu configuration'
+        });
+      }
+
+      async.each(features, (feature, done) => {
+        if (feature.permissions.length) {
+          Roles.find({
+              permissions: {
+                $in: _.map(feature.permissions, (permission) => {
+                  return permission.perm_id
+                })
+              }
+            }).select('name')
+            .exec((err, roles) => {
+              if (err) {
+                return done(err);
+              }
+
+              feature.roles = _.map(roles, (role) => {
+                return role.name;
+              });
+              delete feature.permissions;
+              done(null);
+            })
+        } else {
+          done(null);
+        }
+      }, (err) => {
+        if (err) {
+          return callback(err);
+        }
+
+        callback(null, features);
+      });
+    });
 };

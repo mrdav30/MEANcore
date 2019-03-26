@@ -112,11 +112,12 @@ exports.signIn = function (req, res, next) {
         function (done) {
           var knownIPAddresses = user.get('knownIPAddresses') ? user.get('knownIPAddresses') : [];
           if (!knownIPAddresses.includes(req.connection.remoteAddress)) {
-            user.knownIPAddresses.push(req.connection.remoteAddress);
             user.updateOne({
               _id: mongoose.Types.ObjectId(user.get('_id'))
             }, {
-              $set: _.omit(user, '_id')
+              $addToSet: {
+                knownIPAddresses: req.connection.remoteAddress
+              }
             }, function (err) {
               done(err);
             });

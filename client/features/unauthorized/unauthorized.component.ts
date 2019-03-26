@@ -17,7 +17,6 @@ export class UnauthorizedComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.url = window.document.URL;
         // navigate back to app base after 2 seconds
         setTimeout(() => {
             this.router.navigate([environment.appBaseUrl]);

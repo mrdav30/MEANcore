@@ -4,7 +4,7 @@ var path = require('path'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
   ssrService = config.services.ssrService,
-  featuresController = require('../user-access-control/features.server.controller');
+  uacController = require('../user-access-control/user-access-control.server.controller');
 
 /**
  * Get extention from path
@@ -32,7 +32,7 @@ exports.retrieveRuntimeConfig = function (req, res) {
     config: {}
   };
 
-  featuresController.getMenuConfiguration((err, features) => {
+  uacController.getMenuConfiguration((err, features) => {
     response.config.menuConfig = features ? features : null;
 
 
@@ -89,7 +89,7 @@ exports.renderIndex = async function (req, res) {
  * Render the server error page
  */
 exports.renderServerError = function (req, res) {
-  res.status(500).jsonp({
+  res.status(500).send({
     error: 'Oops! Something went wrong...'
   });
 };

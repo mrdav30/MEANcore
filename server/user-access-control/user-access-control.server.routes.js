@@ -10,7 +10,7 @@ var uac = require('./user-access-control.server.controller'),
 module.exports = function (app) {
 
   // Dashboard viewmodel
-  app.use(['/api/uac'], userAuth.hasAuthorization(['admin'], config.appBase));
+  app.use(['/uac'], userAuth.hasAuthorization(['admin'], config.appBase));
 
   app.route('/api/uac/view').get(uac.getUACViewModel);
 

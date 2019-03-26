@@ -28,31 +28,25 @@ module.exports = function (app) {
       })
       // Only retrieve values required for auth
       .select('username displayName email appName provider roles knownIPAddresses password salt')
+      .lean()
       .exec(function (err, user) {
         // Get users role info based on assigned roles
         Roles.find({
-            name: {
-              $in: _.map(user.roles, (name) => {
-                return name;
+            _id: {
+              $in: _.map(user.roles, (id) => {
+                return new mongoose.Types.ObjectId(id);
               })
             }
           })
-          .select('name permissions')
+          .select('name featurePermissions')
           .lean()
           .exec((err, roles) => {
             if (err) {
               return done(err);
             }
-            
-            const permissions = _.chain(roles)
-              .map('permissions')
-              .flatten()
-              .uniq()
-              .value();
 
-            user.set('permissions', permissions, {
-              strict: false
-            });
+            user.roles = roles;
+
             done(err, user);
           })
       });
