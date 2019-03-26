@@ -214,7 +214,11 @@ var initHelmetHeaders = function (app) {
     includeSubdomains: true,
     force: true
   }));
-  app.use(csp(config.cps));
+
+  // Disable cps during dev testing to prevent issues with ng-dev proxy
+  if (process.env.NODE_ENV === 'production') {
+    app.use(csp(config.cps));
+  }
 
   // POST any CSP violations
   app.use('/report-violation', (req, res) => {
