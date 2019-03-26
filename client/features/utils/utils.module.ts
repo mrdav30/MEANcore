@@ -2,22 +2,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  NgbDatepickerModule,
-  NgbTooltipModule,
-  NgbAlertModule,
-  NgbCollapseModule,
-  NgbProgressbarModule,
-  NgbTabsetModule,
-  NgbPaginationModule
-} from '@ng-bootstrap/ng-bootstrap';
 
 import { ImageUploadModule } from './image-upload/image-upload.module';
 import { DynamicFormsModule } from './dynamic-forms/dynamic-forms.module';
+import { PasswordValidatorModule } from './password-validator/password-validator.module';
 
 import { LoadingComponent } from './loading/loading.component';
 import { MessagingComponent } from './messaging/messaging.component';
-import { PasswordValidatorComponent } from './password-validator/password-validator.component';
 
 import { EqualValidatorDirective } from './directives/equal-validator.directive';
 import { PasswordToggleDirective } from './directives/password-toggle.directive';
@@ -65,20 +56,13 @@ export { CanDeactivateGuard } from './services/can-deactivate-guard.service';
 
 const components = [
   MessagingComponent,
-  LoadingComponent,
-  PasswordValidatorComponent
+  LoadingComponent
 ];
 
 const modules = [
-  NgbDatepickerModule,
-  NgbTooltipModule,
-  NgbAlertModule,
-  NgbCollapseModule,
-  NgbTabsetModule,
-  NgbProgressbarModule,
-  NgbPaginationModule,
   ImageUploadModule,
-  DynamicFormsModule
+  DynamicFormsModule,
+  PasswordValidatorModule
 ];
 
 const directives = [

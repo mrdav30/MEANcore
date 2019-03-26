@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { UtilsModule } from '../../../utils';
 
 import { ResetPasswordComponent } from './reset-password.component';
@@ -15,6 +16,7 @@ import { ResetPasswordComponent } from './reset-password.component';
     CommonModule,
     RouterModule,
     FormsModule,
+    NgbCollapseModule,
     UtilsModule
   ]
 })

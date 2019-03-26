@@ -7,7 +7,8 @@
     </div>
   </label>
   <input type="file" ng2FileSelect [uploader]="uploader" id="uploader-input" style="display:none" />
-</div>
-<div>
-  <button type="button" class="btn btn-secondary" (click)="clearImage()">Clear</button>
+  <div class="text-right">
+    <button type="button" class="btn btn-danger" (click)="clearImage()" ngbTooltip="Clear Image" container="body"
+      placement="bottom"><i class="fas fa-trash-alt"></i></button>
+  </div>
 </div>

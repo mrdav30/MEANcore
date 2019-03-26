@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { UtilsModule } from '../../utils';
 
 import { SignUpComponent } from './sign-up.component';
@@ -15,7 +16,8 @@ import { SignUpComponent } from './sign-up.component';
     CommonModule,
     RouterModule,
     FormsModule,
-    UtilsModule
+    UtilsModule,
+    NgbTooltipModule
   ],
   exports: [
     SignUpComponent

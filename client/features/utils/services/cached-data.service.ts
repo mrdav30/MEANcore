@@ -47,7 +47,7 @@ export class CachedDataService {
                 catchError((err) => {
                     console.log('error', err);
                     delete allData[url];
-                    return this.handleErrorService.handleError<any>(err);
+                    return this.handleErrorService.handleError<any>();
                 })
             );
         }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { UtilsModule } from '../../utils';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { SignInComponent } from './sign-in.component';
 
@@ -15,7 +15,7 @@ import { SignInComponent } from './sign-in.component';
     CommonModule,
     RouterModule,
     FormsModule,
-    UtilsModule
+    NgbCollapseModule
   ]
 })
 export class SignInModule { }
