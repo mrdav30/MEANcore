@@ -16,8 +16,8 @@
   },
   "scripts": {
     "ng": "ng",
-    "config": "node set-env.ts",
-    "version": "node version.ts",
+    "config": "node ./scripts/set-env.ts",
+    "version": "node ./scripts/version.ts",
     "build:dev": "npm run config && npm run version && ng build",
     "build:prod": "npm run config && npm run version && ng build --prod --aot ",
     "client:dev": "npm run build:dev && ng serve --aot --progress=false --proxy-config proxy.conf.js",
@@ -28,7 +28,8 @@
     "test:client": "ng test",
     "lint:client": "ng lint",
     "lint:server": "tslint './server/**/*.ts' -c ./server/tslint.json --fix",
-    "e2e": "npm run config && ng e2e"
+    "e2e": "npm run config && ng e2e",
+    "seed:dev": "node ./scripts/seed-db.js"
   },
   "dependencies": {
     "@angular/animations": "~7.2.0",
