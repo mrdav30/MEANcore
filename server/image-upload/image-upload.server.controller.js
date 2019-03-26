@@ -5,8 +5,7 @@ var path = require('path'),
   config = require(path.resolve('./config/config')),
   _ = require('lodash'),
   fs = require('fs-extra'),
-  //   slugify = config.helpers.slugify,
-  //   fileExists = config.helpers.fileExists,
+  errorHandler = require('../errors.server.controller'),
   imageStorage = config.helpers.imageStorage;
 
 var getUpload = function (req, res) {
@@ -33,7 +32,10 @@ exports.upload = function (req, res, next) {
 
   fs.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
     if (err) {
-      return console.error(err);
+      console.error(err);
+      return res.status(500).send({
+        message: errorHandler.getErrorMessage(err)
+      });
     }
 
     var base = res.locals.host;
@@ -45,4 +47,19 @@ exports.upload = function (req, res, next) {
       "url": (req.file.storage == 'local' ? base : '') + '/' + url
     });
   });
+}
+
+exports.removeImage = function (req, res, next) {
+  fs.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    }
+
+    res.status(200).send({
+      message: 'Image successfully removed'
+    });
+  })
 }

@@ -6,6 +6,8 @@ import { FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
 
 import { ImageUploadComponent } from './image-upload.component';
 
+import { ImageUploadService } from './image-upload.service';
+
 @NgModule({
     declarations: [
         ImageUploadComponent
@@ -14,6 +16,9 @@ import { ImageUploadComponent } from './image-upload.component';
         CommonModule,
         FormsModule,
         FileUploadModule
+    ],
+    providers: [
+        ImageUploadService
     ],
     exports: [
         ImageUploadComponent
