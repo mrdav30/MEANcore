@@ -6,9 +6,5 @@ export const SignUpRoutes: Route[] = [
   {
     path: 'sign-up',
     component: SignUpComponent
-  },
-  {
-    path: 'sign-up-admin/:install',
-    component: SignUpComponent
   }
 ];

@@ -27,7 +27,6 @@ export class AuthService {
     private signOutUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signOut';
     private validateUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/validate';
     private signUpUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signUp';
-    private installUrl = environment.appBaseUrl + environment.apiBaseUrl + '/install';
     private authListener: Observer<any>;
 
     constructor(
@@ -64,18 +63,6 @@ export class AuthService {
 
     signUp(user): Observable<{}> {
         return this.http.post(this.signUpUrl, user, httpOptions)
-            .pipe(
-                tap((res: any) => {
-                    if (res.user) {
-                        this.notifyUserSubscribers(res.user);
-                    }
-                }),
-                catchError(this.handleErrorService.handleError<any>('UserSignUp'))
-            );
-    }
-
-    install(user): Observable<{}> {
-        return this.http.post(this.installUrl, user, httpOptions)
             .pipe(
                 tap((res: any) => {
                     if (res.user) {

@@ -51,7 +51,7 @@ exports.hasAuthorization = function (roles, appBaseUrl) {
       if (_.intersection(userRoles, roles).length) {
         return next();
       } else {
-        var redirectUrl = appBaseUrl ? appBaseUrl : '/unauthorized';
+        var redirectUrl = appBaseUrl ? appBaseUrl + 'unauthorized' : '/unauthorized';
         req.flash('unauthorizedMsg', 'User is not authorized');
         return res.redirect(redirectUrl);
       }

@@ -1,19 +1,15 @@
-import { Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
 import { AuthService } from '../../utils';
-
-export interface RouteParams {
-  install: string;
-}
 
 @Component({
   moduleId: module.id,
   selector: 'app-sign-up',
   templateUrl: `sign-up.component.html`
 })
-export class SignUpComponent implements OnInit {
+export class SignUpComponent {
   @ViewChild('username') username: NgModel;
   @ViewChild('password') password: NgModel;
   public user: any = {
@@ -26,7 +22,6 @@ export class SignUpComponent implements OnInit {
   public possibleUsername: string;
   public passwordTooltip: string;
   public passwordErrors: string[];
-  public isInstallation = false;
 
   constructor(
     public authService: AuthService,
@@ -35,22 +30,10 @@ export class SignUpComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) { }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.isInstallation = params.install ? true : false;
-    });
-  }
-
   onSubmit(): void {
-    if (!this.isInstallation) {
-      this.authService.signUp(this.user).subscribe((data: any) => {
-        this.processResult(data);
-      });
-    } else {
-      this.authService.install(this.user).subscribe((data: any) => {
-        this.processResult(data);
-      });
-    }
+    this.authService.signUp(this.user).subscribe((data: any) => {
+      this.processResult(data);
+    });
   }
 
   processResult(data: any): void {
