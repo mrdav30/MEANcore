@@ -64,13 +64,13 @@ function seed(collection, options) {
   // Merge options with collection options
   options = _.merge(options || {}, collection.options || {});
 
-  console.log('starting seed');
-
   return new Promise(function (resolve, reject) {
     const Model = mongoose.model(collection.model);
     const docs = collection.docs;
 
     var skipWhen = collection.skip ? collection.skip.when : null;
+
+    console.log('Starting ' + collection.model + ' seeding');
 
     if (!Model.seed) {
       return reject(new Error('Database Seeding: Invalid Model Configuration - ' + collection.model + '.seed() not implemented'));
@@ -143,6 +143,7 @@ function seed(collection, options) {
         function onComplete(responses) {
           if (options.logResults) {
             responses.forEach(function (response) {
+              console.log('response: ' + response);
               if (response.message) {
                 console.log(chalk.magenta(response.message));
               }

@@ -97,39 +97,37 @@ module.exports = {
   },
   livereload: true,
   seedDB: {
-    seed: process.env.MONGO_SEED === 'true',
+    seed: process.env.MONGO_SEED || 'false',
     options: {
-      logResults: process.env.MONGO_SEED_LOG_RESULTS !== 'false'
+      logResults: process.env.MONGO_SEED_LOG_RESULTS || 'false'
     },
     // Order of collections in configuration will determine order of seeding.
     // i.e. given these settings, the User seeds will be complete before
     // Article seed is performed.
-    collections: [
-      {
-        model: 'Features',
-        docs: [{
-          data: {
-            name: 'UAC',
-            route: '/uac',
-            permissions: [{
-              name: 'default'
-            }]
-          }
-        }]
+    collections: [{
+      model: 'Features',
+      docs: [{
+        data: {
+          name: 'UAC',
+          route: '/uac',
+          permissions: [{
+            name: 'default'
+          }]
+        }
+      }]
+    }, {
+      model: 'Roles',
+      docs: [{
+        data: {
+          name: 'admin',
+          featurePermissions: ['uac:default']
+        }
       }, {
-        model: 'Roles',
-        docs: [{
-          data:{
-            name: 'admin',
-            featurePermissions: ['uac:default']
-          }
-        },
-        {
-          data:{
-            name: 'user'
-          }
-        }]
-      },{
+        data: {
+          name: 'user'
+        }
+      }]
+    }, {
       model: 'User',
       docs: [{
         data: {

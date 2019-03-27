@@ -40,8 +40,7 @@ module.exports.connect = function (callback) {
 };
 
 module.exports.disconnect = function (cb) {
-  mongoose.connection.db
-    .close(function (err) {
+  mongoose.connection.close(function (err) {
       console.info(chalk.yellow('Disconnected from MongoDB.'));
       return cb(err);
     });

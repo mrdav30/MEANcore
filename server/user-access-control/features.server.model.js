@@ -2,7 +2,8 @@
 
 var mongoose = require('mongoose'),
   Schema = mongoose.Schema,
-  chalk = require('chalk');
+  chalk = require('chalk'),
+  async = require('async');
 
 var featuresSchema = new Schema({
   name: {
@@ -87,13 +88,37 @@ featuresSchema.statics.seed = function (doc, options) {
           });
         }
 
-        var feature = new Feature(doc);
+        var feature = new Features(doc);
 
-        _.forEach(feature.permissions, (permission) => {
-          permission.perm_id = SequenceCounter.getValueForNextSequence('perm_id');
-        });
+        async.series([
+          function (callback) {
+            async.each(feature.permissions, (permission, done) => {
+              SequenceCounter.getValueForNextSequence('perm_id', (err, result) => {
+                if (err) {
+                  return done(err)
+                }
 
-        feature.save(function (err) {
+                permission.perm_id = result;
+                done(null);
+              });
+            }, (err) => {
+              if (err) {
+                return callback(err);
+              }
+
+              callback(null);
+            })
+          },
+          function (callback) {
+            feature.save(function (err) {
+              if (err) {
+                return callback(err);
+              }
+
+              callback(null);
+            });
+          }
+        ], (err) => {
           if (err) {
             return reject(err);
           }
@@ -101,11 +126,9 @@ featuresSchema.statics.seed = function (doc, options) {
           return resolve({
             message: 'Database Seeding: Feature\t\t' + feature.name + ' added'
           });
-        });
-
+        })
       });
     }
-
   });
 }
 

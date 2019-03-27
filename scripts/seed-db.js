@@ -15,16 +15,22 @@ db.connect(async () => {
     })
     .then(function () {
       // Disconnect and finish task
-      db.disconnect(done);
+      db.disconnect((disconnectError) => {
+        if (disconnectError) {
+          console.log('Error disconnecting from the database.');
+          // Finish task with error
+          console.error(disconnectError);
+        }
+      });
     })
-    .catch(function (err) {
-      db.disconnect(function (disconnectError) {
+    .catch((err) => {
+      db.disconnect((disconnectError) => {
         if (disconnectError) {
           console.log('Error disconnecting from the database, but was preceded by a Mongo Seed error.');
         }
 
         // Finish task with error
-        done(err);
+        console.error(err);
       });
     });
 });

@@ -3,10 +3,15 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
+var async = require('async'),
+  _ = require('lodash'),
+  mongoose = require('mongoose'),
   Schema = mongoose.Schema,
+  path = require('path'),
+  config = require(path.resolve('./config/config')),
   crypto = require('crypto'),
   owasp = require('owasp-password-strength-test'),
+  generatePassword = require('generate-password'),
   chalk = require('chalk');
 
 /**
@@ -72,7 +77,7 @@ var UserSchema = new Schema({
     required: 'Please fill in a username',
     trim: true,
     lowercase: true,
-    validate: [validateUsername, validateUsername, 'Please enter a valid username: 3+ characters long, non restricted word, characters "_-.", no consecutive dots, does not begin or end with dots, letters a-z and numbers 0-9.']
+    validate: [validateUsername, 'Please enter a valid username: 3+ characters long, non restricted word, characters "_-.", no consecutive dots, does not begin or end with dots, letters a-z and numbers 0-9.']
   },
   password: {
     type: String,
@@ -218,11 +223,12 @@ UserSchema.statics.generateRandomPassphrase = function () {
 };
 
 /**
-* Seeds the User collection with document (User)
-* and provided options.
-*/
+ * Seeds the User collection with document (User)
+ * and provided options.
+ */
 UserSchema.statics.seed = function (doc, options) {
-  var User = mongoose.model('User');
+  var User = mongoose.model('User'),
+    Roles = mongoose.model('Roles');
 
   return new Promise(function (resolve, reject) {
 
@@ -278,21 +284,56 @@ UserSchema.statics.seed = function (doc, options) {
 
         User.generateRandomPassphrase()
           .then(function (passphrase) {
-            var user = new User(doc);
+            async.series([
+              function (callback) {
+                var roleIds = [];
+                async.each(doc.roles, (role, done) => {
+                  Roles.findOne({
+                    name: new RegExp(_.escapeRegExp(role))
+                  }, (err, result) => {
+                    if (err) {
+                      return done(err);
+                    } else if (result){
+                      roleIds.push(result._id);
+                      done(null);
+                    } else{
+                      done(null)
+                    }
+                  })
+                }, (err) => {
+                  if (err) {
+                    return callback(err);
+                  }
 
-            user.provider = 'local';
-            user.displayName = user.firstName + ' ' + user.lastName;
-            user.password = passphrase;
+                  doc.roles = roleIds;
 
-            user.save(function (err) {
+                  callback(null);
+                })
+              },
+              function (callback) {
+                var user = new User(doc);
+
+                user.provider = 'local';
+                user.displayName = user.firstName + ' ' + user.lastName;
+                user.password = passphrase;
+
+                user.save(function (err) {
+                  if (err) {
+                    return callback(err);
+                  }
+
+                  callback(null);
+                });
+              }
+            ], (err) => {
               if (err) {
                 return reject(err);
               }
 
               return resolve({
-                message: 'Database Seeding: User\t\t' + user.username + ' added with password set to ' + passphrase
+                message: 'Database Seeding: User\t\t' + doc.username + ' added with password set to ' + passphrase
               });
-            });
+            })
           })
           .catch(function (err) {
             return reject(err);

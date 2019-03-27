@@ -1,5 +1,7 @@
 'use strict';
-var mongoose = require('mongoose'),
+
+var async = require('async'),
+  mongoose = require('mongoose'),
   _ = require('lodash'),
   Schema = mongoose.Schema,
   chalk = require('chalk');
@@ -76,43 +78,67 @@ rolesSchema.statics.seed = function (doc, options) {
           });
         }
 
-        var role = new Role(doc),
-          permissionIds = [];
+        async.series([
+          function (callback) {
+            var permissionIds = [];
+            async.each(doc.featurePermissions, (featurePermission, done) => {
+              var featureName = _.split(featurePermission, ':')[0],
+                permissionName = _.split(featurePermission, ':')[1];
 
-        _.forEach(role.featurePermissions, (featurePermission) => {
-          // feature permissions should be set in config as feature:permission
-          var featureName = _.split(featurePermission, ':')[0],
-            permissionName = _.split(featurePermission, ':')[1];
+              Features.findOne({
+                  name: {
+                    $regex: new RegExp(_.escapeRegExp(featureName)),
+                    $options: 'i'
+                  }
+                },
+                (err, result) => {
+                  if (err) {
+                    return done(err)
+                  } else if (result) {
+                    async.each(result.permissions, (permission, cb) => {
+                      if (permission.name === permissionName) {
+                        permissionIds.push(permission.perm_id);
+                      }
+                      cb(null);
+                    }, () => {
+                      done(null);
+                    });
+                  } else {
+                    done(null);
+                  }
+                })
+            }, (err) => {
+              if (err) {
+                return callback(err)
+              }
 
-          Features.find({
-            name: featureName,
-            permission: {
-              name: permissionName
-            }
-          }, (err, doc) => {
-            if (err) {
-              return reject(err);
-            }
+              doc.featurePermissions = permissionIds;
 
-            permissionIds.push(doc.perm_id);
-          })
-        });
+              callback(null);
+            })
+          },
+          function (callback) {
+            var role = new Roles(doc);
 
-        role.featurePermissions = permissionIds;
+            role.save(function (err) {
+              if (err) {
+                return callback(err)
+              }
 
-        role.save(function (err) {
+              callback(null);
+            });
+          }
+        ], (err) => {
           if (err) {
             return reject(err);
           }
 
           return resolve({
-            message: 'Database Seeding: Role\t\t' + role.name + ' added'
+            message: 'Database Seeding: Role\t\t' + doc.name + ' added'
           });
-        });
-
+        })
       });
     }
-
   });
 }
 
