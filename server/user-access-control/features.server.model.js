@@ -22,7 +22,6 @@ var featuresSchema = new Schema({
     },
     name: {
       type: String,
-      unique: true,
       trim: true
     }
   }]
