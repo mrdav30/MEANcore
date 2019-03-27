@@ -70,7 +70,7 @@ function seed(collection, options) {
 
     var skipWhen = collection.skip ? collection.skip.when : null;
 
-    console.log('Starting ' + collection.model + ' seeding');
+    console.log('Database Seeding: ' + collection.model + ' collection started');
 
     if (!Model.seed) {
       return reject(new Error('Database Seeding: Invalid Model Configuration - ' + collection.model + '.seed() not implemented'));
@@ -143,12 +143,13 @@ function seed(collection, options) {
         function onComplete(responses) {
           if (options.logResults) {
             responses.forEach(function (response) {
-              console.log('response: ' + response);
               if (response.message) {
                 console.log(chalk.magenta(response.message));
               }
             });
           }
+
+          console.log(chalk.yellow('Database Seeding: ' + collection.model + ' collection complete'));
 
           return resolve();
         }

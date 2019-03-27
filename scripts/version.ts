@@ -1,5 +1,5 @@
 const { gitDescribeSync } = require('git-describe');
-const { version } = require('./package.json');
+const { version } = require('../package.json');
 const { resolve, relative } = require('path');
 const { writeFileSync } = require('fs-extra');
 
@@ -10,7 +10,7 @@ const gitInfo = gitDescribeSync({
 
 gitInfo.version = version;
 
-const file = resolve(__dirname, 'client', 'environments', 'version.ts');
+const file = resolve('./client/environments/version.ts');
 writeFileSync(file,
 `// IMPORTANT: THIS FILE IS AUTO GENERATED! DO NOT MANUALLY EDIT OR CHECKIN!
 /* tslint:disable */

@@ -5,7 +5,10 @@
  */
 var passport = require('passport'),
   LocalStrategy = require('passport-local').Strategy,
-  User = require('mongoose').model('User');
+  mongoose = require('mongoose'),
+  _ = require('lodash'),
+  User = mongoose.model('User'),
+  Roles = mongoose.model('Roles');
 
 module.exports = function () {
   // Use local strategy
@@ -30,7 +33,31 @@ module.exports = function () {
             });
           }
 
-          return done(null, user);
+          // Convert doc to plain javascript object
+          user = user.toObject();
+
+          // Get users role info based on assigned roles
+          Roles.find({
+              _id: {
+                $in: _.map(user.roles, (id) => {
+                  return new mongoose.Types.ObjectId(id);
+                })
+              }
+            })
+            .select('name featurePermissions')
+            .lean()
+            .exec((err, roles) => {
+              if (err) {
+                return done(err);
+              }
+
+              // if user has no roles, provide user role by default
+              user.roles = roles && roles.length ? roles : [{
+                name: 'user'
+              }];
+
+              done(null, user);
+            })
         });
     }
   ));

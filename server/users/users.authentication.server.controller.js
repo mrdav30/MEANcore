@@ -9,6 +9,7 @@ var async = require('async'),
   mongoose = require('mongoose'),
   passport = require('passport'),
   User = mongoose.model('User'),
+  Roles = mongoose.model('Roles'),
   userValidation = require('./users.validation.service');
 
 exports.validateUser = function (req, res) {
@@ -110,10 +111,10 @@ exports.signIn = function (req, res, next) {
       async.series([
         // Set last known IP of a successful login to prevent logins from unknown IPs.
         function (done) {
-          var knownIPAddresses = user.get('knownIPAddresses') ? user.get('knownIPAddresses') : [];
-          if (!knownIPAddresses.includes(req.connection.remoteAddress)) {
-            user.updateOne({
-              _id: mongoose.Types.ObjectId(user.get('_id'))
+          var userIPAddresses = user.knownIPAddresses ? user.knownIPAddresses : [];
+          if (!userIPAddresses.includes(req.connection.remoteAddress)) {
+            User.updateOne({
+              _id: mongoose.Types.ObjectId(user._id)
             }, {
               $addToSet: {
                 knownIPAddresses: req.connection.remoteAddress

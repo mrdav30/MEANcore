@@ -96,7 +96,7 @@ var UserSchema = new Schema({
   appName: String,
   roles: {
     type: [String],
-    default: ['user']
+    default: []
   },
   updated: {
     type: Date

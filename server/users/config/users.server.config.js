@@ -30,6 +30,10 @@ module.exports = function (app) {
       .select('username displayName email appName provider roles knownIPAddresses password salt')
       .lean()
       .exec(function (err, user) {
+        if (err || !user) {
+          var message = !user ? 'User not found!' : err;
+          done(message);
+        }
         // Get users role info based on assigned roles
         Roles.find({
             _id: {
@@ -45,9 +49,12 @@ module.exports = function (app) {
               return done(err);
             }
 
-            user.roles = roles;
+            // if user has no roles, provide user role by default
+            user.roles = roles && roles.length ? roles : [{
+              name: 'user'
+            }];
 
-            done(err, user);
+            done(null, user);
           })
       });
   });
