@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path'),
+  _ = require('lodash'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
   ssrService = config.services.ssrService,
@@ -10,7 +11,7 @@ var path = require('path'),
  * Get extention from path
  */
 function getExtention(url) {
-  return url.split('.').pop();
+  return _.split(url, '.').pop();
 }
 
 /**
