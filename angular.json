@@ -25,6 +25,7 @@
             "assets": [
               "client/favicon.ico",
               "client/robots.txt",
+              "client/manifest.json",
               "client/assets"
             ],
             "styles": [
@@ -39,10 +40,11 @@
               "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
-              "namedChunks": false,
+              "namedChunks": true,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
+              "vendorChunk": true,
+              "commonChunk": true,
               "buildOptimizer": true,
               "budgets": [{
                 "type": "initial",
