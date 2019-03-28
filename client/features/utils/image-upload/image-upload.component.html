@@ -1,13 +1,15 @@
-<div class="upload-picture" [style.width.px]="imageWidth" [style.height.px]="imageHeight">
-  <img *ngIf="currentUrl" src="{{currentUrl}}" />
-  <label for="uploader-input" ng2FileDrop [ngClass]="{'drag-over': hasDragOver}" (fileOver)="fileOver($event)"
-    [uploader]="uploader">
-    <div class="infotext">
-      <span *ngIf="!currentUrl">Drop your picture<br>or click to upload</span>
-    </div>
-  </label>
-  <input type="file" ng2FileSelect [uploader]="uploader" id="uploader-input" style="display:none" />
-  <div class="text-right">
+<div>
+  <div class="upload-picture" [style.width.px]="imageWidth" [style.height.px]="imageHeight">
+    <img *ngIf="currentUrl" src="{{currentUrl}}" />
+    <label for="uploader-input" ng2FileDrop [ngClass]="{'drag-over': hasDragOver}" (fileOver)="fileOver($event)"
+      [uploader]="uploader">
+      <div class="infotext">
+        <span *ngIf="!currentUrl">Drop your picture<br>or click to upload</span>
+      </div>
+    </label>
+    <input type="file" ng2FileSelect [uploader]="uploader" id="uploader-input" style="display:none" />
+  </div>
+  <div class="text-right" [style.width.px]="imageWidth">
     <button type="button" class="btn btn-danger" (click)="clearImage()" ngbTooltip="Clear Image" container="body"
       placement="bottom"><i class="fas fa-trash-alt"></i></button>
   </div>
