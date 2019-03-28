@@ -63,7 +63,8 @@ export class AppMenuComponent implements OnInit {
       userRoles = [userRoles];
     }
     this.visibleMenus = filter(this.menus, (menu) => {
-      return intersection(userRoles, menu.roles).length ? true : false;
+      return !menu.roles ||
+        intersection(userRoles, menu.roles).length ? true : false;
     });
   }
 
