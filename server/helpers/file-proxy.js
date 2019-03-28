@@ -2,6 +2,8 @@ var fs = require('fs'),
     request = require('request'),
     moment = require('moment');
 
+const oneWeekSeconds = 24 * 7 * (60 * 60);
+
 module.exports = fileProxy;
 
 // proxy file from remote url for page speed score
