@@ -2,13 +2,10 @@
 @import "theme/theme-variables";
 
 @import './assets/_main.scss';
+@import './assets/_font-styles.css';
 
 // 3rd party libraries
 @import "~bootstrap/scss/bootstrap";
-@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
-@import "~@fortawesome/fontawesome-free/scss/brands.scss";
-@import "~@fortawesome/fontawesome-free/scss/regular.scss";
-@import "~@fortawesome/fontawesome-free/scss/solid.scss";
 @import "~ag-grid-community/dist/styles/ag-grid.css";
 
 

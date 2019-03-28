@@ -151,7 +151,9 @@ exports.getMenuConfiguration = function (callback) {
                   return permission.perm_id
                 })
               }
-            }).select('name')
+            })
+            .select('name')
+            .lean()
             .exec((err, roles) => {
               if (err) {
                 return done(err);
@@ -164,6 +166,7 @@ exports.getMenuConfiguration = function (callback) {
               done(null);
             })
         } else {
+          delete feature.permissions;
           done(null);
         }
       }, (err) => {

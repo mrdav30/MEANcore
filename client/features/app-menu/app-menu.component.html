@@ -9,7 +9,7 @@
     <ul class="navbar-nav">
       <li class="nav-item">
         <a routerLink="{{appHome}}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
-          <i class="fas fa-home md-24"></i>
+          <i class="icon-home md-24"></i>
         </a>
       </li>
       <ng-template ngFor let-menu [ngForOf]="visibleMenus">
@@ -23,7 +23,7 @@
         <form name="searchForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
           <div class="search-panel mr-2">
             <button type="button" class="btn btn-small" (click)="isSearchVisible=isSearchVisible?false:true">
-              <i class="fas fa-search"></i>
+              <i class="icon-search"></i>
             </button>
             <input type="search" name="searchQuery" id="searchQuery" *ngIf="isSearchVisible" placeholder="Search..."
               [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required appInputRestriction>

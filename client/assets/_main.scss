@@ -185,22 +185,22 @@ label textarea {
 
 /* end password toggle */
 
-/* font awesome override */
+/* icon font size override */
 
-.fas.md-18 {
+[class^="icon-"].md-18 {
   font-size: 18px;
 }
 
 /* Default */
-.fas.md-24 {
+[class^="icon-"].md-24 {
   font-size: 24px;
 }
 
-.fas.md-36 {
+[class^="icon-"].md-36 {
   font-size: 36px;
 }
 
-.fas.md-48 {
+[class^="icon-"].md-48 {
   font-size: 48px;
 }
 

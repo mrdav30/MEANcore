@@ -5,11 +5,11 @@
     </h5>
     <button type="button" *ngIf="!creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-success float-right"
       aria-hidden="true" ngbTooltip="Create">
-      <i class="fas fa-plus" aria-hidden="true"></i>
+      <i class="icon-plus" aria-hidden="true"></i>
     </button>
     <button type="button" *ngIf="creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-secondary float-right"
       aria-hidden="true" ngbTooltip="Cancel">
-      <i class="fas fa-times" aria-hidden="true"></i>
+      <i class="icon-times" aria-hidden="true"></i>
     </button>
   </div>
   <div class="card-body">
@@ -26,25 +26,25 @@
         <button type="button" class="btn btn-md btn-light text-nowrap text-truncate" (click)="toggleItem(item)">
           <strong>{{item.name}}</strong>
           <span *ngIf="hasMultipleLists(item)" aria-hidden="true">
-            <i class="fas fa-caret-down ml-2"></i>
+            <i class="icon-angle-down ml-2"></i>
           </span>
           <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item) || isToggle || isReadOnly" aria-hidden="true">
-            <i class="fas fa-caret-right ml-2"></i>
+            <i class="icon-chevron-right ml-2"></i>
           </span>
           <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item)" class="badge badge-pill badge-dark ml-2">{{getFirstListCount(item)}}</span>
         </button>
         <div class="btn-group float-right" role="group">
           <button type="button" *ngIf="!editingItem && !isReadOnly" class="btn btn-xs btn-secondary" (click)="toggleEditItem(item)"
             ngbTooltip="Edit" aria-hidden="true">
-            <span><i class="fas fa-edit"></i></span>
+            <span><i class="icon-edit"></i></span>
           </button>
           <button type="button" *ngIf="isReadOnly" class="btn btn-xs btn-secondary" ngbTooltip="View" (click)="toggleItem(item)"
             aria-hidden="true">
-            <i class="fas fa-caret-down"></i>
+            <i class="icon-angle-down"></i>
           </button>
           <button type="button" *ngIf="aboutToDeleteItem !== item" class="btn btn-xs btn-danger" (click)="onDelete(item)"
             ngbTooltip="Delete">
-            <i class="fas fa-trash-alt"></i>
+            <i class="icon-trash-alt"></i>
           </button>
         </div>
         <div *ngIf="aboutToDeleteItem === item">
@@ -52,15 +52,15 @@
             Remove <strong>{{item.name}}</strong> from <strong>{{listTitle}}</strong>?
           </div>
           <div class="btn-group float-right" role="group">
-            <button type="button" class="btn btn-danger" (click)="onDelete(item)"><i class="fas fa-check"></i></button>
-            <button type="button" class="btn btn-info" (click)="aboutToDeleteItem=false"><i class="fas fa-times"></i></button>
+            <button type="button" class="btn btn-danger" (click)="onDelete(item)"><i class="icon-check"></i></button>
+            <button type="button" class="btn btn-info" (click)="aboutToDeleteItem=false"><i class="icon-times"></i></button>
           </div>
         </div>
         <div *ngIf="isSelected(item) && !aboutToDeleteItem && !editingItem && hasMultipleLists(item)" class="list-group p-1">
           <button type="button" *ngFor="let list of getLists(item)" class="list-group-item btn btn-light  text-nowrap text-truncate"
             (click)="toggleList(list)">
             <span>{{list.name}}</span>
-            <i class="fas fa-caret-right ml-2"></i>
+            <i class="icon-angle-down ml-2"></i>
             <span *ngIf="list.items.length" class="badge badge-pill badge-dark ml-2">{{list.items.length}}</span>
           </button>
         </div>

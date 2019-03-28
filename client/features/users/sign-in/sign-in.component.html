@@ -12,7 +12,7 @@
               (keydown.Enter)="validateUser()" />
           </div>
           <div *ngIf="usernameOrEmail.invalid && usernameOrEmail.errors" class="alert alert-danger">
-            <div *ngIf="usernameOrEmail.errors.notused"><i class="fas fa-exclamation mr-2"></i>Username or email doesn't
+            <div *ngIf="usernameOrEmail.errors.notused"><i class="icon-exclamation mr-2"></i>Username or email doesn't
               exist</div>
           </div>
         </div>
@@ -32,7 +32,7 @@
           </div>
           <div *ngIf="password.invalid && password.errors" class="alert alert-danger">
             <div *ngIf="password.errors.incorrect">
-              <i class="fas fa-exclamation mr-2"></i>Password doesn't match our records
+              <i class="icon-exclamation mr-2"></i>Password doesn't match our records
             </div>
           </div>
           <a [routerLink]="['/password/recover', user.usernameOrEmail]" class="card-link">Forgot password?</a>

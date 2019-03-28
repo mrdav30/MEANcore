@@ -1,0 +1,122 @@
+@font-face {
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?pffws7');
+  src:  url('fonts/icomoon.eot?pffws7#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?pffws7') format('truetype'),
+    url('fonts/icomoon.woff?pffws7') format('woff'),
+    url('fonts/icomoon.svg?pffws7#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-clock:before {
+  content: "\f017";
+}
+.icon-smile-wink:before {
+  content: "\f4da";
+}
+.icon-sad-cry:before {
+  content: "\f5b3";
+}
+.icon-smile-beam:before {
+  content: "\f5b8";
+}
+.icon-twitter:before {
+  content: "\f099";
+}
+.icon-github:before {
+  content: "\f09b";
+}
+.icon-linkedin-in:before {
+  content: "\f0e1";
+}
+.icon-stack-overflow:before {
+  content: "\f16c";
+}
+.icon-facebook-f:before {
+  content: "\f39e";
+}
+.icon-times:before {
+  content: "\f00d";
+}
+.icon-home1:before {
+  content: "\f016";
+}
+.icon-download:before {
+  content: "\f019";
+}
+.icon-edit:before {
+  content: "\f044";
+}
+.icon-eye:before {
+  content: "\f06e";
+}
+.icon-save:before {
+  content: "\f0c7";
+}
+.icon-angle-down:before {
+  content: "\f107";
+}
+.icon-trash-alt:before {
+  content: "\f2ed";
+}
+.icon-robot:before {
+  content: "\f544";
+}
+.icon-plus:before {
+  content: "\f067";
+}
+.icon-search:before {
+  content: "\f002";
+}
+.icon-user:before {
+  content: "\f007";
+}
+.icon-check:before {
+  content: "\f00c";
+}
+.icon-home:before {
+  content: "\f015";
+}
+.icon-tag:before {
+  content: "\f02b";
+}
+.icon-chevron-right:before {
+  content: "\f054";
+}
+.icon-external-link:before {
+  content: "\f08e";
+}
+.icon-envelope:before {
+  content: "\f0e0";
+}
+.icon-cloud-download:before {
+  content: "\f0ed";
+}
+.icon-exclamation:before {
+  content: "\f12a";
+}
+.icon-calendar-o:before {
+  content: "\f133";
+}
+.icon-binoculars:before {
+  content: "\f1e5";
+}
+.icon-user-times:before {
+  content: "\f235";
+}

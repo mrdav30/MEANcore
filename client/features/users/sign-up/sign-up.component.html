@@ -29,8 +29,8 @@
                   required spellcheck="false" appAnimatedLabel tabindex="3" />
               </div>
               <div *ngIf="f.submitted && username.invalid" class="alert alert-danger">
-                <div *ngIf="username.errors.required"><i class="fas fa-exclamation mr-2"></i>Username is required</div>
-                <div *ngIf="username.errors.alreadyused"><i class="fas fa-exclamation mr-2"></i>Username already in use</div>
+                <div *ngIf="username.errors.required"><i class="icon-exclamation mr-2"></i>Username is required</div>
+                <div *ngIf="username.errors.alreadyused"><i class="icon-exclamation mr-2"></i>Username already in use</div>
                 <div *ngIf="username.errors.alreadyused">Available: {{possibleUsername}}</div>
               </div>
               <p>You can use letters, numbers & periods</p>
@@ -42,9 +42,9 @@
                   required spellcheck="false" appAnimatedLabel pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" tabindex="4" />
               </div>
               <div *ngIf="f.submitted && email.invalid" class="alert alert-danger">
-                <div *ngIf="email.errors.required"><i class="fas fa-exclamation mr-2"></i>Email is required</div>
+                <div *ngIf="email.errors.required"><i class="icon-exclamation mr-2"></i>Email is required</div>
                 <div *ngIf="email.errors.pattern">
-                  <i class="fas fa-exclamation mr-2"></i>Email must be a valid email address
+                  <i class="icon-exclamation mr-2"></i>Email must be a valid email address
                 </div>
               </div>
             </div>
@@ -57,10 +57,10 @@
               </div>
               <div *ngIf="f.submitted && password.invalid">
                 <div *ngIf="password.errors.required" class="alert alert-danger">
-                  <i class="fas fa-exclamation mr-2"></i>Password is required
+                  <i class="icon-exclamation mr-2"></i>Password is required
                 </div>
                 <div *ngFor="let passwordError of passwordErrors" class="alert alert-danger">
-                  <i class="fas fa-exclamation mr-2"></i>{{passwordError}}
+                  <i class="icon-exclamation mr-2"></i>{{passwordError}}
                 </div>
               </div>
               <app-password-validator [hidden]="!user.password.length" [passwordToCheck]="user.password"
