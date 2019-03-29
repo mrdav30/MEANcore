@@ -5,12 +5,14 @@ const targetPath = `./client/environments/environment.ts`;
 
 // Load node modules
 const colors = require('colors');
-require('dotenv').load();
+require('dotenv').config();
 
 // Debug environment variables
 
 // `environment.ts` file structure that uses the environment variables
-const envConfigFile = `import { VERSION } from './version';
+const envConfigFile = `// IMPORTANT: THIS FILE IS AUTO GENERATED! DO NOT MANUALLY EDIT OR CHECKIN!
+/* tslint:disable */
+import { VERSION } from './version';
 
 export const environment = {
     production: '${process.env.PRODUCTION}',
@@ -25,6 +27,7 @@ export const environment = {
     recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
     twitterHandle: '${process.env.TWITTER_HANDLE}'
 };
+/* tslint:enable */
 `;
 
 console.log(colors.magenta('The file `environment.ts` will be written with the following content: \n'));
