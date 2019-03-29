@@ -112,5 +112,49 @@ module.exports = {
       //     ciphers: 'SSLv3'
       //   }
     }
+  },
+  seedDB: {
+    seed: process.env.MONGO_SEED || 'false',
+    options: {
+      logResults: process.env.MONGO_SEED_LOG_RESULTS || 'false'
+    },
+    // Order of collections in configuration will determine order of seeding.
+    // i.e. given these settings, the User seeds will be complete before
+    // Article seed is performed.
+    collections: [{
+      model: 'Features',
+      docs: [{
+        data: {
+          name: 'UAC',
+          route: '/uac',
+          permissions: [{
+            name: 'default'
+          }]
+        }
+      }]
+    }, {
+      model: 'Roles',
+      docs: [{
+        data: {
+          name: 'admin',
+          featurePermissions: ['uac:default']
+        }
+      }, {
+        data: {
+          name: 'user'
+        }
+      }]
+    }, {
+      model: 'User',
+      docs: [{
+        data: {
+          username: 'local-admin',
+          email: 'admin@localhost.com',
+          firstName: 'Admin',
+          lastName: 'Local',
+          roles: ['admin', 'user']
+        }
+      }]
+    }]
   }
 };
