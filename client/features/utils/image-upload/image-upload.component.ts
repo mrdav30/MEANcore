@@ -34,7 +34,7 @@ export class ImageUploadComponent implements OnInit {
 
     // Set to true to clear the current image from the view after each upload
     @Input()
-    public clearCurrent = false;
+    public clearCurrent = true;
 
     // Set to true to replace the current image before each upload
     @Input()
