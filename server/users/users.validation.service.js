@@ -35,7 +35,7 @@ function validateChanges(req, userUpdates, callback) {
   if (currentUser) {
     async.series([
       function (cb) {
-        if (currentUser.get('username') != userUpdates.username) {
+        if (currentUser.username != userUpdates.username) {
           // check to ensure username isn't already taken
           validateUserData(userUpdates.username, function (err, userExists) {
             if (err) {
@@ -60,10 +60,15 @@ function validateChanges(req, userUpdates, callback) {
       },
       function (cb) {
         // Merge existing user
-        currentUser = _.extend(currentUser.toObject(), userUpdates);
+        currentUser = _.extend(currentUser, userUpdates);
 
         currentUser.updated = Date.now();
         currentUser.displayName = currentUser.firstName + ' ' + currentUser.lastName;
+
+        // Map out roles, only need to store role id
+        currentUser.roles = _.map(currentUser.roles, (role) => {
+          return role._id.toString();
+        })
 
         //fields to update
         var set = _.omit(currentUser, '_id');
@@ -95,6 +100,7 @@ function validateChanges(req, userUpdates, callback) {
       }
     ], function (err, result) {
       if (err) {
+        // return result from findUniqueUsername
         return callback(err, result[0] ? result[0] : null);
       }
 
