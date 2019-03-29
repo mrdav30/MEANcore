@@ -1,35 +1,38 @@
-import { TestBed, async } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { ScriptInjectorService } from '../features/utils';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
+  let component: AppComponent;
+  let fixture: ComponentFixture<AppComponent>;
+  beforeEach(() => {
+    const routerStub = { events: { pipe: () => ({ subscribe: () => ({}) }) } };
+    const titleStub = { getTitle: () => ({}) };
+    const scriptInjectorServiceStub = { load: () => ({ catch: () => ({}) }) };
     TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
-  }));
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+      schemas: [NO_ERRORS_SCHEMA],
+      declarations: [AppComponent],
+      providers: [
+        { provide: Router, useValue: routerStub },
+        { provide: Title, useValue: titleStub },
+        { provide: ScriptInjectorService, useValue: scriptInjectorServiceStub }
+      ]
+    });
+    fixture = TestBed.createComponent(AppComponent);
+    component = fixture.componentInstance;
   });
-
-  it(`should have as title 'meancore'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('meancore');
+  it('can load instance', () => {
+    expect(component).toBeTruthy();
   });
-
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to meancore!');
+  describe('ngOnInit', () => {
+    it('makes expected calls', () => {
+      const titleStub: Title = fixture.debugElement.injector.get(Title);
+      spyOn(titleStub, 'getTitle');
+      component.ngOnInit();
+      expect(titleStub.getTitle).toHaveBeenCalled();
+    });
   });
 });
