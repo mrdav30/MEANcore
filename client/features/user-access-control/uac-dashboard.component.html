@@ -1,6 +1,6 @@
 <div class="container p-3">
   <div *ngIf="message" class="alert alert-danger alert-dismissible" role="alert">
-    <button type="button" data-dismiss="alert" aria-label="Close" (click)="dismissMessage()">
+    <button type="button" class="badge badge-pill badge-danger" data-dismiss="alert" aria-label="Close" (click)="dismissMessage()">
       <i class="icon-times"></i>
     </button>
     {{message}}
