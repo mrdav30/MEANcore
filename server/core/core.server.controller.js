@@ -24,30 +24,6 @@ var renderNotFound = function (req, res) {
 };
 exports.renderNotFound = renderNotFound;
 
-/**
- * Retrieve logged-in user and front-end app settings
- */
-exports.retrieveRuntimeConfig = function (req, res) {
-  var response = {
-    user: {},
-    config: {}
-  };
-
-  uacController.getMenuConfiguration((err, features) => {
-    response.config.menuConfig = features ? features : null;
-
-
-    response.user = req.user || null;
-    if (response.user) {
-      // Remove sensitive data
-      response.user.password = undefined;
-      response.user.salt = undefined;
-    }
-
-    res.status(200).send(response);
-  })
-}
-
 // check for webcrawlers and prerender
 // otherwise move on to render index
 exports.prerender = async function (req, res, next) {

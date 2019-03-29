@@ -7,7 +7,7 @@ import { ConfigService } from './config.service';
 
 @Injectable()
 export class AppLoadService {
-    private getAppConfig = environment.appBaseUrl + environment.apiBaseUrl + '/core/config';
+    private uacConfigUrl = environment.appBaseUrl + environment.apiBaseUrl + '/uac/config';
 
     constructor(
         public configService: ConfigService,
@@ -15,7 +15,7 @@ export class AppLoadService {
     ) { }
 
     initializeApp(): Promise<any> {
-        const configPromise = this.http.get(this.getAppConfig)
+        const configPromise = this.http.get(this.uacConfigUrl)
             .toPromise()
             .then((data: any) => {
                 if (data) {

@@ -8,7 +8,7 @@ var async = require('async'),
   User = mongoose.model('User');
 
 // Configure view model for UAC dashboard
-exports.getUACViewModel = function (req, res) {
+exports.getViewModel = function (req, res) {
   async.waterfall([
       //retrieve all roles
       function (cb) {
@@ -133,7 +133,7 @@ exports.getUACViewModel = function (req, res) {
     });
 };
 
-exports.getMenuConfiguration = function (callback) {
+exports.getConfiguration = function (req, res) {
   Features.find()
     .lean()
     .exec(function (err, features) {
@@ -171,10 +171,25 @@ exports.getMenuConfiguration = function (callback) {
         }
       }, (err) => {
         if (err) {
-          return callback(err);
+          return res.status(500).send({
+            message: errorHandler.getErrorMessage(err)
+          });
         }
 
-        callback(null, features);
+        var response = {
+          user: {},
+          config: {}
+        };
+
+        response.config.menuConfig = features ? features : null;
+        response.user = req.user || null;
+        if (response.user) {
+          // Remove sensitive data
+          response.user.password = undefined;
+          response.user.salt = undefined;
+        }
+
+        res.status(200).send(response);
       });
     });
 };

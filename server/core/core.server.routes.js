@@ -7,9 +7,6 @@ module.exports = function (app) {
   // Define error pages
   app.route('/server-error').get(core.renderServerError);
 
-  // Return app configuration
-  app.route('/api/core/config').get(core.retrieveRuntimeConfig);
-
   // Return a 404 for all undefined api, module or lib routes
   app.route('/:url(api|modules|lib)/*').get(core.renderNotFound);
 

@@ -12,7 +12,10 @@ module.exports = function (app) {
   // Dashboard viewmodel
   app.use(['/uac'], userAuth.hasAuthorization(['admin'], config.appBase));
 
-  app.route('/api/uac/view').get(uac.getUACViewModel);
+  app.route('/api/uac/view').get(uac.getViewModel);
+
+  // Return uac menu configuration
+  app.route('/api/uac/config').get(uac.getConfiguration);
 
   // Roles
   app.route('/api/uac/roles').get(roles.getRoles)
