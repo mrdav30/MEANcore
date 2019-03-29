@@ -10,7 +10,7 @@ var async = require('async'),
 // Features
 
 exports.createFeature = function (req, res) {
-  Features(featuresParam).save(function (err, feature) {
+  Features(req.body.feature).save(function (err, feature) {
     if (err) {
       return res.status(500).send({
         error: 'Unable to create feature'
