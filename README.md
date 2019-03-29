@@ -84,6 +84,22 @@ MAILER_TEST=true
  npm run start:dev
  ```
 
+4. Run the MongoDB Seed
+To have the default menu feature(s), role(s), and/or user account(s) at runtime:
+```bash
+npm run seed
+```
+This will try to seed the features, roles, and users based on the defined NODE_ENV in your env config. You have to copy the user passwords from the console and store it somewhere safe.
+
+5. Running with TLS (Optional)
+The application will start by default with the secuire configuration (SSL mode) turned off and listen on port 3000.  To run your application in a secure manner, you'll need to use OpenSSL and generate a set of self-signed certificates.  Unix-based users can use the following command:
+```bash
+npm run generate-ssl-certs
+```
+Windows users can follow the instructions found [here](https://support.citrix.com/article/CTX128656).  After you've generated the key and certificate, ensure they are placed in the config/sslcerts folder.
+
+To enable/disable SSL mode in a production environment, set the HOST_SECURE variable in your env config.
+
 # Project structure
 
 ```
@@ -104,14 +120,16 @@ client/                      project source code for client
 config/                      configuration for express
 dist/                        compiled client version
 e2e/                         end-to-end tests
+scripts/                     scripts for configuration and managing the application
+|- generate-ssl-certs.sh     generate self-signed certs for dev testing
+|- seed-db.js                seeds the db with default configuration based on config
+|- set-env.ts                run to configure environment configuration based on process.env
+|- version.ts                creates a version file under assets based on package version
 server/                      project source code for server
 reports/                     test and coverage reports
 .env                         process.env variable configuration
-generate-ssl-certs.sh        generate self-signed certs for dev testing
 proxy.conf.js                backend proxy configuration
 server.js                    script to launch express
-set-env.ts                   run to configure environment configuration based on process.env
-version.ts                   creates a version file under assets based on package version
 ```
 
 # Main tasks
@@ -122,18 +140,20 @@ Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
 npm run config                | Produces angular environment configuration from .env
 npm run version               | Generates version control information based on projects package.json
-npm run start:dev                 | Builds client and runs development ng server on `http://localhost:4200/` using proxy config for express endpoints to `http://localhost:3000/`
-npm run start:prod            | Builds client for prod and runs production express server
+npm run build:dev             | Lint code and build app for development in `dist/` folder
+npm run build:prod            | Lint code and build app for production in `dist/` folder
 npm run client:dev            | Run development ng server on `http://localhost:4200/` only
 npm run server:dev            | Run development express server only on `http://localhost:3000/`
 npm run server:prod           | Run production express server only
-npm run build:dev             | Lint code and build app for development in `dist/` folder
-npm run build:prod            | Lint code and build app for production in `dist/` folder
-npm run test:client           | Run unit tests via [Karma](https://karma-runner.github.io) in watch mode
-npm run test                  | Lint code and run unit tests once for continuous integration
-npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
+npm run start:dev             | Builds client and runs development ng server on `http://localhost:4200/` using proxy config for express endpoints to `http://localhost:3000/`
+npm run start:prod            | Builds client for prod and runs production express server
+npm run test:client           | Lint code and run unit tests once for continuous integration
 npm run lint:client           | Lint client code
 npm run lint:server           | Lint server code
+npm run e2e                   | Run e2e tests using [Protractor](http://www.protractortest.org)
+npm run generate-ssl-certs    | Generates self-signed certificates on Unix-based systems using OpenSSL
+npm run seed                  | Seeds the database with defaults based on defined configuration
+
 
 ## Development server
 
@@ -176,6 +196,7 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - Cross-browser CSS with [autoprefixer](https://github.com/postcss/autoprefixer) and
   [browserslist](https://github.com/ai/browserslist)
 - Asset revisioning for [better cache management](https://webpack.github.io/docs/long-term-caching.html)
+- Server-side rendering for web-crawlers using [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 - Unit tests using [Jasmine](http://jasmine.github.io) and [Karma](https://karma-runner.github.io)
 - End-to-end tests using [Protractor](https://github.com/angular/protractor)
 - Static code analysis: [TSLint](https://github.com/palantir/tslint), [Codelyzer](https://github.com/mgechev/codelyzer),
