@@ -56,6 +56,7 @@ export class AppMenuComponent implements OnInit {
   }
 
   setMenuUI(): void {
+    // if user has no roles defined, assign to default user role
     let userRoles = this.user && this.user.roles ? map(this.user.roles, (role) => {
       return role.name;
     }) : ['user'];
