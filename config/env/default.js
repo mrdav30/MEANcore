@@ -4,7 +4,7 @@ module.exports = {
   app: {
     title: 'MEANcore - MeanStack Web Projects!',
     name: process.env.APP_NAME || 'meancore',
-    description: 'Applications runing on mean stack',
+    description: 'Applications running on mean stack',
     keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
     appBaseUrl: process.env.APP_BASE_URL || '/',
     apiBaseUrl: process.env.API_BASE_URL || 'api',
@@ -53,6 +53,9 @@ module.exports = {
     // Specify directives as normal.
     directives: {
       defaultSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+      ],
       scriptSrc: [
         "'self'",
         "'unsafe-eval'",
