@@ -44,6 +44,7 @@ export class SeoService {
 
         this.titleService.setTitle(config.title);
 
+        this.meta.updateTag({ name: 'title', content: config.title });
         this.meta.updateTag({ name: 'description', content: config.description });
         this.meta.updateTag({ name: 'author', content: config.author });
         this.meta.updateTag({ name: 'keywords', content: config.keywords });
@@ -52,13 +53,17 @@ export class SeoService {
         this.meta.updateTag({ name: 'twitter:site', content: this.twitterHandle });
         this.meta.updateTag({ name: 'twitter:title', content: config.title });
         this.meta.updateTag({ name: 'twitter:description', content: config.description });
+        this.meta.updateTag({ name: 'twitter:creator', content: this.twitterHandle });
         this.meta.updateTag({ name: 'twitter:image', content: config.image });
 
-        this.meta.updateTag({ property: 'og:type', content: 'article' });
+        this.meta.updateTag({ property: 'og:type', content: config.type || 'article' });
         this.meta.updateTag({ property: 'og:site_name', content: this.siteName });
         this.meta.updateTag({ property: 'og:title', content: config.title });
         this.meta.updateTag({ property: 'og:description', content: config.description });
         this.meta.updateTag({ property: 'og:image', content: config.image });
+        this.meta.updateTag({ property: 'og.image:type', content: 'png' });
+        this.meta.updateTag({ property: 'og:image:width', content: '750' });
+        this.meta.updateTag({ property: 'og:image:height', content: '500' });
         this.meta.updateTag({ property: 'og:url', content: config.url });
     }
 }
