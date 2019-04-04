@@ -182,7 +182,7 @@ exports.getConfiguration = function (req, res) {
         };
 
         response.config.menuConfig = features ? features : null;
-        response.user = req.user || null;
+        response.user = req.user || false;
         if (response.user) {
           // Remove sensitive data
           response.user.password = undefined;
