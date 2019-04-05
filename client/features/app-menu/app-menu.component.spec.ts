@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { CommonModule, APP_BASE_HREF } from '@angular/common';
+import { APP_BASE_HREF } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
@@ -14,14 +14,18 @@ import { AuthService } from '../utils';
 import { ConfigService } from '../utils';
 import { AppMenuComponent } from './app-menu.component';
 
+// create dummy search component
+@Component({
+  template: `Search`
+})
+export class SearchComponent {
+}
+
 describe('AppMenuComponent', () => {
   let component: AppMenuComponent;
   let fixture: ComponentFixture<AppMenuComponent>;
 
-  const routerStub = {
-    navigate: jasmine.createSpy('navigate'),
-    routerState: {}
-  };
+  let router: Router;
 
   beforeEach(
     async(() => {
@@ -32,14 +36,17 @@ describe('AppMenuComponent', () => {
       };
       const configServiceStub = { config: { menuConfig: {} } };
 
-
       TestBed.configureTestingModule({
         schemas: [NO_ERRORS_SCHEMA],
-        declarations: [AppMenuComponent],
+        declarations: [
+          AppMenuComponent,
+          SearchComponent
+        ],
         imports: [
-          CommonModule,
           FormsModule,
-          RouterTestingModule,
+          RouterTestingModule.withRoutes([
+            { path: 'search', component: SearchComponent }
+          ]),
           NgbCollapseModule
         ],
         providers: [
@@ -47,13 +54,14 @@ describe('AppMenuComponent', () => {
           { provide: AuthService, useValue: authServiceStub },
           { provide: ConfigService, useValue: configServiceStub }
         ]
-      });
+      }).compileComponents();
     })
   );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppMenuComponent);
     component = fixture.debugElement.componentInstance;
+    router = TestBed.get(Router);
 
     fixture.detectChanges();
   });
@@ -106,10 +114,12 @@ describe('AppMenuComponent', () => {
 
   describe('onSubmit', () => {
     it('makes expected calls', () => {
-     // const routerStub: Router = fixture.debugElement.injector.get(Router);
-  //    spyOn(routerStub, 'navigate');
+      component.appSearchRoute = '/search';
+      component.searchQuery = '';
+      const navigateSpy = spyOn(router, 'navigate');
+
       component.onSubmit();
-      expect(routerStub.navigate).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['/search', '']);
     });
   });
 
