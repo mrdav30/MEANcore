@@ -9,8 +9,6 @@ import { AppComponent } from './app.component';
 
 import { ScriptInjectorService } from 'features/utils';
 
-import * as gtag from '../assets/js/gtag';
-
 // create dummy search component
 @Component({
   template: `Test`
@@ -28,7 +26,6 @@ describe('AppComponent', () => {
   beforeEach(
     async(() => {
       const titleStub = { getTitle: () => ({}) };
-
       scriptInjectorServiceSpy = jasmine.createSpyObj('ScriptInjectorService', {
         load: new Promise((resolve) => { resolve(); })
       });
@@ -39,7 +36,7 @@ describe('AppComponent', () => {
         imports: [
           RouterTestingModule.withRoutes([
             { path: 'test', component: TestNavigationComponent }
-          ]),
+          ])
         ],
         providers: [
           { provide: APP_BASE_HREF, useValue: '/' },
@@ -76,17 +73,28 @@ describe('AppComponent', () => {
   }));
 
   describe('ngOnInit', () => {
-    it('makes expected calls', () => {
+    beforeEach((done) => {
+      // inject gtag script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.async = true;
+      script.src = '../assets/js/gtag.js';
+      document.getElementsByTagName('head')[0].appendChild(script);
+      setTimeout(() => {
+        done();
+      }, 1000);
+    });
+
+    it('should call gtag on page navigation', async() => {
       const titleStub: Title = fixture.debugElement.injector.get(Title);
-
       spyOn(titleStub, 'getTitle');
-      fixture.detectChanges();
-      component.ngOnInit();
-    //  fixture.detectChanges();
-      router.navigate(['/test']);
-  //    fixture.detectChanges();
-      expect(titleStub.getTitle).toHaveBeenCalled();
 
+      component.ngOnInit();
+      await fixture.ngZone.run(async () => {
+        await router.navigate(['/test']);
+      });
+
+      expect(titleStub.getTitle).toHaveBeenCalled();
     });
   });
 });
