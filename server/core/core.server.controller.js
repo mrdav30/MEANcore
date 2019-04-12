@@ -4,8 +4,7 @@ var path = require('path'),
   _ = require('lodash'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
-  ssrService = config.services.ssrService,
-  uacController = require('../user-access-control/user-access-control.server.controller');
+  ssrService = config.services.ssrService;
 
 /**
  * Get extention from path
