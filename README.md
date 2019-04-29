@@ -7,7 +7,7 @@
 
 # MEAN Stack Starter Kit
 
-MEANcore is an open-source solution based on the MEAN stack and provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
+MEANcore is an open-source boilerplate solution based on the MEAN stack and provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
 
 ### Benefits
 
