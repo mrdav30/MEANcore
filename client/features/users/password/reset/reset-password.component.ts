@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
+
+import { environment } from '../../../../environments/environment';
 
 import { AuthService } from '../../../utils';
 
@@ -29,10 +32,12 @@ export class ResetPasswordComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Password Reset' + environment.metaTitleSuffix);
     this.route.params.subscribe((params: RouteParams) => {
       this.isTokenInvalid = params.token === 'invalid' ? true : false;
       this.credentials.token = params.token !== 'invalid' ? params.token : 'invalid';

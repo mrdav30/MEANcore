@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
+
+import { environment } from '../../../environments/environment';
 
 import { AuthService } from '../../utils';
 
@@ -23,10 +26,12 @@ export class SignInComponent implements OnInit, AfterViewInit {
 
   constructor(
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Sign-In' + environment.metaTitleSuffix);
     if (this.authService.user) {
       this.redirectPostLogin();
     }

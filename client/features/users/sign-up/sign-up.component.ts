@@ -1,6 +1,9 @@
-import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
+
+import { environment } from '../../../environments/environment';
 
 import { AuthService } from '../../utils';
 
@@ -9,7 +12,7 @@ import { AuthService } from '../../utils';
   selector: 'app-sign-up',
   templateUrl: `sign-up.component.html`
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnInit {
   @ViewChild('username') username: NgModel;
   @ViewChild('password') password: NgModel;
   public user: any = {
@@ -26,11 +29,22 @@ export class SignUpComponent {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private titleService: Title
   ) { }
+
+  ngOnInit(): void {
+    this.titleService.setTitle('Sign-Up' + environment.metaTitleSuffix);
+  }
 
   onSubmit(): void {
     this.authService.signUp(this.user).subscribe((data: any) => {
+      this.processResult(data);
+    });
+  }
+
+  processResult(data: any): void {
+    if (data) {
       if (data.userExists) {
         this.possibleUsername = data.possibleUsername;
         this.username.control.setErrors({ alreadyused: true });
@@ -39,7 +53,7 @@ export class SignUpComponent {
           this.redirectPostLogin();
         }
       }
-    });
+    }
   }
 
   setPasswordValidation(passwordValidation: any): void {
