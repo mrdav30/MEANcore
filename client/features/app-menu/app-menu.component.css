@@ -4,6 +4,14 @@
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .05), inset 0 -1px 0 rgba(0, 0, 0, .1);
 }
 
+.username-link {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.username-link:hover {
+    color: rgba(0, 0, 0, 0.7);
+}
+
 .search-panel input {
     padding: .375rem .75rem;
     font-size: 1rem;

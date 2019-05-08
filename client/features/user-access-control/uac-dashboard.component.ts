@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Title } from '@angular/platform-browser';
 import { map, find, findIndex } from 'lodash';
+
+import { environment } from '../../environments/environment';
 
 import { dynamicQuestionClasses } from '../utils';
 
@@ -36,10 +38,12 @@ export class UserAccessControlComponent implements OnInit {
     permissionsMetadata: dynamicQuestionClasses.QuestionBase<any>[] = [];
 
     constructor(
-        private uacService: UserAccessControlService
+        private uacService: UserAccessControlService,
+        private titleService: Title
     ) { }
 
     ngOnInit(): void {
+        this.titleService.setTitle('UAC' + environment.metaTitleSuffix);
         this.uacService.getViewModel()
             .then(async (data) => {
                 this.roles = data.roles as Role[];

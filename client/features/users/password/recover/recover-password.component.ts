@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
+
+import { environment } from '../../../../environments/environment';
 
 import { AuthService } from '../../../utils';
 
@@ -27,10 +30,12 @@ export class RecoverPasswordComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private titleService: Title
   ) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Password Recovery' + environment.metaTitleSuffix);
     this.route.params.subscribe(params => {
       this.user.usernameOrEmail = params.usernameOrEmail;
     });
