@@ -89,7 +89,6 @@ describe('UserAccessControlComponent', () => {
 
   beforeEach(
     async(() => {
-      const dashboardStateStub = {};
       const userAccessControlServiceStub = {
         getViewModel: () => ({ then: () => ({}) }),
         createRole: () => ({ then: () => ({ catch: () => ({}) }) }),
@@ -115,7 +114,6 @@ describe('UserAccessControlComponent', () => {
         schemas: [NO_ERRORS_SCHEMA],
         declarations: [UserAccessControlComponent],
         providers: [
-          { provide: DashboardState, useValue: dashboardStateStub },
           {
             provide: UserAccessControlService,
             useValue: userAccessControlServiceStub
@@ -139,6 +137,23 @@ describe('UserAccessControlComponent', () => {
 
   it('should create a component', () => {
     expect(component).toBeTruthy();
+  });
+  describe('ngOnInit', () => {
+    it('makes expected calls', fakeAsync(() => {
+      const userAccessControlServiceStub: UserAccessControlService = fixture.debugElement.injector.get(
+        UserAccessControlService
+      );
+      spyOn(component, 'setMetaData');
+      spyOn(userAccessControlServiceStub, 'getViewModel').and.returnValue(Promise.resolve({
+        roles: mockRole,
+        features: mockFeature,
+        users: mockUser
+      }));
+      component.ngOnInit();
+      tick();
+      expect(userAccessControlServiceStub.getViewModel).toHaveBeenCalled();
+      expect(component.setMetaData).toHaveBeenCalled();
+    }));
   });
   it('dashState defaults to: DashboardState.ShowingRoles', () => {
     expect(component.dashState).toEqual(DashboardState.ShowingRoles);
@@ -396,6 +411,15 @@ describe('UserAccessControlComponent', () => {
     });
   });
   describe('Permissions', () => {
+    beforeEach(() => {
+      // rest the selectedFeature since tests don't run in order
+      component.selectedFeature = mockFeature;
+      component.selectedFeature.permissions.length = 0;
+      component.selectedFeature.permissions.push(mockPermission);
+
+      fixture.detectChanges();
+    });
+
     describe('onTogglePermission', () => {
       it('makes expected calls', () => {
         spyOn(component, 'setState');
@@ -519,16 +543,4 @@ describe('UserAccessControlComponent', () => {
       }));
     });
   });
-  // describe('ngOnInit', () => {
-  //   it('makes expected calls', () => {
-  //     const userAccessControlServiceStub: UserAccessControlService = fixture.debugElement.injector.get(
-  //       UserAccessControlService
-  //     );
-  //     spyOn(component, 'setMetaData');
-  //     spyOn(userAccessControlServiceStub, 'getViewModel');
-  //     component.ngOnInit();
-  //     expect(component.setMetaData).toHaveBeenCalled();
-  //     expect(userAccessControlServiceStub.getViewModel).toHaveBeenCalled();
-  //   });
-  // });
 });
