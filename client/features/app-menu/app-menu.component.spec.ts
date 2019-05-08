@@ -24,7 +24,6 @@ export class SearchComponent {
 describe('AppMenuComponent', () => {
   let component: AppMenuComponent;
   let fixture: ComponentFixture<AppMenuComponent>;
-
   let router: Router;
 
   beforeEach(
