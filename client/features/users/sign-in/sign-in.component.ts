@@ -37,7 +37,7 @@ export class SignInComponent implements OnInit, AfterViewInit {
   }
 
   validateUser(): void {
-    this.authService.valuedateUser(this.user).subscribe(
+    this.authService.validateUser(this.user).subscribe(
       (data: any) => {
         if (data) {
           if (data.userExists) {

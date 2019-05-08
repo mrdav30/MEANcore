@@ -35,7 +35,7 @@
         <a routerLink="/sign-up" routerLinkActive="btn-secondary" class="btn btn-outline-dark">Get Started</a>
       </li>
       <li *ngIf="user" class="nav-item">
-        <span class="mr-2"><strong>Hello, {{user.displayName}}!</strong></span>
+        <a routerLink="/profile" class="username-link mr-2"><strong>Hello, {{user.displayName}}!</strong></a>
         <button type="button" (click)="logout()" class="btn btn-outline-dark">Logout</button>
       </li>
     </ul>

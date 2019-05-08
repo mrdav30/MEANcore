@@ -1,0 +1,96 @@
+<div *ngIf="profile && profile" class="container p-3">
+  <h3>Profile Details</h3>
+  <hr />
+  <form name="profileForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+    <div class="form-group row">
+      <label for="firstName" class="col-sm-2"><strong>First Name</strong></label>
+      <div class="col-sm-4">
+        <input type="text" id="firstName" name="firstName" class="form-control" [(ngModel)]="profile.firstName"
+          #firstName="ngModel" spellcheck="false" />
+      </div>
+      <div class="col-sm-6"></div>
+    </div>
+    <div class="form-group row">
+      <label for="lastName" class="col-sm-2"><strong>Last Name</strong></label>
+      <div class="col-sm-4">
+        <input type="text" id="lastName" name="lastName" class="form-control" [(ngModel)]="profile.lastName"
+          #lastName="ngModel" spellcheck="false" />
+      </div>
+      <div class="col-sm-6"></div>
+    </div>
+    <div class="form-group row">
+      <label for="username" class="col-sm-2"><strong>Username</strong></label>
+      <div class="col-sm-4">
+        <input type="text" id="username" name="username" class="form-control" [(ngModel)]="profile.username"
+          #username="ngModel" spellcheck="false" required />
+        <div *ngIf="f.submitted && username.invalid" class="alert alert-danger">
+          <div *ngIf="username.errors.required"><i class="icon-exclamation mr-2"></i>Username is required</div>
+          <div *ngIf="username.errors.alreadyused">
+            <i class="icon-exclamation mr-2"></i>Username already in use
+          </div>
+          <div *ngIf="username.errors.alreadyused">Available: {{possibleUsername}}</div>
+        </div>
+      </div>
+      <div class="col-sm-6"></div>
+    </div>
+    <div class="form-group row">
+      <label for="email" class="col-sm-2"><strong>Email</strong></label>
+      <div class="col-sm-4">
+        <input type="email" id="email" name="email" class="form-control" [(ngModel)]="profile.email" #email="ngModel"
+          spellcheck="false" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" />
+        <div *ngIf="f.submitted && email.invalid" class="alert alert-danger">
+          <div *ngIf="email.errors.required"><i class="icon-exclamation mr-2"></i>Email is required</div>
+          <div *ngIf="email.errors.pattern">
+            <i class="icon-exclamation mr-2"></i>Email must be a valid email address
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6"></div>
+    </div>
+    <div class="form-group row">
+      <label for="password" class="col-sm-2"><strong>Password</strong></label>
+      <div class="col-sm-4">
+        <div>
+          <input type="password" id="password" name="password" type="password" class="form-control inline-control"
+            [(ngModel)]="profile.password" #password="ngModel" spellcheck="false" appPasswordToggle
+            ngbTooltip="{{passwordTooltip}}" />
+        </div>
+        <div *ngIf="f.submitted && password.invalid">
+          <div *ngFor="let passwordError of passwordErrors" class="alert alert-danger">
+            <i class="icon-exclamation mr-2"></i>{{passwordError}}
+          </div>
+        </div>
+        <app-password-validator [hidden]="!profile.password.length" [passwordToCheck]="profile.password"
+          (onGetPasswordValidation)="setPasswordValidation($event)"></app-password-validator>
+      </div>
+      <div class="col-sm-6"></div>
+    </div>
+    <div class="form-group row">
+      <label for="about" class="col-sm-2"><strong>Avatar</strong></label>
+    </div>
+    <div class="form-group row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-4">
+        <app-image-upload [currentUrl]="profile.avatarUrl" [uploadType]="'profile'" [imageWidth]="300"
+          [imageHeight]="300" (urlChange)="profile.avatarUrl=$event"></app-image-upload>
+      </div>
+      <div class="col-sm-6">
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="created" class="col-sm-2"><strong>Joined</strong></label>
+      <div class="col-sm-10">
+        <span id="created" name="created">{{profile.created | date}}</span>
+      </div>
+    </div>
+    <hr />
+    <div class="form-group">
+      <div *ngIf="f.submitted && f.form.invalid" class="alert alert-danger">
+        Please correct any errors trying to save.
+      </div>
+      <div class="btn-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </form>
+</div>

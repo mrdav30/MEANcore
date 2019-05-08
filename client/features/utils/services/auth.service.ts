@@ -54,7 +54,7 @@ export class AuthService {
             );
     }
 
-    valuedateUser(user): Observable<{}> {
+    validateUser(user): Observable<{}> {
         return this.http.post(this.validateUrl, user, httpOptions)
             .pipe(
                 catchError(this.handleErrorService.handleError<any>('ValidateUser'))

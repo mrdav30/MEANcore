@@ -1,5 +1,5 @@
 import { Component, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
 import { AuthService } from '../../utils';
@@ -26,18 +26,11 @@ export class SignUpComponent {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) { }
 
   onSubmit(): void {
     this.authService.signUp(this.user).subscribe((data: any) => {
-      this.processResult(data);
-    });
-  }
-
-  processResult(data: any): void {
-    if (data) {
       if (data.userExists) {
         this.possibleUsername = data.possibleUsername;
         this.username.control.setErrors({ alreadyused: true });
@@ -46,7 +39,7 @@ export class SignUpComponent {
           this.redirectPostLogin();
         }
       }
-    }
+    });
   }
 
   setPasswordValidation(passwordValidation: any): void {
