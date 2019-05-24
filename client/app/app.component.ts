@@ -3,6 +3,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { distinctUntilChanged } from 'rxjs/operators';
 
+import { includes } from 'lodash';
+
 import { environment } from '../environments/environment';
 
 import { ScriptInjectorService } from '../features/utils';
@@ -38,13 +40,17 @@ export class AppComponent implements OnInit {
         return true;
       })
     ).subscribe((x: any) => {
-      const title = this.titleService.getTitle();
-      const path = x.url;
+      // Don't send prerenders to google analytics
+      if (!includes(x.url, '?prerender=true')) {
 
-      gtag('config', environment.googleAnalyticsID, {
-        page_title: title,
-        page_path: path
-      });
+        const title = this.titleService.getTitle();
+        const path = x.url;
+
+        gtag('config', environment.googleAnalyticsID, {
+          page_title: title,
+          page_path: path
+        });
+      }
     });
   }
 }

@@ -56,7 +56,7 @@ exports.renderIndex = async function (req, res) {
   } else {
     var indexPath = path.normalize(config.app.defaultPage);
     res.render(indexPath, config.app, function (err, indexHtml) {
-      res.status(200).send(indexHtml);
+      return res.status(200).send(indexHtml);
     });
   }
 };
