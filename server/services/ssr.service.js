@@ -38,7 +38,8 @@ async function ssr(url) {
     // The page's JS has likely produced markup by this point, but wait longer
     // if your site lazy loads, etc.
     await page.goto(url, {
-      waitUntil: 'networkidle0'
+      waitUntil: 'networkidle0',
+      timeout: 0
     });
   } catch (err) {
     console.error(err);
