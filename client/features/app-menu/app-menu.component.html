@@ -31,11 +31,11 @@
         </form>
       </li>
       <li *ngIf="!user && showLoginNav" class="nav-item">
-        <a routerLink="/sign-in" routerLinkActive="btn-secondary" class="btn btn-outline-dark mr-2">Login</a>
-        <a routerLink="/sign-up" routerLinkActive="btn-secondary" class="btn btn-outline-dark">Get Started</a>
+        <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark mr-2">Login</a>
+        <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark">Get Started</a>
       </li>
       <li *ngIf="user" class="nav-item">
-        <a routerLink="/profile" class="username-link mr-2"><strong>Hello, {{user.displayName}}!</strong></a>
+        <a routerLink="/profile" rel="nofollow" class="username-link mr-2"><strong>Hello, {{user.displayName}}!</strong></a>
         <button type="button" (click)="logout()" class="btn btn-outline-dark">Logout</button>
       </li>
     </ul>
