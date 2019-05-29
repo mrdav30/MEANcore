@@ -1,13 +1,13 @@
-[![MEANcore Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png)](https://github.com/mrdav30/MEANcore)
+[![MEANcore Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png) MEANcore](https://github.com/mrdav30/MEANcore) 
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
 [![Dependencies Status](https://david-dm.org/mrdav30/MEANcore.svg)](https://david-dm.org/mrdav30/MEANcore)
 [![devDependencies Status](https://david-dm.org/mrdav30/MEANcore/dev-status.svg)](https://david-dm.org/mrdav30/MEANcore?type=dev)
 [![Known Vulnerabilities](https://snyk.io/test/github/mrdav30/MEANcore/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mrdav30/MEANcore?targetFile=package.json)
 
-# MEANcore Starter Kit
+# MEAN Stack Starter Kit
 
-The MEANcore starter kit is a full-stack JavaScript open-source solution, which provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
+MEANcore is an open-source boilerplate solution based on the MEAN stack and provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
 
 ### Benefits
 
@@ -18,7 +18,7 @@ The MEANcore starter kit is a full-stack JavaScript open-source solution, which 
 - Scalable architecture with base app template including example components, services and tests
 
 ## Before You Begin
-Before you begin, it's recommend you read about the basic building blocks that assemble a MEAN application:
+Before you begin, it's recommend you read about the basic building blocks that assemble a MEAN stack application:
 * MongoDB - Go through [MongoDB Official Website](https://www.mongodb.com/) and proceed to their [Official Manual](http://docs.mongodb.org/manual/), which should help you understand NoSQL and MongoDB better.
 * Express - The best way to understand express is through its [Official Website](http://expressjs.com/), which has a [Getting Started](http://expressjs.com/starter/installing.html) guide, as well as an [ExpressJS](http://expressjs.com/en/guide/routing.html) guide for general express topics. You can also go through this [StackOverflow Thread](http://stackoverflow.com/questions/8144214/learning-express-for-node-js) for more resources.
 * Angular - Angular's [Official Website](https://angular.io/) is a great starting point.
