@@ -38,6 +38,12 @@ async function ssr(url, browserWSEndpoint) {
       return req.abort();
     }
 
+    // Don't load Google Analytics lib requests so pageviews aren't 2x.
+    const blacklist = ['www.google-analytics.com', '/gtag/js', 'ga.js', 'analytics.js'];
+    if (blacklist.find(regex => req.url().match(regex))) {
+      return req.abort();
+    }
+
     // 3. Pass through all other requests.
     req.continue();
   });
