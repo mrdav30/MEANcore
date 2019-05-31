@@ -5,7 +5,13 @@ var puppeteer = require('puppeteer');
 // Google Cloud Storage (https://firebase.google.com/docs/storage/web/start).
 const RENDER_CACHE = new Map();
 
-async function ssr(url) {
+/**
+ * @param {string} url URL to prerender.
+ * @param {string} browserWSEndpoint Optional remote debugging URL. If
+ *     provided, Puppeteer's reconnects to the browser instance. Otherwise,
+ *     a new browser instance is launched.
+ */
+async function ssr(url, browserWSEndpoint) {
   if (RENDER_CACHE.has(url)) {
     return {
       html: RENDER_CACHE.get(url),
@@ -15,7 +21,10 @@ async function ssr(url) {
 
   const start = Date.now();
 
-  const browser = await puppeteer.launch();
+  console.info('Connecting to existing Chrome instance.');
+  const browser = await puppeteer.connect({
+    browserWSEndpoint
+  }); //await puppeteer.launch();
   const page = await browser.newPage();
 
   // 1. Intercept network requests.
@@ -47,7 +56,8 @@ async function ssr(url) {
   }
 
   const html = await page.content(); // serialized HTML of page DOM.
-  await browser.close();
+  //await browser.close();
+  await page.close(); // Close the page we opened here (not the browser).
 
   const ttRenderMs = Date.now() - start;
   console.info(`Headless rendered page ${url} in: ${ttRenderMs}ms`);
