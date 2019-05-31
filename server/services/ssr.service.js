@@ -43,10 +43,14 @@ async function ssr(url, browserWSEndpoint) {
   });
 
   try {
+    // Add ?headless to the URL so the page has a signal
+    // it's being loaded by headless Chrome.
+    const renderUrl = new URL(url);
+    renderUrl.searchParams.set('headless', '');
     // networkidle0 waits for the network to be idle (no requests for 500ms).
     // The page's JS has likely produced markup by this point, but wait longer
     // if your site lazy loads, etc.
-    await page.goto(url, {
+    await page.goto(renderUrl, {
       waitUntil: 'networkidle0',
       timeout: 0
     });

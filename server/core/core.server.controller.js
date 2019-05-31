@@ -33,7 +33,7 @@ exports.prerender = async function (req, res, next) {
   if (!isBot(req.headers['user-agent'])) {
     return next();
   } else {
-    if (req.query.prerender) {
+    if (typeof req.query.headless != 'undefined') {
       return next();
     } else {
       if (!browserWSEndpoint) {
@@ -41,10 +41,11 @@ exports.prerender = async function (req, res, next) {
         browserWSEndpoint = await browser.wsEndpoint();
       };
 
+      const url = `${req.protocol}://${req.get('host')}${req.url}`;
       const {
         html,
         ttRenderMs
-      } = await ssrService.ssr(`${req.protocol}://${req.get('host')}${req.url}?prerender=true`, browserWSEndpoint);
+      } = await ssrService.ssr(url, browserWSEndpoint);
       // Add Server-Timing! See https://w3c.github.io/server-timing/.
       res.set('Server-Timing', `Prerender;dur=${ttRenderMs};desc="Headless render time (ms)"`);
       return res.status(200).send(html + '<!-- SSR -->'); // Serve prerendered page as response.
