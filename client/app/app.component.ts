@@ -41,6 +41,7 @@ export class AppComponent implements OnInit {
       })
     ).subscribe((x: any) => {
       // Don't send prerenders to google analytics
+      if (!includes(x.url, '?prerender=true')) {
         const title = this.titleService.getTitle();
         const path = x.url;
 
@@ -48,6 +49,7 @@ export class AppComponent implements OnInit {
           page_title: title,
           page_path: path
         });
+      }
     });
   }
 }
