@@ -17,8 +17,8 @@ export interface RouteParams {
   templateUrl: `recover-password.component.html`
 })
 export class RecoverPasswordComponent implements OnInit {
-  @ViewChild('usernameOrEmail') usernameOrEmail: NgModel;
-  @ViewChild('password') password: NgModel;
+  @ViewChild('usernameOrEmail', {static: false}) usernameOrEmail: NgModel;
+  @ViewChild('password', {static: false}) password: NgModel;
   public user: any = {
     usernameOrEmail: '',
     password: ''

@@ -14,10 +14,10 @@ import { AuthService } from '../../utils';
 })
 
 export class SignInComponent implements OnInit, AfterViewInit {
-  @ViewChild('usernameOrEmail') usernameOrEmail: NgModel;
-  @ViewChild('userFocus') userFocus: ElementRef;
-  @ViewChild('password') password: NgModel;
-  @ViewChild('passFocus') passFocus: ElementRef;
+  @ViewChild('usernameOrEmail', {static: false}) usernameOrEmail: NgModel;
+  @ViewChild('userFocus', {static: false}) userFocus: ElementRef;
+  @ViewChild('password', {static: false}) password: NgModel;
+  @ViewChild('passFocus', {static: false}) passFocus: ElementRef;
   public user: any = {
     usernameOrEmail: '',
     password: ''

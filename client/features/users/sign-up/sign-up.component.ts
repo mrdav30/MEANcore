@@ -13,8 +13,8 @@ import { AuthService } from '../../utils';
   templateUrl: `sign-up.component.html`
 })
 export class SignUpComponent implements OnInit {
-  @ViewChild('username') username: NgModel;
-  @ViewChild('password') password: NgModel;
+  @ViewChild('username', {static: false}) username: NgModel;
+  @ViewChild('password', {static: false}) password: NgModel;
   public user: any = {
     firstName: '',
     lastName: '',

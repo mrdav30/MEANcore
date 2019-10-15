@@ -18,7 +18,7 @@ export interface RouteParams {
   templateUrl: `reset-password.component.html`
 })
 export class ResetPasswordComponent implements OnInit {
-  @ViewChild('newPassword') newPassword: NgModel;
+  @ViewChild('newPassword', {static: false}) newPassword: NgModel;
   public credentials: any = {
     token: '',
     newPassword: ''
