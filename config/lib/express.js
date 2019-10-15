@@ -206,7 +206,7 @@ var initHelmetHeaders = function (app) {
   app.use(helmet.ieNoOpen());
   app.use(helmet.hsts({
     maxAge: SIX_MONTHS,
-    includeSubdomains: true,
+    includeSubDomains: true,
     force: true
   }));
 
