@@ -4,13 +4,8 @@ var path = require('path'),
   _ = require('lodash'),
   config = require(path.resolve('./config/config')),
   isBot = config.helpers.isBot,
-<<<<<<< HEAD
   puppeteer = require('puppeteer'),
-  ssrService = config.services.ssrService,
-  uacController = require('../user-access-control/user-access-control.server.controller');
-=======
   ssrService = config.services.ssrService;
->>>>>>> working
 
 let browserWSEndpoint = null;
 
