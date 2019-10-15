@@ -9,7 +9,7 @@ import { environment } from '../environments/environment';
 
 import { ScriptInjectorService } from '../features/utils';
 
-declare var gtag: (type: string, googleAnalyticsID: string, pageProperties: any) => void;
+declare const gtag: (type: string, googleAnalyticsID: string, pageProperties: any) => void;
 
 @Component({
   moduleId: module.id,

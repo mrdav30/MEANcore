@@ -1,35 +1,56 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+
 import { AuthService } from '../../../utils';
 import { RecoverPasswordComponent } from './recover-password.component';
+import { HomeComponent } from '../../../home/home.component';
 
 describe('RecoverPasswordComponent', () => {
   let component: RecoverPasswordComponent;
   let fixture: ComponentFixture<RecoverPasswordComponent>;
+  let router: Router;
+
+  beforeEach(
+    async(() => {
+      const authServiceStub = {
+        signIn: () => ({ subscribe: () => ({}) }),
+        forgot: () => ({ subscribe: () => ({}) }),
+        user: false,
+        redirectUrl: 'home'
+      };
+      TestBed.configureTestingModule({
+        schemas: [NO_ERRORS_SCHEMA],
+        declarations: [
+          RecoverPasswordComponent,
+          HomeComponent
+        ],
+        imports: [
+          FormsModule,
+          RouterTestingModule.withRoutes([
+            { path: 'home', component: HomeComponent }
+          ]),
+        ],
+        providers: [
+          { provide: AuthService, useValue: authServiceStub }
+        ]
+      }).compileComponents();
+    }));
+
   beforeEach(() => {
-    const routerStub = { navigate: () => ({}) };
-    const activatedRouteStub = { params: { subscribe: () => ({}) } };
-    const authServiceStub = {
-      signIn: () => ({ subscribe: () => ({}) }),
-      forgot: () => ({ subscribe: () => ({}) }),
-      user: {},
-      redirectUrl: {}
-    };
-    TestBed.configureTestingModule({
-      schemas: [NO_ERRORS_SCHEMA],
-      declarations: [RecoverPasswordComponent],
-      providers: [
-        { provide: Router, useValue: routerStub },
-        { provide: ActivatedRoute, useValue: activatedRouteStub },
-        { provide: AuthService, useValue: authServiceStub }
-      ]
-    });
     fixture = TestBed.createComponent(RecoverPasswordComponent);
-    component = fixture.componentInstance;
+    component = fixture.debugElement.componentInstance;
+    router = TestBed.get(Router);
+
+    component.user.usernameOrEmail = 'test@test.com';
+
+    fixture.detectChanges();
   });
-  it('can load instance', () => {
+
+  it('should create a component', () => {
     expect(component).toBeTruthy();
   });
   it('isSecretValidated defaults to: false', () => {
@@ -39,23 +60,43 @@ describe('RecoverPasswordComponent', () => {
     expect(component.isSecretReset).toEqual(false);
   });
   describe('recoverPassword', () => {
-    it('makes expected calls', () => {
+    it('signs in when correct password entered', () => {
+      component.user.password = 'secret';
       const authServiceStub: AuthService = fixture.debugElement.injector.get(
         AuthService
       );
-      spyOn(authServiceStub, 'signIn');
-      spyOn(authServiceStub, 'forgot');
+      spyOn(authServiceStub, 'signIn').and.callFake(() => {
+        return of(true);
+      });
+      authServiceStub.user = true;
+      component.recoverPassword();
+      expect(authServiceStub.signIn).toHaveBeenCalled();
+      expect(component.isSecretValidated).toEqual(true);
+    });
+    it('alerts user that a recovery email was sent', () => {
+      component.user.password = 'secret';
+      const authServiceStub: AuthService = fixture.debugElement.injector.get(
+        AuthService
+      );
+      spyOn(authServiceStub, 'signIn').and.callFake(() => {
+        return of({ invalidSecret: true });
+      });
+      spyOn(authServiceStub, 'forgot').and.callFake(() => {
+        return of({ isSecretReset: true });
+      });
+      authServiceStub.user = false;
       component.recoverPassword();
       expect(authServiceStub.signIn).toHaveBeenCalled();
       expect(authServiceStub.forgot).toHaveBeenCalled();
+      expect(component.isSecretReset).toEqual(true);
     });
   });
   describe('redirectPostLogin', () => {
     it('makes expected calls', () => {
-      const routerStub: Router = fixture.debugElement.injector.get(Router);
-      spyOn(routerStub, 'navigate');
+      const navigateSpy = spyOn(router, 'navigate');
+
       component.redirectPostLogin();
-      expect(routerStub.navigate).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['home']);
     });
   });
 });

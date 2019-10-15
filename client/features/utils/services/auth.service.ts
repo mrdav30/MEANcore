@@ -18,7 +18,7 @@ const httpOptions = {
 @Injectable()
 export class AuthService {
     public redirectUrl = environment.appDefaultRoute;
-    public user: any;
+    public user: any = false;
     public userChange$: Observable<any>;
 
     private signInUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signIn'; // URL to web API

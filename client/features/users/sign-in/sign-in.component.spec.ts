@@ -1,31 +1,53 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+
 import { AuthService } from '../../utils';
 import { SignInComponent } from './sign-in.component';
+import { HomeComponent } from '../../home/home.component';
 
 describe('SignInComponent', () => {
   let component: SignInComponent;
   let fixture: ComponentFixture<SignInComponent>;
+  let router: Router;
+
   beforeEach(() => {
-    const routerStub = { navigate: () => ({}) };
     const authServiceStub = {
-      user: {},
-      valuedateUser: () => ({ subscribe: () => ({}) }),
+      user: false,
+      validateUser: () => ({ subscribe: () => ({}) }),
       signIn: () => ({ subscribe: () => ({}) }),
-      redirectUrl: {}
+      redirectUrl: 'home'
     };
+
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
-      declarations: [SignInComponent],
+      declarations: [
+        SignInComponent,
+        HomeComponent
+      ],
+      imports: [
+        FormsModule,
+        RouterTestingModule.withRoutes([
+          { path: 'home', component: HomeComponent }
+        ]),
+      ],
       providers: [
-        { provide: Router, useValue: routerStub },
         { provide: AuthService, useValue: authServiceStub }
       ]
-    });
-    fixture = TestBed.createComponent(SignInComponent);
-    component = fixture.componentInstance;
+    }).compileComponents();
   });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SignInComponent);
+    component = fixture.debugElement.componentInstance;
+    router = TestBed.get(Router);
+
+    fixture.detectChanges();
+  });
+
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
@@ -33,20 +55,29 @@ describe('SignInComponent', () => {
     expect(component.isUserValidated).toEqual(false);
   });
   describe('ngOnInit', () => {
-    it('makes expected calls', () => {
+    it('redirects if user already logged on', () => {
+      const authServiceStub: AuthService = fixture.debugElement.injector.get(
+        AuthService
+      );
+      authServiceStub.user = true;
       spyOn(component, 'redirectPostLogin');
       component.ngOnInit();
       expect(component.redirectPostLogin).toHaveBeenCalled();
     });
   });
   describe('validateUser', () => {
-    it('makes expected calls', () => {
+    it('ensures username exists', () => {
       const authServiceStub: AuthService = fixture.debugElement.injector.get(
         AuthService
       );
-      spyOn(authServiceStub, 'valuedateUser');
+      spyOn(authServiceStub, 'validateUser').and.callFake(() => {
+        return of({
+          userExists: true
+        });
+      });
       component.validateUser();
-      expect(authServiceStub.valuedateUser).toHaveBeenCalled();
+      expect(authServiceStub.validateUser).toHaveBeenCalled();
+      expect(component.isUserValidated).toEqual(true);
     });
   });
   describe('signIn', () => {
@@ -55,18 +86,23 @@ describe('SignInComponent', () => {
         AuthService
       );
       spyOn(component, 'redirectPostLogin');
-      spyOn(authServiceStub, 'signIn');
+      spyOn(authServiceStub, 'signIn').and.callFake(() => {
+        return of({
+          invalidSecret: false
+        });
+      });
+      authServiceStub.user = true;
       component.signIn();
-      expect(component.redirectPostLogin).toHaveBeenCalled();
       expect(authServiceStub.signIn).toHaveBeenCalled();
+      expect(component.redirectPostLogin).toHaveBeenCalled();
     });
   });
   describe('redirectPostLogin', () => {
-    it('makes expected calls', () => {
-      const routerStub: Router = fixture.debugElement.injector.get(Router);
-      spyOn(routerStub, 'navigate');
+    it('navigates to default route', () => {
+      const navigateSpy = spyOn(router, 'navigate');
+
       component.redirectPostLogin();
-      expect(routerStub.navigate).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(['home']);
     });
   });
 });
