@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 export class SeoService {
     private siteName = environment.appName;
     private twitterHandle = environment.twitterHandle;
+    private metaTitleSuffix = environment.metaTitleSuffix;
 
     constructor(
         private titleService: Title,
@@ -44,7 +45,7 @@ export class SeoService {
 
         this.titleService.setTitle(config.title);
 
-        this.meta.updateTag({ name: 'title', content: config.title });
+        this.meta.updateTag({ name: 'title', content: config.title + ' ' + this.metaTitleSuffix });
         this.meta.updateTag({ name: 'description', content: config.description });
         this.meta.updateTag({ name: 'author', content: config.author });
         this.meta.updateTag({ name: 'keywords', content: config.keywords });
