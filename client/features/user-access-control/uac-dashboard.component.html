@@ -6,7 +6,7 @@
     {{message}}
   </div>
   <div class="row">
-    <div id="roleList" *ngIf="roles" class="col-sm-4">
+    <div id="roleList" *ngIf="metaDataSet" class="col-sm-4">
       <app-dynamic-list listTitle="Roles" [items]="roles" [itemsMetadata]="rolesMetadata" (itemSelect)="onToggleRole($event)"
         (listSelect)="onToggleList($event)" (itemCreate)="onCreateRole($event)" (itemChanges)="onModifyRole($event)"
         (itemDelete)="onDeleteRole($event)" (itemStartEdit)="onStartEditRole()">

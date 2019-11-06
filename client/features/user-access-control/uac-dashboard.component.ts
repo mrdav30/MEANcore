@@ -24,6 +24,7 @@ export class UserAccessControlComponent implements OnInit {
     users: User[] = [];
     features: Feature[] = [];
     permissions: Permission[] = [];
+    metaDataSet = false;
     selectedRole: Role = null;
     featuresSelected = false;
     usersSelected = false;
@@ -49,7 +50,9 @@ export class UserAccessControlComponent implements OnInit {
                 this.roles = data.roles as Role[];
                 this.users = data.users as User[];
                 this.features = data.features as Feature[];
-                await this.setMetaData();
+                await this.setMetaData().then(() => {
+                    this.metaDataSet = true;
+                });
             });
     }
 
