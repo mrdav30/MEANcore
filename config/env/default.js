@@ -68,7 +68,8 @@ module.exports = {
         'data:',
         'https://fonts.gstatic.com/s/montserrat/'
       ],
-      childSrc: ["'self'"],
+      frameSrc: ["'self'"],
+      prefetchSrc: ["'self'"],
       imgSrc: [
         "'self'",
         'data:',
