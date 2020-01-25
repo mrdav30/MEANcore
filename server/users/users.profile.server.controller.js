@@ -78,26 +78,22 @@ exports.me = function (req, res) {
 exports.updateProfile = function (req, res) {
   var profile = req.body;
 
-  // remove password property if it wasn't updated
-  if (!profile.password.length) {
-    delete profile.password;
-  }
-
   userValidation.validateChanges(req, profile, function (err, result) {
     if (err && !result) {
-      return res.status(400).send({
-        message: errorHandler.getErrorMessage(err)
+      res.status(200).send({
+        message: errorHandler.getErrorMessage(err),
+        msgType: 'error'
       });
     } else if (result && result.userExists) {
-      return res.status(200).send({
+      res.status(200).send({
         userExists: true,
         possibleUsername: result.availableUsername
       });
+    } else {
+      res.status(200).send({
+        message: 'Success!'
+      });
     }
-
-    res.status(200).send({
-      message: 'Success!'
-    });
   });
 }
 

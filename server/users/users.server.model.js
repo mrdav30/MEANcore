@@ -133,6 +133,7 @@ UserSchema.pre('save', function (next) {
   next();
 });
 
+
 /**
  * Create instance method for hashing a password
  */
@@ -293,10 +294,10 @@ UserSchema.statics.seed = function (doc, options) {
                   }, (err, result) => {
                     if (err) {
                       return done(err);
-                    } else if (result){
+                    } else if (result) {
                       roleIds.push(result._id);
                       done(null);
-                    } else{
+                    } else {
                       done(null)
                     }
                   })

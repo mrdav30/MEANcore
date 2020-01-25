@@ -25,13 +25,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
     }
 
     readResponse(res: any) {
-        let type = 'error';
-        if (res.status === 200) {
-            type = 'success';
-        }
         const msg: any = {
             message: res.body.message,
-            msgType: type
+            msgType: res.body.msgType ? res.body.msgType : res.status === 200 ? 'success' : 'error'
         };
 
         this.messages.push(msg);

@@ -29,6 +29,11 @@ exports.validateUserData = validateUserData;
 function validateChanges(req, userUpdates, callback) {
   let currentUser = req.user;
 
+  // remove password property if it wasn't updated
+  if (!userUpdates.password.length) {
+    delete userUpdates.password;
+  }
+
   // For security measurement we remove the roles from the req.body object
   delete userUpdates.roles;
 
@@ -59,44 +64,53 @@ function validateChanges(req, userUpdates, callback) {
         }
       },
       function (cb) {
-        // Merge existing user
-        currentUser = _.extend(currentUser, userUpdates);
+        User.findById({
+            _id: mongoose.Types.ObjectId(currentUser._id)
+          })
+          .exec((err, user) => {
+            if (!err && user) {
 
-        currentUser.updated = Date.now();
-        currentUser.displayName = currentUser.firstName + ' ' + currentUser.lastName;
-
-        // Map out roles, only need to store role id
-        currentUser.roles = _.map(currentUser.roles, (role) => {
-            return role && role._id ? role._id.toString() : null;
-        })
-
-        //fields to update
-        var set = _.omit(currentUser, '_id');
-
-        User.updateOne({
-          _id: mongoose.Types.ObjectId(currentUser._id)
-        }, {
-          $set: set
-        }, function (err, doc) {
-          if (err) {
-            return cb(err);
-          }
-
-          // Remove sensitive data before login
-          currentUser.password = undefined;
-          currentUser.salt = undefined;
-
-          req.login(currentUser, function () {
-            // Manually save session before redirect. See bug https://github.com/expressjs/session/pull/69
-            req.session.save(function (err) {
-              if (err) {
-                return cb(err);
+              if (user.authenticate(userUpdates.password)) {
+                return cb('You cannot use a previous password.');
+              } else {
+                user.password = userUpdates.password;
               }
 
-              cb(null);
-            })
-          });
-        });
+              // Merge existing user
+              user = _.extend(user, userUpdates);
+
+              user.updated = Date.now();
+              user.displayName = userUpdates.firstName + ' ' + userUpdates.lastName;
+
+              // Map out roles, only need to store role id
+              user.roles = _.map(user.roles, (role) => {
+                return role && role._id ? role._id.toString() : null;
+              })
+
+              user.save((err) => {
+                if (err) {
+                  return cb(errorHandler.getErrorMessage(err));
+                } else {
+                  // Remove sensitive data before login
+                  user.password = undefined;
+                  user.salt = undefined;
+
+                  req.login(user, function () {
+                    // Manually save session before redirect. See bug https://github.com/expressjs/session/pull/69
+                    req.session.save(function (err) {
+                      if (err) {
+                        return cb(err);
+                      }
+
+                      return cb(null);
+                    })
+                  });
+                }
+              });
+            } else {
+              return cb('User is not found');
+            }
+          })
       }
     ], function (err, result) {
       if (err) {
