@@ -1,8 +1,8 @@
 'use strict';
 
-var async = require('async'),
-  _ = require('lodash'),
+var _ = require('lodash'),
   mongoose = require('mongoose'),
+  errorHandler = require('../errors.server.controller'),
   SequenceCounter = mongoose.model('SequenceCounter'),
   Features = mongoose.model('Features'),
   Roles = mongoose.model('Roles');
@@ -12,8 +12,9 @@ var async = require('async'),
 exports.createFeature = function (req, res) {
   Features(req.body.feature).save(function (err, feature) {
     if (err) {
-      return res.status(500).send({
-        error: 'Unable to create feature'
+      return res.status(200).send({
+        message: 'Unable to create feature',
+        msgType: 'error'
       });
     }
 
@@ -47,27 +48,42 @@ exports.deleteFeature = function (req, res) {
     },
     function (err, feature) {
       if (err) {
-        return res.status(500).send({
-          error: 'Unable to delete feature'
+        return res.status(200).send({
+          message: 'Unable to delete feature',
+          msgType: 'error'
         });
       }
 
-      // delete feature permissions from any assigned roles
-      Roles.updateMany({
-        featurePermissions: {
-          $in: _.map(feature.get('permissions'), (permission) => {
-            return permission.perm_id;
-          })
-        }
-      }, (err) => {
-        if (err) {
-          return res.status(500).send({
-            error: 'Unable to delete feature permissions from roles'
-          });
-        }
+      let permissions = feature.get('permissions');
+      if (permissions.length > 0) {
+        // delete feature permissions from any assigned roles
+        Roles.updateMany({
+          featurePermissions: {
+            $in: _.map(permissions, (permission) => {
+              return permission.perm_id;
+            })
+          }
+        }, {
+          $pull: {
+            featurePermissions: {
+              $in: _.map(permissions, (permission) => {
+                return permission.perm_id;
+              })
+            }
+          }
+        }, (err) => {
+          if (err) {
+            return res.status(200).send({
+              message: 'Unable to delete feature permissions from roles',
+              msgType: 'error'
+            });
+          }
 
+          res.status(200).send();
+        })
+      } else {
         res.status(200).send();
-      })
+      }
     });
 };
 
@@ -84,7 +100,7 @@ exports.createPermission = function (req, res) {
 
     permissionParms.perm_id = counter;
 
-    Features.findOneAndUpdate({
+    Features.updateOne({
         _id: mongoose.Types.ObjectId(req.params.feature_id)
       }, {
         $addToSet: {
@@ -138,24 +154,26 @@ exports.deletePermission = function (req, res) {
     },
     function (err) {
       if (err) {
-        return res.status(500).send({
-          error: 'Unable to delete permission'
+        return res.status(200).send({
+          message: 'Unable to delete permission',
+          msgType: 'error'
         });
       }
 
       // pull permission from any assigned roles
       Roles.updateMany({
-        permissions: {
+        featurePermissions: {
           $in: req.params.perm_id
         }
       }, {
         $pull: {
-          permissions: req.params.perm_id
+          featurePermissions: req.params.perm_id
         }
       }, (err) => {
         if (err) {
-          return res.status(500).send({
-            error: 'Unable to delete permission from roles'
+          return res.status(200).send({
+            messsage: 'Unable to delete permission from roles',
+            msgType: 'error'
           });
         }
 
