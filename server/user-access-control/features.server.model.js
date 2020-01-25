@@ -16,6 +16,10 @@ var featuresSchema = new Schema({
     unique: true,
     trim: true
   },
+  order_priority: {
+    type: Number,
+    unique: true
+  },
   permissions: [{
     perm_id: {
       type: String

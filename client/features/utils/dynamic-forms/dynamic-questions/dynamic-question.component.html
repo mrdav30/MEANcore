@@ -9,8 +9,9 @@
     <div *ngSwitchCase="'readonly'" class="form-group">
       <span class="ml-2">{{question.value}}</span>
     </div>
-    <input class="form-control" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.type">
+    <input class="form-control" type="text" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.type">
     <textarea class="form-control" *ngSwitchCase="'textarea'" [formControlName]="question.key" [id]="question.key"></textarea>
+    <input class="form-control" type="number" *ngSwitchCase="'number'" [formControlName]="question.key" [id]="question.key">
     <input class="form-control" type="checkbox" *ngSwitchCase="'checkbox'" [formControlName]="question.key" [id]="question.key">
     <select class="form-control" [id]="question.key" *ngSwitchCase="'dropdown'" [formControlName]="question.key">
       <option *ngFor="let opt of question.selectOptions" [value]="opt.key">{{opt.value}}</option>

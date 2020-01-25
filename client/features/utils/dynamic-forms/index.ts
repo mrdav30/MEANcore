@@ -7,3 +7,4 @@ export * from './dynamic-questions/models/question-dropdown';
 export * from './dynamic-questions/models/question-readonly';
 export * from './dynamic-questions/models/question-textbox';
 export * from './dynamic-questions/models/question-textarea';
+export * from './dynamic-questions/models/question-number';

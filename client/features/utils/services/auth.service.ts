@@ -20,6 +20,7 @@ export class AuthService {
     public redirectUrl = environment.appDefaultRoute;
     public user: any = false;
     public userChange$: Observable<any>;
+    private authListener: Observer<any>;
 
     private signInUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signIn'; // URL to web API
     private recoverUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/forgot';
@@ -27,7 +28,6 @@ export class AuthService {
     private signOutUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signOut';
     private validateUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/validate';
     private signUpUrl = environment.appBaseUrl + environment.apiBaseUrl + '/auth/signUp';
-    private authListener: Observer<any>;
 
     constructor(
         public configService: ConfigService,

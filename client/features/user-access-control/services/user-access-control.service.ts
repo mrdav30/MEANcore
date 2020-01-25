@@ -6,6 +6,17 @@ import {
 } from '@angular/common/http';
 
 import {
+  Observable,
+  Observer
+} from 'rxjs';
+
+import {
+  catchError,
+  tap,
+  share
+} from 'rxjs/operators';
+
+import {
   environment
 } from '../../../environments/environment';
 
@@ -22,9 +33,17 @@ import {
 
 @Injectable()
 export class UserAccessControlService {
+  public featureChange$: Observable < any > ;
+  private uacListener: Observer < any > ;
+
   constructor(
     private http: HttpClient,
     private handleErrorService: HandleErrorService,
+    private appLoadService: AppLoadService
+  ) {
+    this.featureChange$ = new Observable(observer => this.uacListener = observer).pipe(
+      share()
+    );
   }
 
   // UAC viewmodel
@@ -104,6 +123,11 @@ export class UserAccessControlService {
       .toPromise();
   }
 
+  async alertFeatureChange() {
+    await this.appLoadService.initializeApp().then(() => {
+      this.uacListener.next('feature');
+    })
+  }
   // Permissions
 
   createPermission(feature_id: string, permission: Permission): Promise < any > {

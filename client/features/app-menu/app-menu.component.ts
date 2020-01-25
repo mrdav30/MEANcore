@@ -1,10 +1,12 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../utils';
-import { filter, intersection, map } from 'lodash';
+
+import { filter, intersection, map, orderBy } from 'lodash';
 
 import { environment } from '../../environments/environment';
-import { ConfigService, MenuConfig } from '../utils';
+
+import { UserAccessControlService } from '../user-access-control/services/user-access-control.service'
+import { ConfigService, AuthService, MenuConfig } from '../utils';
 
 @Component({
   moduleId: module.id,
@@ -32,13 +34,16 @@ export class AppMenuComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private uacService: UserAccessControlService
   ) { }
 
   ngOnInit(): void {
-    this.menus = this.configService.config.menuConfig ? this.configService.config.menuConfig : [];
     this.authService.userChange$.subscribe(currentUser => {
       this.onSetUser(currentUser);
+    });
+    this.uacService.featureChange$.subscribe(() => {
+      this.setMenuUI();
     });
     this.onSetUser(false);
     this.onResize(window);
@@ -58,6 +63,7 @@ export class AppMenuComponent implements OnInit {
   }
 
   setMenuUI(): void {
+    this.menus = this.configService.config.menuConfig ? this.configService.config.menuConfig : [];
     // if currentUser has no roles defined, assign to default currentUser role
     let userRoles = this.currentUser && this.currentUser.roles ? map(this.currentUser.roles, (role) => {
       return role.name;
@@ -69,6 +75,8 @@ export class AppMenuComponent implements OnInit {
       return !menu.roles ||
         intersection(userRoles, menu.roles).length ? true : false;
     });
+
+    this.visibleMenus = orderBy(this.visibleMenus, 'order_priority', 'asc');
   }
 
   onSubmit(): void {
