@@ -11,7 +11,6 @@ var _ = require('lodash'),
   streamifier = require('streamifier');
 
 // Configure UPLOAD_PATH
-// process.env.IMAGE_STORAGE contains _content/image-uploads
 var UPLOAD_PATH = path.resolve(config.uploads.images.uploadRepository + '/_tempDir');
 
 // create a multer storage engine

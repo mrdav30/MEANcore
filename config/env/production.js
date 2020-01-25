@@ -130,7 +130,8 @@ module.exports = {
           route: '/uac',
           permissions: [{
             name: 'default'
-          }]
+          }],
+          order_priority: 1
         }
       }]
     }, {
