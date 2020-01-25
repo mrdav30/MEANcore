@@ -50,9 +50,11 @@ APP_LOGO='assets/images/logo.png'
 APP_DEFAULT_ROUTE='home'
 APP_BASE_URL='/'
 API_BASE_URL='api'
+APP_DEFAULT_ROUTE=''
 IMAGE_BASE_URL='/image-uploads'
-IMAGE_STORAGE='./_content/image-uploads/'
 TWITTER_HANDLE=''
+MONGO_SEED_LOG_RESULTS=true
+META_TITLE_SUFFIX=' | MEANcore'
 
 SESSION_SECRET='MEANCORE'
 SESSION_KEY='meancore-key'
