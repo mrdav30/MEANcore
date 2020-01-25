@@ -1,0 +1,59 @@
+.app-footer h3 {
+  text-transform: uppercase
+}
+
+.app-footer h3,
+.app-footer p {
+  color: #fff;
+}
+
+.app-footer h3,
+.app-footer p {
+    color: #fff;
+}
+
+.app-footer a {
+    color: #fff;
+}
+
+.app-footer a:hover {
+    color: #7b7b7b;
+}
+
+
+.app-footer li,
+.app-footer ul {
+  margin: 0;
+  padding: 0
+}
+
+.app-footer {
+    background-color: #2f2f2f
+}
+
+.app-footer li {
+  list-style: none
+}
+
+.app-footer ul ul {
+  padding-left: 20px
+}
+
+.about-list,
+.month-list,
+.tag-list {
+  color: #fff;
+
+}
+
+.year {
+  cursor: pointer;
+}
+
+.tag {
+  float: left;
+}
+
+hr {
+  background-color: #fff;
+}

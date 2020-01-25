@@ -1,0 +1,90 @@
+<div class="container p-3">
+  <div class="card form-group">
+    <div class="card-body">
+      <h3><i class="icon-tag mr-2"></i>Contact Us</h3>
+      <div [ngbCollapse]="isMessageSent">
+        <p class="card-text">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua. Tincidunt tortor aliquam nulla facilisi. Nulla posuere sollicitudin aliquam ultrices. Id eu nisl
+          nunc mi ipsum. Vitae proin sagittis nisl rhoncus mattis rhoncus. Pulvinar elementum integer enim neque
+          volutpat ac tincidunt vitae semper. In ante metus dictum at tempor commodo. In vitae turpis massa sed
+          elementum tempus egestas sed sed. Bibendum arcu vitae elementum curabitur vitae nunc sed velit. Amet volutpat
+          consequat mauris nunc congue nisi.
+        </p>
+      </div>
+      <div [ngbCollapse]="!isMessageSent">
+        <p class="card-text">Thanks for the message <i class="far fa-smile-beam"></i></p>
+        <p>We'll review your message as soon as possible and be in touch shortly.</p>
+      </div>
+    </div>
+  </div>
+  <div [ngbCollapse]="isMessageSent">
+    <form name="postForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+      <div class="row form-group">
+        <div class="col-sm-6">
+          <div>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" class="form-control" [(ngModel)]="contactDetails.name"
+              #name="ngModel" appAnimatedLabel required />
+          </div>
+          <div *ngIf="f.submitted && name.invalid" class="alert alert-danger">
+            <div *ngIf="name.errors.required"><i class="icon-exclamation mr-2"></i>Name is required</div>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+
+      </div>
+      <div class="row form-group">
+        <div class="col-sm-6">
+          <div>
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" [(ngModel)]="contactDetails.email"
+              #email="ngModel" appAnimatedLabel required />
+          </div>
+          <div *ngIf="f.submitted && email.invalid" class="alert alert-danger">
+            <div *ngIf="email.errors.required"><i class="icon-exclamation mr-2"></i>Email is required</div>
+            <div *ngIf="email.errors.email"><i class="icon-exclamation mr-2"></i>Email is invalid</div>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+      </div>
+      <div class="row form-group">
+        <div class="col-sm-6">
+          <div>
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" class="form-control" [(ngModel)]="contactDetails.subject"
+              #subject="ngModel" appAnimatedLabel required />
+          </div>
+          <div *ngIf="f.submitted && subject.invalid" class="alert alert-danger">
+            <div *ngIf="subject.errors.required"><i class="icon-exclamation mr-2"></i>Subject is required</div>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+      </div>
+      <div class="row form-group">
+        <div class="col-sm-6">
+          <div>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" class="form-control" [(ngModel)]="contactDetails.message"
+              #message="ngModel" appAnimatedLabel required></textarea>
+          </div>
+          <div *ngIf="f.submitted && message.invalid" class="alert alert-danger">
+            <div *ngIf="message.errors.required"><i class="icon-exclamation mr-2"></i>Subject is required</div>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+      </div>
+      <div class="row form-group">
+        <div class="col-sm-6">
+          <div *ngIf="f.submitted && f.form.invalid" class="alert alert-danger">
+            Please correct any errors trying to save.
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary float-right">Submit</button>
+          </div>
+        </div>
+        <div class="col-sm-6"></div>
+      </div>
+    </form>
+  </div>
+</div>

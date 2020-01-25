@@ -1,14 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-navbar sticky-top">
-  <a class="navbar-brand" routerLink="/home"><img class="img-fluid mr-2" src="{{appLogo}}" />MEANcore</a>
-  <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" aria-controls="navbarNav"
-    aria-expanded="false" aria-label="Toggle navigation">
+  <a class="navbar-brand" routerLink="{{appDefaultRoute}}"><img class="img-fluid mr-2" src="{{appLogo}}" />MEANcore</a>
+  <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
+    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <!-- data-toggle="collapse" data-target="#navbarNav" -->
   <div class="collapse navbar-collapse" id="navbarNav" [ngbCollapse]="isNavbarCollapsed">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a routerLink="{{appHome}}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        <a routerLink="{{appDefaultRoute}}" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}"
+          class="nav-link">
           <i class="icon-home md-24"></i>
         </a>
       </li>
@@ -21,21 +22,24 @@
     <ul class="navbar-nav ml-auto">
       <li *ngIf="showSearchNav" class="nav-item search-nav">
         <form name="searchForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-          <div class="search-panel mr-2">
-            <button type="button" class="btn btn-small" (click)="isSearchVisible=isSearchVisible?false:true">
+          <div class="search-panel">
+            <button type="button" class="btn btn-lg" (click)="isSearchVisible=isSearchVisible?false:true">
               <i class="icon-search"></i>
             </button>
             <input type="search" name="searchQuery" id="searchQuery" *ngIf="isSearchVisible" placeholder="Search..."
-              [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required appInputRestriction>
+              [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required appInputRestriction class="ml-2">
           </div>
         </form>
       </li>
-      <li *ngIf="!user && showLoginNav" class="nav-item">
+      <li *ngIf="!currentUser && showLoginNav" class="nav-item">
         <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark mr-2">Login</a>
         <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark">Get Started</a>
       </li>
-      <li *ngIf="user" class="nav-item">
-        <a routerLink="/profile" rel="nofollow" class="username-link mr-2"><strong>Hello, {{user.displayName}}!</strong></a>
+      <li *ngIf="currentUser" class="nav-item">
+        <a routerLink="/profile" rel="nofollow" class="btn mr-2 user-avatar">         
+          <img [(src)]="currentUserAvatar" *ngIf="currentUserAvatar">
+          <i class="mr-2 icon-user" *ngIf="!currentUserAvatar"></i>
+        </a>
         <button type="button" (click)="logout()" class="btn btn-outline-dark">Logout</button>
       </li>
     </ul>

@@ -37,7 +37,7 @@ exports.prerender = async function (req, res, next) {
     } else {
       if (!browserWSEndpoint) {
         const browser = await puppeteer.launch();
-        browserWSEndpoint = await browser.wsEndpoint();
+        browserWSEndpoint = browser.wsEndpoint();
       };
 
       const url = `${req.protocol}://${req.get('host')}${req.url}`;
@@ -60,8 +60,10 @@ exports.renderIndex = async function (req, res) {
   var ext = getExtention(req.url);
   // TODO: change the way to identify extentions
   var exts = ['html', 'css', 'js', 'pdf', 'jpeg', 'gif', 'png'];
-  if (!config.app.defaultPage || ~exts.indexOf(ext)) { // if not in extentions give 404
-    renderNotFound(req, res); // We know its not found
+  // if not in extentions give 404
+  if (!config.app.defaultPage || ~exts.indexOf(ext)) {
+    // We know its not found
+    renderNotFound(req, res);
   } else {
     var indexPath = path.normalize(config.app.defaultPage);
     res.render(indexPath, config.app, function (err, indexHtml) {

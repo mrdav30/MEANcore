@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { FileUploadModule } from 'ng2-file-upload/ng2-file-upload';
+import { FileUploadModule } from 'ng2-file-upload';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { ImageUploadComponent } from './image-upload.component';

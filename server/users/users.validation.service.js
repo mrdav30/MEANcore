@@ -67,7 +67,7 @@ function validateChanges(req, userUpdates, callback) {
 
         // Map out roles, only need to store role id
         currentUser.roles = _.map(currentUser.roles, (role) => {
-          return role._id.toString();
+            return role && role._id ? role._id.toString() : null;
         })
 
         //fields to update

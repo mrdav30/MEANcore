@@ -16,7 +16,7 @@ const SPLIT_VALUE_ACCESSOR: any = {
     providers: [SPLIT_VALUE_ACCESSOR]
 })
 export class SplitDirective implements ControlValueAccessor {
-    private onChange;
+    private onChange: (arg0: string[]) => void;
 
     private onTouchedCallback: () => void = noop;
 
@@ -33,7 +33,7 @@ export class SplitDirective implements ControlValueAccessor {
                     .split(',')
                     .filter((el) => {
                         // filter out null values
-                        return el;
+                        return el.length > 0;
                     })
                     .map((tag: string) => {
                         // trim whitespace

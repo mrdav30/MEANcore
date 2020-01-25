@@ -4,6 +4,7 @@ var fileExists = require('./helpers/file-exists'),
     shiftKeyCase = require('./helpers/shift-key-case'),
     slugify = require('./helpers/slugify'),
     fileProxy = require('./helpers/file-proxy'),
+    crawlerDetector = require('./helpers/crawler-detector/crawler-detector'),
     isBot = require('./helpers/isBot'),
     imageStorage = require('./helpers/image-storage');
 
@@ -14,6 +15,7 @@ module.exports = {
     shiftKeyCase,
     slugify,
     fileProxy,
+    crawlerDetector,
     isBot,
     imageStorage
 };

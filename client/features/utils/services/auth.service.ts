@@ -42,7 +42,7 @@ export class AuthService {
         this.user = this.configService.user || false;
     }
 
-    signIn(user): Observable<{}> {
+    signIn(user: any): Observable<{}> {
         return this.http.post(this.signInUrl, user)
             .pipe(
                 tap((res: any) => {
@@ -54,14 +54,14 @@ export class AuthService {
             );
     }
 
-    validateUser(user): Observable<{}> {
+    validateUser(user: any): Observable<{}> {
         return this.http.post(this.validateUrl, user, httpOptions)
             .pipe(
                 catchError(this.handleErrorService.handleError<any>('ValidateUser'))
             );
     }
 
-    signUp(user): Observable<{}> {
+    signUp(user: any): Observable<{}> {
         return this.http.post(this.signUpUrl, user, httpOptions)
             .pipe(
                 tap((res: any) => {
@@ -73,14 +73,14 @@ export class AuthService {
             );
     }
 
-    forgot(user): Observable<{}> {
+    forgot(user: any): Observable<{}> {
         return this.http.post(this.recoverUrl, user, httpOptions)
             .pipe(
                 catchError(this.handleErrorService.handleError<any>('ForgotPassword'))
             );
     }
 
-    reset(credentials): Observable<{}> {
+    reset(credentials: any): Observable<{}> {
         return this.http.post(this.resetUrl + credentials.token, credentials, httpOptions)
             .pipe(
                 tap((res: any) => {
@@ -107,7 +107,7 @@ export class AuthService {
         this.authListener.next(this.user);
     }
 
-    hasRole(role): boolean {
+    hasRole(role: any): boolean {
         // only for test since switching makes it a string
         if (!Array.isArray(this.user.roles)) {
             this.user.roles = [this.user.roles];
@@ -115,13 +115,13 @@ export class AuthService {
         return this.user.roles.indexOf(role) !== -1;
     }
 
-    hasPermission(permission): boolean {
+    hasPermission(permission: any): boolean {
         permission = permission.toLowerCase();
         const permissions = this.user.permission_data[environment.appName];
         return !!find(permissions, (p) => p.name === permission);
     }
 
-    checkPermission(permission, attributes): any {
+    checkPermission(permission: any, attributes: any): any {
         permission = permission.toLowerCase();
         const permissions = filter(this.user.permission_data[environment.appName], (p) => p.name === permission);
         return some(permissions, (p) => {

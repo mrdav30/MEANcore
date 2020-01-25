@@ -14,7 +14,7 @@ import { ConfigService, MenuConfig } from '../utils';
 })
 
 export class AppMenuComponent implements OnInit {
-  public appHome = environment.appDefaultRoute;
+  public appDefaultRoute = environment.appDefaultRoute;
   public appLogo = environment.appLogo;
   //  UI Config
   public menus: MenuConfig[];
@@ -26,7 +26,8 @@ export class AppMenuComponent implements OnInit {
   public appSearchRoute = '';
   public searchQuery = '';
   public isNavbarCollapsed = true;
-  public user: any = false;
+  public currentUser: any = false;
+  public currentUserAvatar: any;
 
   constructor(
     private router: Router,
@@ -36,30 +37,31 @@ export class AppMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.menus = this.configService.config.menuConfig ? this.configService.config.menuConfig : [];
-    this.authService.userChange$.subscribe(user => {
-      this.onSetUser(user);
+    this.authService.userChange$.subscribe(currentUser => {
+      this.onSetUser(currentUser);
     });
-    this.onSetUser();
+    this.onSetUser(false);
     this.onResize(window);
   }
 
   @HostListener('window:resize', ['$event.target'])
-  onResize(event) {
+  onResize(event: any) {
     if (event.innerWidth > 990) {
       this.isNavbarCollapsed = true;
     }
   }
 
-  onSetUser(user?: any): void {
-    this.user = user ? user : this.authService.user ? this.authService.user : false;
+  onSetUser(currentUser?: any): void {
+    this.currentUser = currentUser ? currentUser : this.authService.user ? this.authService.user : false;
+    this.currentUserAvatar = this.currentUser ? this.currentUser.avatarUrl : null;
     this.setMenuUI();
   }
 
   setMenuUI(): void {
-    // if user has no roles defined, assign to default user role
-    let userRoles = this.user && this.user.roles ? map(this.user.roles, (role) => {
+    // if currentUser has no roles defined, assign to default currentUser role
+    let userRoles = this.currentUser && this.currentUser.roles ? map(this.currentUser.roles, (role) => {
       return role.name;
-    }) : ['user'];
+    }) : ['currentUser'];
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }

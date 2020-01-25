@@ -30,6 +30,7 @@ module.exports = {
       sslKey: fs.readFileSync('./config/sslcerts/ssl-key.pem'),
       sslPass: '1234'
       */
+      useUnifiedTopology: true
     },
     // Enable mongoose debug mode
     debug: process.env.MONGODB_DEBUG || false

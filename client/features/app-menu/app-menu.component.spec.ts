@@ -70,7 +70,7 @@ describe('AppMenuComponent', () => {
   });
 
   it('appHome defaults to: environment.appDefaultRoute', () => {
-    expect(component.appHome).toEqual(environment.appDefaultRoute);
+    expect(component.appDefaultRoute).toEqual(environment.appDefaultRoute);
   });
 
   it('appLogo defaults to: environment.appLogo', () => {
@@ -98,7 +98,7 @@ describe('AppMenuComponent', () => {
   });
 
   it('user defaults to: false', () => {
-    expect(component.user).toEqual(false);
+    expect(component.currentUser).toEqual(false);
   });
 
   describe('ngOnInit', () => {

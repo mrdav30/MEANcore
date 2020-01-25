@@ -27,7 +27,7 @@ module.exports = function (app) {
         _id: id
       })
       // Only retrieve values required for auth
-      .select('username displayName email appName provider roles knownIPAddresses password salt')
+      .select('username displayName email avatarUrl appName provider roles knownIPAddresses password salt')
       .lean()
       .exec(function (err, user) {
         if (err || !user) {

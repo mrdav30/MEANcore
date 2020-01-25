@@ -28,7 +28,7 @@ module.exports.connect = function (callback) {
     .then(function (connection) {
       // Enabling mongoose debug mode if required
       mongoose.set('debug', config.mongoDB.debug);
-
+      
       // Call callback FN
       if (callback) callback(connection.db);
     })
