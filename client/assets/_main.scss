@@ -330,6 +330,10 @@ input:checked+.slider.round.exclude:before {
   border-left: 5px solid #42A948;
 }
 
+.ng-invalid[required] {
+  border-left: 5px solid #ff0000;
+}
+
 .restricted-textarea {
   max-width: 100%;
   max-height: 150px;

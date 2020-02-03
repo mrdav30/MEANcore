@@ -14,9 +14,10 @@
 }
 
 .upload-picture img {
-    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     height: 100%;
-    position: absolute;
     z-index: 2;
     border-radius: 1em;
 }
@@ -25,8 +26,9 @@
     height: 100%;
     width: 100%;
     padding: 5px;
-    margin: 0px;
-    position: relative;
+    position: absolute;
+    left: 0;
+    top: 0;
     z-index: 3;
 }
 
