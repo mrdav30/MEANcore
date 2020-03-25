@@ -72,7 +72,8 @@ module.exports = {
       imgSrc: [
         "'self'",
         'data:',
-        'https://www.google-analytics.com/'
+        'https://www.google-analytics.com/',
+        'https://www.gstatic.com/images/branding/'
       ],
       reportUri: '/report-violation',
       objectSrc: ["'none'"],
