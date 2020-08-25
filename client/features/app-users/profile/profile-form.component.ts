@@ -18,8 +18,8 @@ import { Profile } from './profile';
 })
 
 export class ProfileFormComponent implements OnInit {
-    @ViewChild('username', {static: false}) username: NgModel;
-    @ViewChild('password', {static: false}) password: NgModel;
+    @ViewChild('username') username: NgModel;
+    @ViewChild('password') password: NgModel;
     public profile: Profile;
     public possibleUsername: string;
     public passwordTooltip: string;
