@@ -10,7 +10,7 @@ var async = require('async'),
   path = require('path'),
   config = require(path.resolve('./config/config')),
   crypto = require('crypto'),
-  owasp = require('owasp-password-strength-test'),
+  owasp = config.sharedModules.owaspPasswordStrengthTest,
   generatePassword = require('generate-password'),
   chalk = require('chalk');
 

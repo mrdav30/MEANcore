@@ -10,6 +10,7 @@ module.exports = {
     sockets: 'server/**/*sockets.js',
     models: 'server/**/*model.js',
     config: ['server/*/config/*.js'],
+    sharedModules: ['sharedModules/*.js'],
     views: ['server/*/views/*.html']
   }
 };

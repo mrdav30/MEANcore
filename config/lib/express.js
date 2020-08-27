@@ -372,6 +372,9 @@ var initApps = function (db) {
   // assigning helpers to configs
   config.helpers = require(path.resolve('./server/helpers.js'));
 
+  // assigning shared modules to configs
+  config.sharedModules = require(path.resolve('./sharedModules/sharedModules.js'));
+
   // set up view
   config.serverViewPath = 'server';
 

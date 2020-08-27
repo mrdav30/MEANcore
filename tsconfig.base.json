@@ -22,6 +22,7 @@
     ],
     "paths": {
       "@env/*": ["environments/*"],
+      "@sharedModules/owasp-password-strength-test": ["../sharedModules/owasp-password-strength-test.js"],
       "core-js/es6/*": ["../node_modules/core-js/es/*"],
       "core-js/es7/*": ["../node_modules/core-js/es/*"]
     }
