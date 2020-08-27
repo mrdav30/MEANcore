@@ -1,7 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
-import { forEach, includes, chain } from 'lodash';
+import { forEach, includes, chain } from 'lodash-es';
 
 import { QuestionBase } from './dynamic-questions/models/question-base';
 import { QuestionControlService } from './dynamic-questions/services/question-control.service';

@@ -1,5 +1,5 @@
 const path = require('path');
-const SitemapGenerator = require('advanced-sitemap-generator');
+const SitemapGenerator = require('sitemap-generator');
 
 // create generator
 const generator = SitemapGenerator('https://meancore.com', {

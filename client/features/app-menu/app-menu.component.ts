@@ -1,7 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { filter, intersection, map, orderBy } from 'lodash';
+import { filter, intersection, map, orderBy } from 'lodash-es';
 
 import { environment } from '../../environments/environment';
 

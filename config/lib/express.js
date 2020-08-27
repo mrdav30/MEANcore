@@ -18,6 +18,7 @@ var config = require('../config'),
   cookieParser = require('cookie-parser'),
   helmet = require('helmet'),
   csp = require('helmet-csp'),
+  nocache = require('nocache'),
   flash = require('connect-flash'),
   hbs = require('express-hbs'),
   path = require('path'),
@@ -200,7 +201,7 @@ var initHelmetHeaders = function (app) {
     action: 'sameorigin'
   }));
   app.use(helmet.hidePoweredBy());
-  app.use(helmet.noCache());
+  app.use(nocache());
   app.use(helmet.xssFilter());
   app.use(helmet.noSniff());
   app.use(helmet.ieNoOpen());

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 
-import { merge } from 'lodash';
+import { merge } from 'lodash-es';
 
 import { ProfileService } from '../../utils/services/profile.service';
 import { Profile } from './profile';

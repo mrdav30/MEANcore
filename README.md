@@ -31,7 +31,7 @@ Checkout our blog [Techievor](https://techievor.com) built on meancore for a ful
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
 * Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
-* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.
+* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version 10.15.0 of Node, 10.20.0 is preferred.
 * MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017).
 
 # Getting started
@@ -47,10 +47,9 @@ PROXY=
 
 APP_NAME='meancore'
 APP_LOGO='assets/images/logo.png'
-APP_DEFAULT_ROUTE='home'
+APP_DEFAULT_ROUTE=''
 APP_BASE_URL='/'
 API_BASE_URL='api'
-APP_DEFAULT_ROUTE=''
 IMAGE_BASE_URL='/image-uploads'
 IMAGE_STORAGE='./_content/image-uploads/'
 TWITTER_HANDLE=''
@@ -129,6 +128,7 @@ scripts/                     scripts for configuration and managing the applicat
 |- set-env.ts                run to configure environment configuration based on process.env
 |- version.ts                creates a version file under assets based on package version
 server/                      project source code for server
+sharedModules/               custom modules that are shared between the client and server
 reports/                     test and coverage reports
 .env                         process.env variable configuration
 proxy.conf.js                backend proxy configuration

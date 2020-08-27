@@ -10,7 +10,7 @@ import {
   map,
   find,
   findIndex
-} from 'lodash';
+} from 'lodash-es';
 
 import {
   environment

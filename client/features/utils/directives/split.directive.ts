@@ -13,7 +13,7 @@ import {
 import {
   chain,
   trim
-} from 'lodash';
+} from 'lodash-es';
 
 const noop = () => {}; // tslint:disable-line
 

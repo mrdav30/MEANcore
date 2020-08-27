@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 
-import { split } from 'lodash';
+import { split } from 'lodash-es';
 
 import { environment } from '../../../environments/environment';
 

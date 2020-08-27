@@ -119,6 +119,7 @@ var validateSessionSecret = function (config, testing) {
 
 /**
  * Initialize global configuration files
+ * TODO: this will be used for module based functionality
  */
 var initGlobalConfigFolders = function (config, assets) {
   // Appending files

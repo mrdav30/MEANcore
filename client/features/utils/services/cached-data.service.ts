@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { tap, publishReplay, refCount, catchError } from 'rxjs/operators';
-import { map, forEach } from 'lodash';
+import { map, forEach } from 'lodash-es';
 
 import { HandleErrorService } from './handle-error.service';
 
