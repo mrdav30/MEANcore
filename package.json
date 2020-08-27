@@ -64,7 +64,7 @@
     "fs-extra": "^8.1.0",
     "generate-password": "^1.5.0",
     "git-describe": "^4.0.4",
-    "googleapis": "^47.0.0",
+    "googleapis": "^49.0.0",
     "helmet": "^3.21.2",
     "helmet-csp": "^2.9.4",
     "https-proxy-agent": "^4.0.0",
