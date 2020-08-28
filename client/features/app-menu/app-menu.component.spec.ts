@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { environment } from '../../environments/environment';
+import { environment } from '@env';
 
 import { AuthService } from '../utils';
 import { ConfigService } from '../utils';

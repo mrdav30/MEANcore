@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
-import { environment } from '../environments/environment';
+// import { environment } from '../environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
 
@@ -75,11 +75,12 @@ export function init_app(appLoadService: AppLoadService) {
     LoadingService,
     MessagingService,
     ScriptInjectorService,
-    SeoService,
-    {
-      provide: '@env',
-      useValue: environment
-    }
+    SeoService
+    // ,
+    // {
+    //   provide: '@env',
+    //   useValue: environment
+    // }
   ],
   bootstrap: [AppComponent]
 })

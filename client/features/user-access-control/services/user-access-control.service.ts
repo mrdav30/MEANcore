@@ -18,7 +18,7 @@ import {
 
 import {
   environment
-} from '../../../environments/environment';
+} from '@env';
 
 import {
   HandleErrorService,

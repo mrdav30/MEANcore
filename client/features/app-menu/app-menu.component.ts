@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { filter, intersection, map, orderBy } from 'lodash-es';
 
-import { environment } from '../../environments/environment';
+import { environment } from '@env';
 
 import { UserAccessControlService } from '../user-access-control/services/user-access-control.service'
 import { ConfigService, AuthService, MenuConfig } from '../utils';

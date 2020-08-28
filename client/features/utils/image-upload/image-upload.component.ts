@@ -3,7 +3,7 @@ import { FileUploader } from 'ng2-file-upload';
 
 import { split } from 'lodash-es';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@env';
 
 import { ImageUploadService } from './image-upload.service';
 

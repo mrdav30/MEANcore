@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgModel } from '@angular/forms';
 
-import { environment } from '../../../../environments/environment';
+import { environment } from '@env';
 
 import { AuthService } from '../../../utils';
 

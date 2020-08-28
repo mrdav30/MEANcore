@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 
 import { find, filter, some, every } from 'lodash-es';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@env';
 
 import { ConfigService } from './config.service';
 import { HandleErrorService } from './handle-error.service';

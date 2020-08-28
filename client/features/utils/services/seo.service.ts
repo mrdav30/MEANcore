@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@env';
 
 @Injectable()
 export class SeoService {

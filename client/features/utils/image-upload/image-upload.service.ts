@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, Observer } from 'rxjs';
-import { catchError, share, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Router } from '@angular/router';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@env';
 
 import { ConfigService } from '../services/config.service';
 import { HandleErrorService } from '../services/handle-error.service';

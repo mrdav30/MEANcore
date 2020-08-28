@@ -3,7 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import { environment } from '../environments/environment';
+import { environment } from '@env';
 
 import { ScriptInjectorService } from '../features/utils';
 
