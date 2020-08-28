@@ -31,7 +31,9 @@
     "lint:server": "tslint './server/**/*.ts' -c ./server/tslint.json --fix",
     "e2e": "npm run config && ng e2e",
     "generate-ssl-certs": "./scripts/generate-ssl-certs.sh",
-    "seed": "node ./scripts/seed-db.js"
+    "seed": "node ./scripts/seed-db.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@angular/animations": "^10.0.12",
@@ -104,7 +106,8 @@
     "tslib": "^2.0.1",
     "vhost": "3.0.2",
     "winston": "^3.2.1",
-    "zone.js": "^0.11.1"
+    "zone.js": "^0.11.1",
+    "snyk": "^1.385.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.7",
@@ -129,5 +132,6 @@
     "ts-node": "^9.0.0",
     "tslint": "~6.1.0",
     "typescript": "^3.9.7"
-  }
+  },
+  "snyk": true
 }
