@@ -1,10 +1,10 @@
-'use strict';
-var mongoose = require('mongoose'),
-  Roles = mongoose.model('Roles'),
-  User = mongoose.model('User');
+import mongoose from 'mongoose';
+import _ from 'lodash';
+const Roles = mongoose.model('Roles');
+const User = mongoose.model('User');
 
-exports.getRoles = function (req, res) {
-  Roles.find(query).sort({
+export function getRoles(req, res) {
+  Roles.find().sort({
       _id: -1
     })
     .lean()
@@ -17,9 +17,9 @@ exports.getRoles = function (req, res) {
 
       res.status(200).send(roles);
     });
-};
+}
 
-exports.createRole = function (req, res) {
+export function createRole(req, res) {
   Roles(req.body.role).save(function (err, role) {
     if (err) {
       return res.status(500).send({
@@ -29,11 +29,11 @@ exports.createRole = function (req, res) {
 
     res.status(200).send(role);
   });
-};
+}
 
-exports.updateRole = function (req, res) {
+export function updateRole(req, res) {
   // fields to update
-  var set = _.omit(req.body.role, '_id');
+  const set = _.omit(req.body.role, '_id');
 
   Roles.updateOne({
       _id: mongoose.Types.ObjectId(req.params.role_id)
@@ -49,9 +49,9 @@ exports.updateRole = function (req, res) {
 
       res.status(200).send(role);
     });
-};
+}
 
-exports.deleteRole = function (req, res) {
+export function deleteRole(req, res) {
   Roles.deleteOne({
       _id: mongoose.Types.ObjectId(req.params.role_id)
     },
@@ -80,9 +80,9 @@ exports.deleteRole = function (req, res) {
         res.status(200).send();
       })
     });
-};
+}
 
-exports.connectPermissionWithRole = function (req, res) {
+export function connectPermissionWithRole(req, res) {
   Roles.updateOne({
       _id: mongoose.Types.ObjectId(req.params.role_id)
     }, {
@@ -99,9 +99,9 @@ exports.connectPermissionWithRole = function (req, res) {
 
       res.status(200).send();
     });
-};
+}
 
-exports.disconnectPermissionFromRole = function (req, res) {
+export function disconnectPermissionFromRole(req, res) {
   Roles.updateOne({
       _id: mongoose.Types.ObjectId(req.params.role_id)
     }, {
@@ -118,9 +118,9 @@ exports.disconnectPermissionFromRole = function (req, res) {
 
       res.status(200).send();
     });
-};
+}
 
-exports.addUserToRole = function (req, res) {
+export function addUserToRole(req, res) {
   User.updateOne({
       _id: mongoose.Types.ObjectId(req.params.user_id)
     }, {
@@ -137,9 +137,9 @@ exports.addUserToRole = function (req, res) {
 
       res.status(200).send();
     });
-};
+}
 
-exports.removeUserFromRole = function (req, res) {
+export function removeUserFromRole(req, res) {
   User.updateOne({
       _id: mongoose.Types.ObjectId(req.params.user_id)
     }, {
@@ -156,4 +156,4 @@ exports.removeUserFromRole = function (req, res) {
 
       res.status(200).send();
     });
-};
+}

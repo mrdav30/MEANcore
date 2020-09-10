@@ -1,10 +1,8 @@
-'use strict';
+import * as imageUpload from './image-upload.server.controller.js';
 
-module.exports = function (app) {
-  var imageUpload = require('./image-upload.server.controller');
-
+export default async function (app) {
   // handle file upload
   app.route('/api/image-uploads').post(imageUpload.getUpload().single('upload'), imageUpload.upload);
   // handle file removal
   app.route('/api/image-uploads').put(imageUpload.removeImage);
-};
+}

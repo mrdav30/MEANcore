@@ -1,16 +1,14 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var _ = require('lodash');
+import * as usersAuthn from './users.authentication.server.controller.js';
+import * as usersAuthz from './users.authorization.server.controller.js';
+import * as usersPass from './users.password.server.controller.js';
+import * as usersProf from './users.profile.server.controller.js';
 
-/**
- * Extend user's controller
- */
-module.exports = _.extend(
-	require('./users.authentication.server.controller'),
-	require('./users.authorization.server.controller'),
-	require('./users.password.server.controller'),
-	require('./users.profile.server.controller')
-);
+export {
+	usersAuthn,
+	usersAuthz,
+	usersPass,
+	usersProf
+};

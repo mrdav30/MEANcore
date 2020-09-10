@@ -4,7 +4,7 @@ import { catchError, share, tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { find, filter, some, every } from 'lodash-es';
+import { find, filter, some, every } from 'lodash';
 
 import { environment } from '@env';
 

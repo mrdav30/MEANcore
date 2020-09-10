@@ -1,28 +1,31 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-  path = require('path'),
-  _ = require('lodash'),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User'),
-  Roles = mongoose.model('Roles');
+import passport from 'passport';
+import {
+  join,
+  resolve,
+  dirname
+} from 'path';
+import _ from 'lodash';
+import mongoose from 'mongoose';
+import url from 'url';
+const User = mongoose.model('User');
+const Roles = mongoose.model('Roles');
 
 /**
  * Module init function.
  */
-module.exports = function (app) {
-  var config = app.locals.config;
+export default async function (app) {
+  let config = app.locals.config;
 
   // Serialize sessions
-  passport.serializeUser(function (user, done) {
+  passport.serializeUser((user, done) => {
     done(null, user._id);
   });
 
   // Deserialize sessions
-  passport.deserializeUser(function (id, done) {
+  passport.deserializeUser((id, done) => {
     User.findOne({
         _id: id
       })
@@ -31,7 +34,7 @@ module.exports = function (app) {
       .lean()
       .exec(function (err, user) {
         if (err || !user) {
-          var message = !user ? 'User not found!' : err;
+          let message = !user ? 'User not found!' : err;
           done(message);
         }
         // Get users role info based on assigned roles
@@ -60,11 +63,26 @@ module.exports = function (app) {
   });
 
   // Initialize strategies
-  config.utils.getGlobbedPaths(path.join(__dirname, './strategies/**/*.js')).forEach(function (strategy) {
-    require(path.resolve(strategy))(config);
-  });
+  // config.utils.getGlobbedPaths(join(dirname(''), './strategies/**/*.js')).forEach((strategy) => {
+  //   let strategyPath = url.pathToFileURL(resolve(strategy)).href;
+  //   // eslint-disable-next-line node/no-unsupported-features/es-syntax
+  //   await import(resolve(strategyPath))(config);
+  // });
+
+  const __dirname = dirname(url.fileURLToPath(import.meta.url));
+  const strategies = config.utils.getGlobbedPaths(join(__dirname, 'strategies/**/*.js'));
+
+  await Promise.all(strategies.map(async (strategyFile) => {
+    let strategyPath = url.pathToFileURL(resolve(strategyFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(strategyPath).then(async (strategy) => {
+      await strategy.default(config);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }));
 
   // Add passport's middleware
   app.use(passport.initialize());
   app.use(passport.session());
-};
+}

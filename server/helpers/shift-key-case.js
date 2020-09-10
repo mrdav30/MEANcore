@@ -1,6 +1,4 @@
-module.exports = keysToLowerCase;
-
-function keysToLowerCase(obj, cb) {
+export function keysToLowerCase(obj, cb) {
     Object.keys(obj).forEach(function (key) {
         var k = key.toLowerCase();
 
@@ -14,4 +12,4 @@ function keysToLowerCase(obj, cb) {
     } else {
         return (obj);
     }
-};
+}

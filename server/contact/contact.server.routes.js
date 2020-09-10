@@ -1,7 +1,5 @@
-'use strict';
+import * as contact from './contact.server.controller.js';
 
-module.exports = function (app) {
-    var contact = require('./contact.server.controller');
-
+export default function (app) {
     app.route('/api/contact').post(contact.sendContactRequest);
-};
+}

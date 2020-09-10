@@ -1,11 +1,9 @@
-'use strict';
+import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
+import chalk from 'chalk';
+import async from 'async';
 
-var mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  chalk = require('chalk'),
-  async = require('async');
-
-var featuresSchema = new Schema({
+const featuresSchema = new Schema({
   name: {
     type: String,
     unique: true,
@@ -36,7 +34,7 @@ var featuresSchema = new Schema({
  * and provided options.
  */
 featuresSchema.statics.seed = function (doc, options) {
-  var Features = mongoose.model('Features'),
+  const Features = mongoose.model('Features'),
     SequenceCounter = mongoose.model('SequenceCounter');
 
   return new Promise(function (resolve, reject) {
@@ -91,7 +89,7 @@ featuresSchema.statics.seed = function (doc, options) {
           });
         }
 
-        var feature = new Features(doc);
+        let feature = new Features(doc);
 
         async.series([
           function (callback) {

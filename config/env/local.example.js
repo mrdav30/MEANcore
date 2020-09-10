@@ -1,5 +1,3 @@
-'use strict';
-
 // Rename this file to local-NODE_ENV.js (i.e. local-development.js, or local-test.js) for having a local configuration variables that
 // will not get commited and pushed to remote repositories.
 // Use it for your API keys, passwords, etc.
@@ -17,19 +15,17 @@
 
 /* For example (Development):
 
-module.exports = {
-  db: {
+export const db: {
     uri: 'mongodb://localhost/local-dev',
     options: {
       user: '',
       pass: ''
     }
-  },
-  sessionSecret: process.env.SESSION_SECRET || 'youshouldchangethistosomethingsecret',
-  facebook: {
+};
+export const sessionSecret: process.env.SESSION_SECRET || 'youshouldchangethistosomethingsecret';
+export const facebook: {
     clientID: process.env.FACEBOOK_ID || 'APP_ID',
     clientSecret: process.env.FACEBOOK_SECRET || 'APP_SECRET',
     callbackURL: '/api/auth/facebook/callback'
-  }
 };
 */

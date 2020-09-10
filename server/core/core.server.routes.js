@@ -1,8 +1,7 @@
-'use strict';
+import * as core from  './core.server.controller.js';
 
-module.exports = function (app) {
+export default function (app) {
   // Root routing
-  var core = require('./core.server.controller');
 
   // Define error pages
   app.route('/server-error').get(core.renderServerError);
@@ -13,4 +12,4 @@ module.exports = function (app) {
   // Define application route
   // Will first check for webcrawlers to enable server-side rendering
   app.route('/*').get(core.prerender, core.renderIndex);
-};
+}

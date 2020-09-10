@@ -1,6 +1,5 @@
-'use strict';
+import * as logger from './logger.server.controller.js';
 
-module.exports = function (app) {
-    var ctrl = require('./logger.server.controller');
-    app.route('/api/log-error').post(ctrl.logError);
-};
+export default function (app) {
+  app.route('/api/log-error').post(logger.logError);
+}

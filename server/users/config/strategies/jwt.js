@@ -1,16 +1,15 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-  passportJWT = require("passport-jwt"),
-  User = require('mongoose').model('User');
+import passport from 'passport';
+import strategy from "passport-jwt";
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
 
-const ExtractJWT = passportJWT.ExtractJwt;
-const JWTStrategy = passportJWT.Strategy;
+const ExtractJWT = strategy.ExtractJwt;
+const JWTStrategy = strategy.Strategy;
 
-module.exports = function () {
+export default function () {
   // Use jwt strategy
   passport.use(new JWTStrategy({
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
@@ -31,4 +30,4 @@ module.exports = function () {
       })
     }
   ));
-};
+}

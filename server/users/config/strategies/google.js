@@ -1,16 +1,18 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-    url = require('url'),
-    path = require('path'),
-	GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-	config = require(path.resolve('./config/config')),
-	users = require(path.resolve('./server/users/users.server.controller'));
+import passport from 'passport';
+import url from 'url';
+import { resolve } from 'path';
+import strategy from 'passport-google-oauth';
+import config from '../../../../config/config.js';
+const usersPath = url.pathToFileURL(resolve('./server/users/users.server.controller.js'));
+// eslint-disable-next-line node/no-unsupported-features/es-syntax
+const users = import(usersPath);
 
-module.exports = function() {
+const GoogleStrategy = strategy.OAuth2Strategy;
+
+export default function() {
 	// Use google strategy
 	passport.use(new GoogleStrategy({
 			clientID: config.google.clientID,
@@ -20,12 +22,12 @@ module.exports = function() {
 		},
 		function(req, accessToken, refreshToken, profile, done) {
 			// Set the provider data and include tokens
-			var providerData = profile._json;
+			let providerData = profile._json;
 			providerData.accessToken = accessToken;
 			providerData.refreshToken = refreshToken;
 
 			// Create the user OAuth profile
-			var providerUserProfile = {
+			let providerUserProfile = {
 				firstName: profile.name.givenName,
 				lastName: profile.name.familyName,
 				displayName: profile.displayName,
@@ -40,4 +42,4 @@ module.exports = function() {
 			users.saveOAuthUserProfile(req, providerUserProfile, done);
 		}
 	));
-};
+}

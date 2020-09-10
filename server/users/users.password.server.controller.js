@@ -1,33 +1,32 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var errorHandler = require('../errors.server.controller'),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User'),
-  path = require('path'),
-  config = require(path.resolve('./config/config')),
-  emailService = config.services.emailService,
-  _ = require('lodash'),
-  crypto = require('crypto'),
-  async = require('async');
+import {
+  getErrorMessage
+} from '../errors.server.controller.js';
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
+import config from '../../config/config.js';
+import {
+  randomBytes
+} from 'crypto';
+import async from 'async';
 
 /**
  * Forgot for reset password (forgot POST)
  */
-exports.forgot = function (req, res, next) {
+export function forgot(req, res, next) {
   async.waterfall([
     // Generate random token
     function (done) {
-      crypto.randomBytes(20, function (err, buffer) {
-        var token = buffer.toString('hex');
+      randomBytes(20, function (err, buffer) {
+        const token = buffer.toString('hex');
         done(err, token);
       });
     },
     // Lookup user by username
     function (token, done) {
-      var usernameOrEmail = String(req.body.usernameOrEmail).toLowerCase();
+      const usernameOrEmail = String(req.body.usernameOrEmail).toLowerCase();
 
       User.findOne({
         $or: [{
@@ -54,7 +53,7 @@ exports.forgot = function (req, res, next) {
     },
     // If valid email, send reset email using service
     function (token, user, done) {
-      var mailOptions = {
+      const mailOptions = {
         to: user.email,
         from: config.mailer.from,
         subject: 'Password Reset',
@@ -66,7 +65,7 @@ exports.forgot = function (req, res, next) {
         }
       };
 
-      emailService.sendEmail(req, res, mailOptions, function (err) {
+      config.services.sendEmail(req, res, mailOptions, function (err) {
         if (!err) {
           res.send({
             message: 'An email has been sent to ' + user.email + ' with further instructions.',
@@ -80,14 +79,14 @@ exports.forgot = function (req, res, next) {
   ], function (err) {
     if (err) {
       return next(err)
-    };
+    }
   });
-};
+}
 
 /**
  * Reset password GET from email token
  */
-exports.validateResetToken = function (req, res) {
+export function validateResetToken(req, res) {
   User.findOne({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: {
@@ -100,14 +99,14 @@ exports.validateResetToken = function (req, res) {
 
     res.redirect(req.baseUrl + '/password/reset/' + req.params.username + '/' + req.params.token);
   });
-};
+}
 
 /**
  * Reset password POST from email token
  */
-exports.reset = function (req, res, next) {
+export function reset(req, res, next) {
   // Init Variables
-  var passwordDetails = req.body;
+  const passwordDetails = req.body;
 
   async.waterfall([
     function (done) {
@@ -128,7 +127,7 @@ exports.reset = function (req, res, next) {
               user.save(function (err) {
                 if (err) {
                   return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
+                    message: getErrorMessage(err)
                   });
                 } else {
                   // Remove sensitive data before login
@@ -138,7 +137,7 @@ exports.reset = function (req, res, next) {
                   req.login(user, function (err) {
                     if (err) {
                       res.status(400).send({
-                        message: errorHandler.getErrorMessage(err)
+                        message: getErrorMessage(err)
                       });
                     } else {
                       // Return authenticated user
@@ -168,7 +167,7 @@ exports.reset = function (req, res, next) {
     },
     // If valid email, send reset email using service
     function (user, done) {
-      var mailOptions = {
+      const mailOptions = {
         to: user.email,
         from: config.mailer.from,
         subject: 'Your password has been changed',
@@ -179,7 +178,7 @@ exports.reset = function (req, res, next) {
         }
       };
 
-      emailService.sendEmail(req, res, mailOptions, function (err) {
+      config.services.sendEmail(req, res, mailOptions, function (err) {
         done(err);
       });
     }
@@ -188,14 +187,14 @@ exports.reset = function (req, res, next) {
       return next(err);
     }
   });
-};
+}
 
 /**
  * Change Password
  */
-exports.changePassword = function (req, res) {
+export function changePassword(req, res) {
   // Init Variables
-  var passwordDetails = req.body;
+  const passwordDetails = req.body;
 
   if (req.user) {
     if (passwordDetails.newPassword) {
@@ -207,7 +206,7 @@ exports.changePassword = function (req, res) {
             user.save(function (err) {
               if (err) {
                 return res.status(400).send({
-                  message: errorHandler.getErrorMessage(err)
+                  message: getErrorMessage(err)
                 });
               } else {
                 // Remove sensitive data before login
@@ -217,7 +216,7 @@ exports.changePassword = function (req, res) {
                 req.login(user, function (err) {
                   if (err) {
                     res.status(400).send({
-                      message: errorHandler.getErrorMessage(err)
+                      message: getErrorMessage(err)
                     });
                   } else {
                     res.send({
@@ -248,4 +247,4 @@ exports.changePassword = function (req, res) {
       message: 'User is not signed in'
     });
   }
-};
+}

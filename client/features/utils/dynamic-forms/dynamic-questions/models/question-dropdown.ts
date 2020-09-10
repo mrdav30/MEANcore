@@ -1,6 +1,6 @@
 import { QuestionBase } from './question-base';
 
-import { get } from 'lodash-es';
+import { get } from 'lodash';
 
 export class DropdownQuestion extends QuestionBase<string> {
   controlType = 'dropdown';

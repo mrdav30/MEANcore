@@ -1,8 +1,6 @@
-'use strict';
-
-const Crawlers   = require('./crawlersProvider');
-const Exclusions = require('./exclusionsProvider');
-const Headers    = require('./headersProvider');
+import Crawlers from './crawlersProvider.js';
+import Exclusions from './exclusionsProvider.js';
+import Headers from './headersProvider.js';
 
 class CrawlerDetector
 {
@@ -58,7 +56,7 @@ class CrawlerDetector
 		// Use the Request headers if httpHeaders is not defined
         if ( typeof headers !== "object" || Object.keys(headers).length == 0 )
         {
-        	headers = Object.keys(this.request).length ? this.request.headers : {};
+			headers = Object.keys(this.request).length ? this.request.headers : {};
         }
 
 		// Clear existing headers.
@@ -136,4 +134,4 @@ class CrawlerDetector
 	}
 }
 
-module.exports = CrawlerDetector;
+export default CrawlerDetector;

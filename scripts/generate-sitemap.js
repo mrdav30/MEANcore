@@ -1,11 +1,11 @@
-const path = require('path');
-const SitemapGenerator = require('sitemap-generator');
+import { join } from 'path';
+import SitemapGenerator from 'sitemap-generator';
 
 // create generator
 const generator = SitemapGenerator('https://meancore.com', {
   stripQuerystring: false,
   ignoreHreflang: false,
-  filepath: path.join(process.cwd(), 'sitemap.xml'),
+  filepath: join(process.cwd(), 'sitemap.xml'),
   excludeUrls: []
 });
 

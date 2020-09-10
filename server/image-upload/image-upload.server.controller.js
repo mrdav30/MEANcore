@@ -1,45 +1,45 @@
-'use strict';
+import {
+  join
+} from 'path';
+import multer from 'multer';
+import config from '../../config/config.js';
+import fse from 'fs-extra';
+import {
+  getErrorMessage
+} from '../errors.server.controller.js';
 
-var path = require('path'),
-  multer = require('multer'),
-  config = require(path.resolve('./config/config')),
-  _ = require('lodash'),
-  fs = require('fs-extra'),
-  errorHandler = require('../errors.server.controller'),
-  imageStorage = config.helpers.imageStorage;
-
-var getUpload = function (req, res) {
+export function getUpload () {
   // file upload config using multer
 
-  var storage = imageStorage({
+  const storage = config.helpers.ImageStorage({
     output: 'png',
     quality: 50
   })
 
-  var upload = multer({
+  const upload = multer({
     storage: storage
   });
 
   return upload;
 }
-exports.getUpload = getUpload;
 
-exports.upload = function (req, res, next) {
+export function upload(req, res) {
 
-  var dir = req.query.upload || '';
-  var filename = req.file.filename;
-  var finalDest = config.uploads.images.uploadRepository + dir + '/' + filename
+  const dir = req.query.upload || '';
+  const filename = req.file.filename;
+  const finalDest = config.uploads.images.uploadRepository + dir + '/' + filename
 
-  fs.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
+  fse.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
     if (err) {
       console.error(err);
       return res.status(500).send({
-        message: errorHandler.getErrorMessage(err)
+        message: getErrorMessage(err)
       });
     }
 
-    var base = res.locals.host;
-    var url = path.join(req.file.baseUrl, dir, filename).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
+    const base = res.locals.host;
+    // eslint-disable-next-line no-useless-escape
+    const url = join(req.file.baseUrl, dir, filename).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
 
     // respond with image url
     res.status(200).send({
@@ -49,12 +49,12 @@ exports.upload = function (req, res, next) {
   });
 }
 
-exports.removeImage = function (req, res, next) {
-  fs.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
+export function removeImage(req, res) {
+  fse.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
     if (err) {
       console.error(err);
       return res.status(500).send({
-        message: errorHandler.getErrorMessage(err)
+        message: getErrorMessage(err)
       });
     }
 

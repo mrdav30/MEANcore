@@ -126,7 +126,7 @@ export class UserAccessControlService {
   async alertFeatureChange() {
     await this.appLoadService.initializeApp().then(() => {
       this.uacListener.next('feature');
-    })
+    });
   }
   // Permissions
 

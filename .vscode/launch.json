@@ -13,7 +13,8 @@
       "runtimeExecutable": null,
       "runtimeArgs": [
         "--nolazy",
-        "--max-old-space-size=4096"
+        "--max-old-space-size=4096",
+        "--trace-warnings"
       ],
       "console": "internalConsole",
       "sourceMaps": false,

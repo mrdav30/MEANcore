@@ -1,16 +1,16 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-  LocalStrategy = require('passport-local').Strategy,
-  mongoose = require('mongoose'),
-  _ = require('lodash'),
-  User = mongoose.model('User'),
-  Roles = mongoose.model('Roles');
+import passport from 'passport';
+import strategy from 'passport-local';
+import mongoose from 'mongoose';
+import _ from 'lodash';
+const User = mongoose.model('User');
+const Roles = mongoose.model('Roles');
 
-module.exports = function () {
+const LocalStrategy = strategy.Strategy;
+
+export default function () {
   // Use local strategy
   passport.use(new LocalStrategy({
       usernameField: 'usernameOrEmail',
@@ -61,4 +61,4 @@ module.exports = function () {
         });
     }
   ));
-};
+}

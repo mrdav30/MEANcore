@@ -1,6 +1,6 @@
-﻿var path = require('path'),
-  nodemailer = require('nodemailer'),
-  async = require('async');
+﻿import { resolve } from 'path';
+import nodemailer from 'nodemailer';
+import async from 'async';
 
 var createTestAccount = function (config, cb) {
   //uses ethereal mail by default
@@ -13,7 +13,7 @@ var createTestAccount = function (config, cb) {
 
 // We need res for rendering template.
 // We can be dependent of app instead of res but its better not to expose app.
-exports.sendEmail = function (req, res, options, next) {
+export function sendEmail (req, res, options, next) {
   var config = req.app.locals.config;
   var mailTransport;
 
@@ -35,7 +35,7 @@ exports.sendEmail = function (req, res, options, next) {
         if (options.data) {
           options.data.baseUrl = options.data.baseUrl || res.locals.host;
         }
-        res.render(path.resolve(options.path), options.data, function (err, emailHTML) {
+        res.render(resolve(options.path), options.data, function (err, emailHTML) {
           if (err) {
             console.error('Tmpl - Error : - ', err, err.message);
             console.error('Tmpl - Options ', options);
@@ -75,4 +75,4 @@ exports.sendEmail = function (req, res, options, next) {
     }
     return next(err);
   });
-};
+}

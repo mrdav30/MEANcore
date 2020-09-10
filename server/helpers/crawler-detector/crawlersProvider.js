@@ -1,6 +1,5 @@
-'use strict';
-
-const Provider = require("./provider");
+/* eslint-disable no-useless-escape */
+import Provider from "./provider.js";
 
 class Crawlers extends Provider
 {
@@ -12,4 +11,4 @@ class Crawlers extends Provider
 	}
 }
 
-module.exports = Crawlers;
+export default Crawlers;

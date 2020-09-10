@@ -1,16 +1,17 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var errorHandler = require('../errors.server.controller.js'),
-  _ = require('lodash'),
-  userValidation = require('./users.validation.service'),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User');
+import {
+  getErrorMessage
+} from '../errors.server.controller.js';
+import {
+  validateChanges
+} from './users.validation.service.js';
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
 
-exports.getCurrentProfile = function (req, res) {
-  var user = req.user || null;
+export function getCurrentProfile(req, res) {
+  const user = req.user || null;
 
   if (!user) {
     return res.status(200).send({
@@ -23,7 +24,7 @@ exports.getCurrentProfile = function (req, res) {
     .exec(function (err, profile) {
       if (err) {
         return res.status(400).send({
-          message: errorHandler.getErrorMessage(err)
+          message: getErrorMessage(err)
         });
       }
 
@@ -37,7 +38,7 @@ exports.getCurrentProfile = function (req, res) {
     });
 }
 
-exports.getProfileById = function (req, res) {
+export function getProfileById(req, res) {
   User.findById(req.params._id)
     .lean()
     .exec(function (err, profile) {
@@ -60,8 +61,8 @@ exports.getProfileById = function (req, res) {
 /**
  * Send User from session
  */
-exports.me = function (req, res) {
-  var user = req.user || null;
+export function me(req, res) {
+  const user = req.user || null;
 
   if (user) {
     // Remove sensitive data
@@ -70,18 +71,18 @@ exports.me = function (req, res) {
   }
 
   res.status(200).send(user);
-};
+}
 
 /**
  * Update user details
  */
-exports.updateProfile = function (req, res) {
-  var profile = req.body;
+export function updateProfile(req, res) {
+  const profile = req.body;
 
-  userValidation.validateChanges(req, profile, function (err, result) {
+  validateChanges(req, profile, function (err, result) {
     if (err && !result) {
       res.status(200).send({
-        message: errorHandler.getErrorMessage(err),
+        message: getErrorMessage(err),
         msgType: 'error'
       });
     } else if (result && result.userExists) {
@@ -97,7 +98,7 @@ exports.updateProfile = function (req, res) {
   });
 }
 
-exports.deleteProfile = function (req, res) {
+export function deleteProfile(req, res) {
   let user = req.user || null;
   if (req.params._id !== user._id) {
     // can only delete own account
@@ -105,11 +106,11 @@ exports.deleteProfile = function (req, res) {
   }
 
   User.deleteOne({
-    _id: mongo.helper.toObjectID(user._id)
+    _id: mongoose.helper.toObjectID(user._id)
   }).exec(function (err) {
     if (err) {
       return res.status(400).send({
-        message: errorHandler.getErrorMessage(err)
+        message: getErrorMessage(err)
       });
     }
 

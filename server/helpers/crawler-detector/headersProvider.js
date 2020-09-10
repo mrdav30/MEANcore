@@ -1,6 +1,4 @@
-'use strict';
-
-const Provider = require("./provider");
+import Provider from "./provider.js";
 
 class Headers extends Provider
 {
@@ -12,4 +10,4 @@ class Headers extends Provider
 	}
 }
 
-module.exports = Headers;
+export default Headers;

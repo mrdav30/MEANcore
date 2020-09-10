@@ -1,26 +1,25 @@
-'use strict';
+import { seedDB } from '../config';
+import { model } from 'mongoose';
+import _ from 'lodash';
+import { bold, yellow, magenta } from 'chalk';
 
-var config = require('../config'),
-  mongoose = require('mongoose'),
-  _ = require('lodash'),
-  chalk = require('chalk');
-
-exports.start = start;
+const _start = start;
+export { _start as start };
 
 function start(seedConfig) {
   return new Promise(function (resolve, reject) {
-    console.log(chalk.bold.green('Seeding ' + process.env.NODE_ENV + " databases"));
+    console.log(bold.green('Seeding ' + process.env.NODE_ENV + " databases"));
 
     seedConfig = seedConfig || {};
 
-    var options = seedConfig.options || (config.seedDB ? _.clone(config.seedDB.options, true) : {});
-    var collections = seedConfig.collections || (config.seedDB ? _.clone(config.seedDB.collections, true) : []);
+    const options = seedConfig.options || (seedDB ? _.clone(seedDB.options, true) : {});
+    const collections = seedConfig.collections || (seedDB ? _.clone(seedDB.collections, true) : []);
 
     if (!collections.length) {
       return resolve();
     }
 
-    var seeds = collections
+    let seeds = collections
       .filter(function (collection) {
         return collection.model;
       });
@@ -39,7 +38,7 @@ function start(seedConfig) {
     function onSuccessComplete() {
       if (options.logResults) {
         console.log();
-        console.log(chalk.bold.green('Database Seeding: Mongo Seed complete!'));
+        console.log(bold.green('Database Seeding: Mongo Seed complete!'));
         console.log();
       }
 
@@ -49,8 +48,8 @@ function start(seedConfig) {
     function onError(err) {
       if (options.logResults) {
         console.log();
-        console.log(chalk.bold.red('Database Seeding: Mongo Seed Failed!'));
-        console.log(chalk.bold.red('Database Seeding: ' + err));
+        console.log(bold.red('Database Seeding: Mongo Seed Failed!'));
+        console.log(bold.red('Database Seeding: ' + err));
         console.log();
       }
 
@@ -65,12 +64,12 @@ function seed(collection, options) {
   options = _.merge(options || {}, collection.options || {});
 
   return new Promise(function (resolve, reject) {
-    const Model = mongoose.model(collection.model);
+    const Model = model(collection.model);
     const docs = collection.docs;
 
-    var skipWhen = collection.skip ? collection.skip.when : null;
+    const skipWhen = collection.skip ? collection.skip.when : null;
 
-    console.log(chalk.yellow('Database Seeding: ' + collection.model + ' collection started'));
+    console.log(yellow('Database Seeding: ' + collection.model + ' collection started'));
 
     if (!Model.seed) {
       return reject(new Error('Database Seeding: Invalid Model Configuration - ' + collection.model + '.seed() not implemented'));
@@ -120,11 +119,11 @@ function seed(collection, options) {
 
         if (skipCollection) {
           return onComplete([{
-            message: chalk.yellow('Database Seeding: ' + collection.model + ' collection skipped')
+            message: yellow('Database Seeding: ' + collection.model + ' collection skipped')
           }]);
         }
 
-        var workload = docs
+        const workload = docs
           .filter(function (doc) {
             return doc.data;
           })
@@ -144,12 +143,12 @@ function seed(collection, options) {
           if (options.logResults) {
             responses.forEach(function (response) {
               if (response.message) {
-                console.log(chalk.magenta(response.message));
+                console.log(magenta(response.message));
               }
             });
           }
 
-          console.log(chalk.yellow('Database Seeding: ' + collection.model + ' collection complete'));
+          console.log(yellow('Database Seeding: ' + collection.model + ' collection complete'));
 
           return resolve();
         }
