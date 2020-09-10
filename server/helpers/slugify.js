@@ -1,9 +1,7 @@
-var _ = require('lodash');
-
-module.exports = slugify;
+import _ from 'lodash';
 
 // convert string into slug
-function slugify(input) {
+export function slugify(input) {
     if (!input){
         return;
     }
@@ -18,4 +16,4 @@ function slugify(input) {
     slug = _.replace(slug, /[\s-]+/g, '-');
 
     return slug;
-};
+}

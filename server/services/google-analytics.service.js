@@ -1,17 +1,16 @@
-'use strict'
+import config from '../../config/config.js';
+import _ from 'lodash';
 
-var path = require('path'),
-  config = require(path.resolve('./config/config')),
-  _ = require('lodash');
-
+import googleapis from 'googleapis';
 const {
   google
-} = require('googleapis');
+} = googleapis;
+
 const scopes = 'https://www.googleapis.com/auth/analytics.readonly';
 const view_id = config.GOOGLE_VIEW_ID;
 
 
-function getData(startDate, endDate, dimensions, metrics, filters, callback) {
+export function getData(startDate, endDate, dimensions, metrics, filters, callback) {
   if (!config.GOOGLE_VIEW_ID || !config.GOOGLE_CLIENT_EMAIL || !config.GOOGLE_PRIVATE_KEY) {
     console.log('Google Analytics config not properly set');
     return callback(null, null);
@@ -20,7 +19,7 @@ function getData(startDate, endDate, dimensions, metrics, filters, callback) {
   var gAnalytics = google.analytics('v3');
   var authClient = new google.auth.JWT(config.GOOGLE_CLIENT_EMAIL, null, config.GOOGLE_PRIVATE_KEY, scopes);
 
-  authClient.authorize(function (err, tokens) {
+  authClient.authorize(function (err) {
     if (err) {
       console.log(err);
       return callback(err);
@@ -58,5 +57,3 @@ function getData(startDate, endDate, dimensions, metrics, filters, callback) {
     });
   });
 }
-
-exports.getData = getData;

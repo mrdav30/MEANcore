@@ -1,11 +1,14 @@
-'use strict';
-var async = require('async'),
-  _ = require('lodash'),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User');
+import async from 'async';
+import _ from 'lodash';
+import {
+  getErrorMessage
+} from '../errors.server.controller.js';
+import { randomBytes } from 'crypto';
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
 
 // returns true if username exists
-var validateUserData = function (usernameOrEmail, cb) {
+export const validateUserData = function (usernameOrEmail, cb) {
   User.findOne({
     $or: [{
         username: usernameOrEmail
@@ -24,9 +27,8 @@ var validateUserData = function (usernameOrEmail, cb) {
     cb(null, user);
   });
 }
-exports.validateUserData = validateUserData;
 
-function validateChanges(req, userUpdates, callback) {
+export function validateChanges(req, userUpdates, callback) {
   let currentUser = req.user;
 
   // remove password property if it wasn't updated
@@ -47,7 +49,7 @@ function validateChanges(req, userUpdates, callback) {
               return cb(err);
             } else if (userExists) {
               // User name already exists, provide other possibilities
-              var possibleUsername = userUpdates.username || ((userUpdates.email) ? userUpdates.email.split('@')[0] : '');
+              const possibleUsername = userUpdates.username || ((userUpdates.email) ? userUpdates.email.split('@')[0] : '');
 
               User.findUniqueUsername(possibleUsername, null, function (err, availableUsername) {
                 cb(true, {
@@ -70,10 +72,15 @@ function validateChanges(req, userUpdates, callback) {
           .exec((err, user) => {
             if (!err && user) {
 
-              if (user.authenticate(userUpdates.password)) {
-                return cb('You cannot use a previous password.');
-              } else {
-                user.password = userUpdates.password;
+              if (userUpdates.password) {
+                if (user.authenticate(userUpdates.password)) {
+                  return cb('You cannot use a previous password.');
+                } else {
+                  user.salt = Buffer.from(randomBytes(16).toString('base64'), 'base64');
+                  user.password = user.hashPassword(userUpdates.password);
+                  // remove password after update to prevent issues with merge
+                  delete userUpdates.password;
+                }
               }
 
               // Merge existing user
@@ -87,9 +94,15 @@ function validateChanges(req, userUpdates, callback) {
                 return role && role._id ? role._id.toString() : null;
               })
 
-              user.save((err) => {
+              let set = _.omit(user, '_id');
+
+              User.updateOne({
+                _id: mongoose.Types.ObjectId(user._id)
+              }, {
+                $set: set
+              }, (err) => {
                 if (err) {
-                  return cb(errorHandler.getErrorMessage(err));
+                  return cb(getErrorMessage(err));
                 } else {
                   // Remove sensitive data before login
                   user.password = undefined;
@@ -124,4 +137,3 @@ function validateChanges(req, userUpdates, callback) {
     return callback('User is not signed in');
   }
 }
-exports.validateChanges = validateChanges;

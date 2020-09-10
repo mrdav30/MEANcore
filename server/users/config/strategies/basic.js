@@ -1,13 +1,14 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var passport = require('passport'),
-  BasicStrategy = require('passport-http').BasicStrategy,
-  User = require('mongoose').model('User');
+import passport from 'passport';
+import strategy from 'passport-http';
+import mongoose from 'mongoose';
+const User = mongoose.model('User');
 
-module.exports = function () {
+const BasicStrategy = strategy.BasicStrategy;
+
+export default function () {
   // Use basic strategy
   // Retrieve required fields for auth only
   passport.use(new BasicStrategy({
@@ -37,4 +38,4 @@ module.exports = function () {
         });
     }
   ));
-};
+}

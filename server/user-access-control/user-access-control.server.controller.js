@@ -1,14 +1,15 @@
-'use strict';
-var async = require('async'),
-  _ = require('lodash'),
-  errorHandler = require('../errors.server.controller'),
-  mongoose = require('mongoose'),
-  Roles = mongoose.model('Roles'),
-  Features = mongoose.model('Features'),
-  User = mongoose.model('User');
+import async from 'async';
+import _ from 'lodash';
+import {
+  getErrorMessage
+} from '../errors.server.controller.js';
+import mongoose from 'mongoose';
+const Roles = mongoose.model('Roles');
+const Features = mongoose.model('Features');
+const User = mongoose.model('User');
 
 // Configure view model for UAC dashboard
-exports.getViewModel = function (req, res) {
+export function getViewModel(req, res) {
   async.waterfall([
       //retrieve all roles
       function (cb) {
@@ -125,15 +126,15 @@ exports.getViewModel = function (req, res) {
     function (err, result) {
       if (err) {
         return res.status(500).send({
-          message: errorHandler.getErrorMessage(err)
+          message: getErrorMessage(err)
         });
       }
 
       res.status(200).send(result);
     });
-};
+}
 
-exports.getConfiguration = function (req, res) {
+export function getConfiguration(req, res) {
   Features.find()
     .lean()
     .exec(function (err, features) {
@@ -172,11 +173,11 @@ exports.getConfiguration = function (req, res) {
       }, (err) => {
         if (err) {
           return res.status(500).send({
-            message: errorHandler.getErrorMessage(err)
+            message: getErrorMessage(err)
           });
         }
 
-        var response = {
+        let response = {
           user: {},
           config: {}
         };
@@ -192,4 +193,4 @@ exports.getConfiguration = function (req, res) {
         res.status(200).send(response);
       });
     });
-};
+}

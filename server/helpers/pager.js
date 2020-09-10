@@ -1,8 +1,6 @@
-var _ = require('lodash');
+import _ from 'lodash';
 
-module.exports = pager;
-
-function pager(totalItems, currentPage, pageSize) {
+export function pager(totalItems, currentPage, pageSize) {
     // default to first page
     currentPage = parseInt(currentPage || 1);
 

@@ -1,12 +1,10 @@
-'use strict';
+import async from 'async';
+import mongoose from 'mongoose';
+import _ from 'lodash';
+const Schema = mongoose.Schema;
+import chalk from 'chalk';
 
-var async = require('async'),
-  mongoose = require('mongoose'),
-  _ = require('lodash'),
-  Schema = mongoose.Schema,
-  chalk = require('chalk');
-
-var rolesSchema = new Schema({
+const rolesSchema = new Schema({
   name: {
     type: String,
     unique: true,
@@ -17,13 +15,12 @@ var rolesSchema = new Schema({
   }
 });
 
-
 /**
  * Seeds the Features collection with document (Feature)
  * and provided options.
  */
 rolesSchema.statics.seed = function (doc, options) {
-  var Roles = mongoose.model('Roles'),
+  const Roles = mongoose.model('Roles'),
     Features = mongoose.model('Features');
 
   return new Promise(function (resolve, reject) {
@@ -80,9 +77,9 @@ rolesSchema.statics.seed = function (doc, options) {
 
         async.series([
           function (callback) {
-            var permissionIds = [];
+            let permissionIds = [];
             async.each(doc.featurePermissions, (featurePermission, done) => {
-              var featureName = _.split(featurePermission, ':')[0],
+              const featureName = _.split(featurePermission, ':')[0],
                 permissionName = _.split(featurePermission, ':')[1];
 
               Features.findOne({
@@ -118,7 +115,7 @@ rolesSchema.statics.seed = function (doc, options) {
             })
           },
           function (callback) {
-            var role = new Roles(doc);
+            let role = new Roles(doc);
 
             role.save(function (err) {
               if (err) {

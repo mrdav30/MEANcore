@@ -1,5 +1,3 @@
-'use strict';
-
-module.exports = {
-  // Test assets
+export const tests = {
+  server: ['tests/**/*.js']
 };

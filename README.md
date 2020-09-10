@@ -31,7 +31,7 @@ Checkout our blog [Techievor](https://techievor.com) built on meancore for a ful
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
 * Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
-* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version 10.15.0 of Node, 10.20.0 is preferred.
+* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.9.0 of Node.js.
 * MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017).
 
 # Getting started
@@ -40,8 +40,6 @@ Make sure you have installed all of the following prerequisites on your developm
 ```
 NODE_ENV='development'
 PRODUCTION=false
-DOMAIN=
-DOMAIN_PATTERN=
 HOST_SECURE=
 PROXY=
 
@@ -126,7 +124,6 @@ scripts/                     scripts for configuration and managing the applicat
 |- generate-ssl-certs.sh     generate self-signed certs for dev testing
 |- seed-db.js                seeds the db with default configuration based on config
 |- set-env.ts                run to configure environment configuration based on process.env
-|- version.ts                creates a version file under assets based on package version
 server/                      project source code for server
 sharedModules/               custom modules that are shared between the client and server
 reports/                     test and coverage reports
@@ -142,7 +139,6 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
 npm run config                | Produces angular environment configuration from .env
-npm run version               | Generates version control information based on projects package.json
 npm run build:dev             | Lint code and build app for development in `dist/` folder
 npm run build:prod            | Lint code and build app for production in `dist/` folder
 npm run client:dev            | Run development ng server on `http://localhost:4200/` only

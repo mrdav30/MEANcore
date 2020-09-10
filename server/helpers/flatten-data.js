@@ -1,13 +1,7 @@
-var moment = require('moment');
-
-module.exports = {
-    flattenData,
-    flattenNumberData,
-    flattenDateData
-}
+import moment from 'moment';
 
 // Flatten the array of object to array of ids
-function flattenData(collection, key) {
+export function flattenData(collection, key) {
     key = key || 'ID';
     if (collection && collection.length) {
         return collection.map(el => {
@@ -16,10 +10,10 @@ function flattenData(collection, key) {
     } else {
         return [null]; // Oracledb driver cant take empty array and must pass array. package must handle null
     }
-};
+}
 
 // Flatten the array of object to array of numbers
-function flattenNumberData(collection, key) {
+export function flattenNumberData(collection, key) {
     key = key || 'ID';
     if (collection && collection.length) {
         return collection.map(el => {
@@ -32,10 +26,10 @@ function flattenNumberData(collection, key) {
     } else {
         return [null]; // Oracledb driver cant take empty array and must pass array. package must handle null
     }
-};
+}
 
 // Flatten the array of object to array of dates
-function flattenDateData(collection, key) {
+export function flattenDateData(collection, key) {
     key = key || 'ID';
     if (collection && collection.length) {
         return collection.map(el => {
@@ -48,4 +42,4 @@ function flattenDateData(collection, key) {
     } else {
         return [null]; // Oracledb driver cant take empty array and must pass array. package must handle null
     }
-};
+}

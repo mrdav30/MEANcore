@@ -1,12 +1,11 @@
-var path = require('path'),
-    config = require(path.resolve('./config/config')),
-    request = require('request');
+import config from '../../config/config.js';
+import got from 'got';
 
-exports.logEvent = function(source, eventMsg, eventSev, errMsg, cbMain) {
+export function logEvent(source, eventMsg, eventSev, errMsg, cbMain) {
     return logExtEvent(source, eventMsg, eventSev, errMsg, null, cbMain);
 }
 
-exports.logExtEvent = function(source, eventMsg, eventSev, errMsg, evData, cbMain) {
+export function logExtEvent(source, eventMsg, eventSev, errMsg, evData, cbMain) {
     var event = {
         "source": source + ' - ' + config.dbtype,
         "event": {
@@ -17,19 +16,17 @@ exports.logExtEvent = function(source, eventMsg, eventSev, errMsg, evData, cbMai
     };
     if (evData) event["event"]["event-data"] = evData;
     event = JSON.stringify(event);
-    request({
-        url: config.splunkUrl,
-        method: 'POST',
+    got.post(config.splunkUrl, {
         form: event,
         headers: {
             "Authorization": "Splunk " + config.splunkToken
         }
-    }, function callback(err, httpResponse, body) {
+    }, function callback(err) {
         if (err) {
             console.error(err);
             cbMain(err);
         } else {
             cbMain(null);
-        };
+        }
     });
 }

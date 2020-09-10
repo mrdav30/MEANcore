@@ -1,9 +1,8 @@
-'use strict';
+import * as recaptcha from './recaptcha.server.controller.js';
 
-module.exports = function (app) {
-	// Recaptcha Routes
-	var recaptcha = require('./recaptcha.server.controller');
+export default function (app) {
+  // Recaptcha Routes
 
-	// Setting up the users profile api
-	app.route('/api/validate_captcha').get(recaptcha.getRecaptchaValdiation);
-};
+  // Setting up the users profile api
+  app.route('/api/validate_captcha').get(recaptcha.getRecaptchaValdiation);
+}

@@ -1,6 +1,5 @@
-'use strict';
-
-const Provider = require("./provider");
+/* eslint-disable no-useless-escape */
+import Provider from "./provider.js";
 
 class Exclusions extends Provider
 {
@@ -12,4 +11,4 @@ class Exclusions extends Provider
 	}
 }
 
-module.exports = Exclusions;
+export default Exclusions;

@@ -1,21 +1,20 @@
-require('dotenv').config();
+import 'dotenv/config.js';
 
-const db = require('../config/lib/mongoose');
-const seed = require('../config/lib/mongo-seed');
+import { connect, loadModels, disconnect } from '../config/lib/mongoose-manager.js';
+import { start } from '../config/lib/mongo-seed';
 
 // Open mongoose database connection
-db.connect(async () => {
-  db.loadModels();
+connect(async () => {
+  loadModels();
 
-  seed
-    .start({
+  start({
       options: {
         logResults: true
       }
     })
     .then(function () {
       // Disconnect and finish task
-      db.disconnect((disconnectError) => {
+      disconnect((disconnectError) => {
         if (disconnectError) {
           console.log('Error disconnecting from the database.');
           // Finish task with error
@@ -24,7 +23,7 @@ db.connect(async () => {
       });
     })
     .catch((err) => {
-      db.disconnect((disconnectError) => {
+      disconnect((disconnectError) => {
         if (disconnectError) {
           console.log('Error disconnecting from the database, but was preceded by a Mongo Seed error.');
         }

@@ -1,6 +1,4 @@
-'use strict';
-
-const owaspConfig = {
+export const owaspConfig = {
   allowPassphrases: true,
   maxLength: 128,
   minLength: 10,
@@ -82,7 +80,7 @@ const passwordTests = {
 };
 
 // This method tests password strength
-function passwordTest(password) {
+export function passwordTest(password) {
 
   // create an object to store the test results
   const result = {
@@ -148,9 +146,4 @@ function passwordTest(password) {
 
   // return the result
   return result;
-};
-
-if (module && module.exports) {
-  exports.owaspConfig = owaspConfig;
-  exports.passwordTest = passwordTest;
 }

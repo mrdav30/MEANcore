@@ -1,5 +1,3 @@
-'use strict';
-
 class Provider
 {
 	constructor(){}
@@ -10,4 +8,4 @@ class Provider
 	}
 }
 
-module.exports = Provider;
+export default Provider;

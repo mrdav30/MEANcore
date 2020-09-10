@@ -1,10 +1,8 @@
-var fs = require('fs');
+import fse from 'fs-extra';
 
-module.exports = fileExists;
-
-function fileExists(filePath) {
+export function fileExists(filePath) {
     try {
-        return fs.statSync(filePath).isFile();
+        return fse.statSync(filePath).isFile();
     } catch (e) {
         return false;
     }

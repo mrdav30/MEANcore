@@ -1,7 +1,7 @@
 
 import { Component, Input, Output, EventEmitter, AfterViewInit } from '@angular/core';
 
-import { map, split, forEach, findIndex, filter, find } from 'lodash-es';
+import { map, split, forEach, findIndex, filter, find } from 'lodash';
 
 import { QuestionBase } from './dynamic-questions/models/question-base';
 

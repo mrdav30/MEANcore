@@ -1,41 +1,44 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var config = require('../config'),
-  express = require('express'),
-  morgan = require('morgan'),
-  logger = require('./logger'),
-  bodyParser = require('body-parser'),
-  session = require('express-session'),
-  mongoose = require('./mongoose'),
-  mongoStore = require('connect-mongo')({
-    session: session
-  }),
-  compress = require('compression'),
-  methodOverride = require('method-override'),
-  cookieParser = require('cookie-parser'),
-  helmet = require('helmet'),
-  csp = require('helmet-csp'),
-  nocache = require('nocache'),
-  flash = require('connect-flash'),
-  hbs = require('express-hbs'),
-  path = require('path'),
-  _ = require('lodash'),
-  vhost = require('vhost');
+import config from '../config.js';
+import express from 'express';
+import morgan from 'morgan';
+import logger from './logger.js';
+import bodyparser from 'body-parser';
+import session from 'express-session';
+import {
+  loadModels
+} from './mongoose-manager.js';
+import connectMongo from 'connect-mongo';
+const MongoStore = connectMongo(session);
+import compress from 'compression';
+import methodOverride from 'method-override';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import csp from 'helmet-csp';
+import nocache from 'nocache';
+import flash from 'connect-flash';
+import expresshbs from 'express-hbs';
+import url from 'url';
+import fse from 'fs-extra';
+import {
+  resolve
+} from 'path';
+import _ from 'lodash';
+import vhost from 'vhost';
 
 /**
  * Configure the models
  */
-var initServerModels = function () {
-  mongoose.loadModels();
+const initServerModels = async () => {
+  await loadModels();
 };
 
 /**
  * Initialize local variables
  */
-var initLocalVariables = function (app, config) {
+const initLocalvariables = function (app, config) {
   // Setting application local variables
   app.locals.title = config.app.title;
   app.locals.description = config.app.description;
@@ -65,7 +68,7 @@ var initLocalVariables = function (app, config) {
 /**
  * Configure Express session
  */
-var initSession = function (app, config, db) {
+const initSession = (app, config, db) => {
   app.use(session({
     saveUninitialized: false, // dont save unmodified
     resave: false, // forces the session to be saved back to the store
@@ -76,7 +79,7 @@ var initSession = function (app, config, db) {
       secure: config.sessionCookie.secure && config.secure.ssl
     },
     name: config.sessionKey,
-    store: new mongoStore({
+    store: new MongoStore({
       db: db,
       collection: config.sessionCollection,
       url: config.mongoDB.uri
@@ -87,8 +90,8 @@ var initSession = function (app, config, db) {
 /**
  * Initialize application middleware
  */
-var initMiddleware = function (app, config) {
- // Should be placed before express.static
+const initMiddleware = (app, config) => {
+  // Should be placed before express.static
   app.use(compress({
     level: 9,
     memLevel: 9
@@ -108,11 +111,11 @@ var initMiddleware = function (app, config) {
   }
 
   // Request body parsing middleware should be above methodOverride
-  app.use(bodyParser.urlencoded({
+  app.use(bodyparser.urlencoded({
     extended: true,
     limit: '260mb'
   }));
-  app.use(bodyParser.json({
+  app.use(bodyparser.json({
     limit: '260mb'
   }));
   app.use(methodOverride());
@@ -127,8 +130,8 @@ var initMiddleware = function (app, config) {
 /**
  * Configure handlebars Helpers
  */
-var initHandlebars = function () {
-  hbs.registerHelper('currency', function (number, options) {
+const initHandlebars = () => {
+  expresshbs.registerHelper('currency', function (number) {
     if (number === null || isNaN(number)) {
       return number;
     }
@@ -138,7 +141,7 @@ var initHandlebars = function () {
     });
   });
 
-  hbs.registerHelper('decimal', function (number, options) {
+  expresshbs.registerHelper('decimal', function (number) {
     if (number === null || isNaN(number)) {
       return number;
     }
@@ -148,11 +151,11 @@ var initHandlebars = function () {
     }).substr(1);
   });
 
-  hbs.registerHelper('ifeq', (a, b, options) => {
+  expresshbs.registerHelper('ifeq', (a, b, options) => {
     return a == b ? options.fn(this) : options.inverse(this); // eslint-disable-line
   });
 
-  hbs.registerHelper('ifnoteq', (a, b, options) => {
+  expresshbs.registerHelper('ifnoteq', (a, b, options) => {
     return a != b ? options.fn(this) : options.inverse(this); // eslint-disable-line
   });
 
@@ -161,42 +164,106 @@ var initHandlebars = function () {
 /**
  * Configure view engine
  */
-var initViewEngine = function (app, config) {
-  var serverViewPath = path.resolve(config.serverViewPath ? config.serverViewPath : './');
+const initViewEngine = (app, config) => {
+  let serverViewPath = resolve(config.serverViewPath ? config.serverViewPath : './');
   app.set('views', [serverViewPath, config.staticFiles]);
 
   // server side html
-  app.engine('server.view.html', hbs.express4({
+  app.engine('server.view.html', expresshbs.express4({
     extname: '.server.view.html'
   }));
   app.set('view engine', 'server.view.html');
 
   //client side html
-  app.engine('html', hbs.express4({
+  app.engine('html', expresshbs.express4({
     extname: 'html'
   }));
   app.set('view engine', 'html');
 
-  app.engine('js', hbs.express4({
+  app.engine('js', expresshbs.express4({
     extname: '.js'
   }));
 };
 
+const initSharedConfiguration = async (config) => {
+  // assigning services to configs
+  await Promise.all(config.files.services.map(async (serviceFile) => {
+    let servicePath = url.pathToFileURL(resolve(serviceFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(servicePath).then(async (service) => {
+      config.services = {
+        ...config.services,
+        ...service
+      };
+    });
+  })).catch((err) => {
+    console.log(err);
+  });
+
+  // assigning helpers to configs
+  await Promise.all(config.files.helpers.map(async (helpersFile) => {
+    let helpersPath = url.pathToFileURL(resolve(helpersFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(helpersPath).then((helper) => {
+      config.helpers = {
+        ...config.helpers,
+        ...helper
+      };
+    });
+  })).catch((err) => {
+    console.log(err);
+  });
+
+
+  // assigning shared modules to configs
+  await Promise.all(config.files.sharedModules.map(async (sharedModuleFile) => {
+    let sharedModulePath = url.pathToFileURL(resolve(sharedModuleFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(sharedModulePath).then((shareModule) => {
+      config.shareModules = {
+        ...config.shareModules,
+        ...shareModule
+      };
+    });
+  })).catch((err) => {
+    console.log(err);
+  });
+
+  // set up view
+  config.serverViewPath = 'server';
+  // set up static file location
+  config.staticFiles = 'dist/' + config.app.name + '/';
+
+  // read package.json for MEANCore project information
+  await fse.readFile(resolve('./package.json')).then((jsonStr) => {
+    const data = JSON.parse(jsonStr);
+    config.version = data.version;
+  }).catch((err) => {
+    console.log(err);
+  });
+}
+
 /**
  * Invoke server configuration
  */
-var initServerConfiguration = function (app, config) {
-  config.files.server.configs.forEach(function (configPath) {
-    require(path.resolve(configPath))(app);
-  });
+const initServerConfiguration = async (app, config) => {
+  await Promise.all(config.files.configs.map(async (configFile) => {
+    let configPath = url.pathToFileURL(resolve(configFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(configPath).then(async (appConfig) => {
+      await appConfig.default(app);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }));
 };
 
 /**
  * Configure Helmet headers configuration
  */
-var initHelmetHeaders = function (app) {
+const initHelmetHeaders = (app) => {
   // Use helmet to secure Express headers
-  var SIX_MONTHS = 15778476000;
+  let SIX_MONTHS = 15778476000;
   app.use(helmet.frameguard({
     action: 'sameorigin'
   }));
@@ -230,29 +297,29 @@ var initHelmetHeaders = function (app) {
 /**
  * Configure the modules static routes
  */
-var initClientRoutes = function (app, config) {
-  var cacheTime = -9999;
+const initClientRoutes = (app, config) => {
+  let cacheTime = -9999;
   if (process.env.NODE_ENV !== 'development') {
     cacheTime = '30d';
   }
 
   // in development mode files are loaded from node_modules
-  app.use('/node_modules', express.static(path.resolve(config.staticFiles + '../../node_modules/'), {
+  app.use('/node_modules', express.static(resolve(config.staticFiles + '../../node_modules/'), {
     maxAge: '30d', // Cache node modules in development as well as they are not updated that frequently.
     index: false,
   }));
 
   // Setting the app router and static folder
-  app.use('/', express.static(path.resolve(config.staticFiles), {
+  app.use('/', express.static(resolve(config.staticFiles), {
     maxAge: cacheTime,
     index: false,
   }));
 
   // Setting the app router and static folder for image paths
-  let imageOptions = _.map(config.uploads.images.options),
-    defaultRoute = config.app.appBaseUrl + config.app.apiBaseUrl + config.uploads.images.baseUrl;
+  const imageOptions = _.map(config.uploads.images.options);
+  const defaultRoute = config.app.appBaseUrl + config.app.apiBaseUrl + config.uploads.images.baseUrl;
   _.forEach(imageOptions, (option) => {
-    app.use(defaultRoute + '/' + option.finalDest, express.static(path.resolve(config.uploads.images.uploadRepository + option.finalDest), {
+    app.use(defaultRoute + '/' + option.finalDest, express.static(resolve(config.uploads.images.uploadRepository + option.finalDest), {
       maxAge: option.maxAge,
       index: option.index
     }));
@@ -262,18 +329,23 @@ var initClientRoutes = function (app, config) {
 /**
  * Configure the server routes
  */
-var initServerRoutes = function (app, config) {
-  // Globbing routing files
-  config.files.server.routes.forEach(function (routePath) {
-    require(path.resolve(routePath))(app);
-  });
+const initServerRoutes = async (app, config) => {
+  for (const routeFile of config.files.routes) {
+    let routePath = url.pathToFileURL(resolve(routeFile)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    await import(routePath).then(async (route) => {
+      await route.default(app);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }
 };
 
 /**
  * Configure error handling
  */
-var initErrorRoutes = function (app, config) {
-  app.use(function (err, req, res, next) {
+const initErrorRoutes = (app, config) => {
+  app.use((err, req, res, next) => {
     // If the error object doesn't exists
     if (!err) {
       return next();
@@ -283,7 +355,7 @@ var initErrorRoutes = function (app, config) {
     console.error(err.stack);
 
     // Redirect to error page
-    let appBaseUrl = config.appBaseUrl || '/';
+    const appBaseUrl = config.appBaseUrl || '/';
     res.redirect(appBaseUrl + 'server-error');
   });
 };
@@ -291,15 +363,18 @@ var initErrorRoutes = function (app, config) {
 /**
  * Configure Socket.io
  */
-var configureSocketIO = function (app, db) {
+const configureSocketIO = async (app, db) => {
   // Load the Socket.io configuration
-  var server = require('./socket.io')(app, db);
-
-  // Return server object
-  return server;
+  try {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const server = await import('./socket.io.js');
+    return server.default(app, db);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
-var enableCORS = function (app) {
+const enableCORS = (app) => {
   app.use(function (req, res, next) {
     //res.header('Access-Control-Allow-Headers', 'content-type,devicetoken,usertoken');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -318,17 +393,17 @@ var enableCORS = function (app) {
 /**
  * Initialize the Express application
  */
-var init = function (config, db) {
+const init = async (config, db) => {
   // Initialize express app
-  var app = express();
+  let app = express();
 
   // Initialize local variables
-  initLocalVariables(app, config);
+  initLocalvariables(app, config);
 
   // Initialize Express middleware
   initMiddleware(app, config);
 
-  // Initialize Handlebars halper
+  // Initialize Handlebars helper
   initHandlebars();
 
   // Initialize Express view engine
@@ -346,55 +421,49 @@ var init = function (config, db) {
   // Initialize Express session
   initSession(app, config, db);
 
-  //  Configure mongodb models
-  initServerModels();
-
-  // Initialize Modules configuration
-  initServerConfiguration(app, config);
-
-  // Initialize modules server routes
-  initServerRoutes(app, config);
-
   // Initialize error routes
   initErrorRoutes(app, config);
 
+  //  Configure mongodb models
+  await initServerModels().then(async () => {
+    Promise.all([
+      // Initialize modules server configuration
+      await initServerConfiguration(app, config),
+      // Initialize modules server routes
+      await initServerRoutes(app, config)
+    ])
+  });
+
   console.log('Loading Completed for: ' + config.app.name);
+
   return app;
 };
 
-var initApps = function (db) {
+async function initApps(db) {
   // need to decide if use express or connect??
-  var rootApp = express();
+  let rootApp = express();
 
-  // assigning services to configs.
-  config.services = require(path.resolve('./server/services.js'));
+  // Initialize global globbed shared config
+  await initSharedConfiguration(config);
 
-  // assigning helpers to configs
-  config.helpers = require(path.resolve('./server/helpers.js'));
+  await init(config, db).then((app) => {
+    if (config.app.appBaseUrl) {
+      rootApp.use(config.app.appBaseUrl, app);
+    } else if (config.app.domainPattern) {
+      rootApp.use(vhost(config.app.domainPattern, app));
+    }
+  })
 
-  // assigning shared modules to configs
-  config.sharedModules = require(path.resolve('./sharedModules/sharedModules.js'));
-
-  // set up view
-  config.serverViewPath = 'server';
-
-  // set up static file location
-  config.staticFiles = 'dist/' + config.app.name + '/';
-
-  if (config.app.appBaseUrl) {
-    rootApp.use(config.app.appBaseUrl, init(config, db));
-  } else if (config.app.domainPattern) {
-    rootApp.use(vhost(config.app.domainPattern, init(config, db)));
-  }
-
-  rootApp = configureSocketIO(rootApp, db);
+  rootApp = await configureSocketIO(rootApp, db);
 
   return rootApp;
-};
+}
 
-module.exports.initAllApps = function (db, callback) {
-  var rootApp = initApps(db);
+export async function initAllApps(db, callback) {
+  const rootApp = await initApps(db);
   if (callback) {
-    callback(rootApp);
+    return callback(rootApp);
   }
-};
+
+  return;
+}

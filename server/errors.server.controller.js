@@ -1,13 +1,11 @@
-'use strict';
-
 /**
  * Get unique error field name
  */
-var getUniqueErrorMessage = function (err) {
-  var output;
+const getUniqueErrorMessage = function (err) {
+  let output;
 
   try {
-    var fieldName = err.err.substring(err.err.lastIndexOf('.$') + 2, err.err.lastIndexOf('_1'));
+    const fieldName = err.err.substring(err.err.lastIndexOf('.$') + 2, err.err.lastIndexOf('_1'));
     output = fieldName.charAt(0).toUpperCase() + fieldName.slice(1) + ' already exists';
 
   } catch (ex) {
@@ -20,9 +18,9 @@ var getUniqueErrorMessage = function (err) {
 /**
  * Get the error message from error object
  */
-exports.getErrorMessage = function (err) {
+export function getErrorMessage (err) {
   if (typeof err !== 'string') {
-    var message = err.message;
+    let message = err.message;
     if (err.code) {
       switch (err.code) {
         case 11000:
@@ -33,7 +31,7 @@ exports.getErrorMessage = function (err) {
           message = 'Something went wrong';
       }
     } else {
-      for (var errName in err.errors) {
+      for (let errName in err.errors) {
         if (err.errors[errName].message) {
           message = err.errors[errName].message;
         }
@@ -44,4 +42,4 @@ exports.getErrorMessage = function (err) {
   }
 
   return err;
-};
+}

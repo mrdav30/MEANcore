@@ -85,7 +85,7 @@ describe('AppComponent', () => {
       }, 1000);
     });
 
-    it('should call gtag on page navigation', async() => {
+    it('should call gtag on page navigation', async () => {
       const titleStub: Title = fixture.debugElement.injector.get(Title);
       spyOn(titleStub, 'getTitle');
 

@@ -1,14 +1,11 @@
-var rp = require('request-promise'),
-    path = require('path'),
-    config = require(path.resolve('./config/config'));
+import got from 'got';
+import config from '../../config/config.js';
 
 const secretKey = config.RECAPTCHA_SECRET_KEY;
 const scope = 'https://www.google.com/recaptcha/api/siteverify';
 
-exports.getRecaptchaValdiation = function (req, res) {
+export function getRecaptchaValdiation (req, res) {
     const options = {
-        method: 'POST',
-        uri: scope,
         qs: {
             secret: secretKey,
             response: req.query.token
@@ -16,7 +13,7 @@ exports.getRecaptchaValdiation = function (req, res) {
         json: true
     };
 
-    rp(options)
+    got.post(scope, options)
         .then(response => res.json(response))
         .catch(() => {});
 }

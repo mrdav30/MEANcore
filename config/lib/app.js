@@ -1,34 +1,39 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var config = require('../config'),
-  mongoose = require('./mongoose'),
-  express = require('./express'),
-  chalk = require('chalk');
+import config from '../config.js';
+import {
+  connectDB
+} from './mongoose-manager.js';
+import {
+  initAllApps
+} from './express.js';
+import chalk from 'chalk';
 
-module.exports.init = function init(callback) {
-  mongoose.connect(function (db) {
-    express.initAllApps(db, function (app) {
-      if (callback) callback(app, config);
+export function init(callback) {
+  connectDB((db) => {
+    initAllApps(db, (app) => {
+      if (callback) {
+        callback(app, config);
+      }
     });
   });
-};
+}
 
-module.exports.start = function start(callback) {
-  var _this = this;
+export function start(callback) {
+  let _this = this;
 
-  _this.init(function (app, config) {
+  _this.init((app, config) => {
 
     // Start the app by listening on <port> at <host>
-    var server = app.listen(config.port, config.host, function () {
+    let server = app.listen(config.port, config.host, () => {
 
       process.stdin.resume(); //so the program will not close instantly
 
       function exitHandler(options, err) {
         if (options.cleanup) console.log('clean');
         if (err) console.log(err.stack);
+        // eslint-disable-next-line no-process-exit
         if (options.exit) process.exit();
       }
 
@@ -56,19 +61,20 @@ module.exports.start = function start(callback) {
       }));
 
       // Create server URL
-      var server = (config.secure && config.secure.ssl ? 'https://' : 'http://') + config.host + ':' + config.port;
+      let serverUrl = (config.secure && config.secure.ssl ? 'https://' : 'http://') + config.host + ':' + config.port;
       // Logging initialization
       console.log('--');
       console.log(chalk.green(config.app.title));
       console.log();
       console.log(chalk.green('Environment:     ' + process.env.NODE_ENV));
-      console.log(chalk.green('Server:          ' + server));
+      console.log(chalk.green('Server:          ' + serverUrl));
       console.log(chalk.green('Database:        ' + config.mongoDB.uri));
-      console.log(chalk.green('App version:     ' + config.meancore.version));
+      console.log(chalk.green('App version:     ' + config.version));
       console.log('--');
 
       if (callback) callback(app, config);
     });
+
     server.timeout = 10 * 60 * 1000; // 10 mins
   });
-};
+}

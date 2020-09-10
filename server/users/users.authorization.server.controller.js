@@ -1,16 +1,14 @@
-'use strict';
-
 /**
  * Module dependencies.
  */
-var _ = require('lodash'),
-  mongoose = require('mongoose'),
-  User = mongoose.model('User');
+import _ from 'lodash';
+import mongoose from 'mongoose';
+const  User = mongoose.model('User');
 
 /**
  * User middleware
  */
-exports.userByID = function (req, res, next, id) {
+export function userByID (req, res, next, id) {
   User.findOne({
     _id: id
   }).exec(function (err, user) {
@@ -23,38 +21,38 @@ exports.userByID = function (req, res, next, id) {
     req.profile = user;
     next();
   });
-};
+}
 
 /**
  * Require login routing middleware
  */
-exports.requiresLogin = function (req, res, appBaseUrl, next) {
+export function requiresLogin (req, res, appBaseUrl, next) {
   if (!req.isAuthenticated() && !req.apiAuthed) {
-    var redirectUrl = appBaseUrl ? appBaseUrl + 'sign-in' : '/sign-in';
+    const redirectUrl = appBaseUrl ? appBaseUrl + 'sign-in' : '/sign-in';
     return res.redirect(redirectUrl);
   }
 
   next();
-};
+}
 
 /**
  * User authorizations routing middleware
  */
-exports.hasAuthorization = function (roles, appBaseUrl) {
-  var _this = this;
+export function hasAuthorization (roles, appBaseUrl) {
+  const _this = this;
 
   return function (req, res, next) {
     _this.requiresLogin(req, res, appBaseUrl, function () {
-      var userRoles = req.user && req.user.roles ? _.map(req.user.roles, (role) => {
+      const userRoles = req.user && req.user.roles ? _.map(req.user.roles, (role) => {
         return role.name;
       }) : ['user'];
       if (_.intersection(userRoles, roles).length) {
         return next();
       } else {
-        var redirectUrl = appBaseUrl ? appBaseUrl + 'unauthorized' : '/unauthorized';
+        const redirectUrl = appBaseUrl ? appBaseUrl + 'unauthorized' : '/unauthorized';
         req.flash('unauthorizedMsg', 'User is not authorized');
         return res.redirect(redirectUrl);
       }
     });
   };
-};
+}

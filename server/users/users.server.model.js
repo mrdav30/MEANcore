@@ -1,30 +1,27 @@
-'use strict';
-
+/* eslint-disable no-useless-escape */
 /**
  * Module dependencies.
  */
-var async = require('async'),
-  _ = require('lodash'),
-  mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  path = require('path'),
-  config = require(path.resolve('./config/config')),
-  crypto = require('crypto'),
-  owasp = config.sharedModules.owaspPasswordStrengthTest,
-  generatePassword = require('generate-password'),
-  chalk = require('chalk');
+import async from 'async';
+import _ from 'lodash';
+import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
+import config from '../../config/config.js';
+import { randomBytes, pbkdf2Sync } from 'crypto';
+import generatePassword from 'generate-password';
+import chalk from 'chalk';
 
 /**
  * A Validation function for local strategy properties
  */
-var validateLocalStrategyProperty = function (property) {
+const validateLocalStrategyProperty = function (property) {
   return ((this.provider !== 'local' && !this.updated) || property.length);
 };
 
 /**
  * A Validation function for local strategy password
  */
-var validateLocalStrategyPassword = function (password) {
+const validateLocalStrategyPassword = function (password) {
   return (this.provider !== 'local' || (password && password.length > 6));
 };
 
@@ -38,8 +35,8 @@ var validateLocalStrategyPassword = function (password) {
  * - not begin or end with "."
  */
 
-var validateUsername = function (username) {
-  var usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
+const validateUsername = function (username) {
+  const usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
   return (
     this.provider !== 'local' ||
     (username && usernameRegex.test(username) && config.illegalUsernames.indexOf(username) < 0)
@@ -49,7 +46,7 @@ var validateUsername = function (username) {
 /**
  * User Schema
  */
-var UserSchema = new Schema({
+const UserSchema = new Schema({
   firstName: {
     type: String,
     trim: true,
@@ -126,7 +123,7 @@ var UserSchema = new Schema({
  */
 UserSchema.pre('save', function (next) {
   if (this.password && this.password.length > 6) {
-    this.salt = Buffer.from(crypto.randomBytes(16).toString('base64'), 'base64');
+    this.salt = Buffer.from(randomBytes(16).toString('base64'), 'base64');
     this.password = this.hashPassword(this.password);
   }
 
@@ -139,7 +136,7 @@ UserSchema.pre('save', function (next) {
  */
 UserSchema.methods.hashPassword = function (password) {
   if (this.salt && password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000, 64, 'sha512').toString('base64');
+    return pbkdf2Sync(password, this.salt, 10000, 64, 'sha512').toString('base64');
   } else {
     return password;
   }
@@ -153,10 +150,10 @@ UserSchema.methods.authenticate = function (password) {
 };
 
 UserSchema.statics.findUser = function (_id, callback) {
-  var _this = this;
+  const _this = this;
 
   _this.findOne({
-    _id: id
+    _id: _id
   }).exec(function (err, user) {
     if (err) {
       return callback(err);
@@ -171,8 +168,8 @@ UserSchema.statics.findUser = function (_id, callback) {
  * Find possible not used username
  */
 UserSchema.statics.findUniqueUsername = function (username, suffix, callback) {
-  var _this = this;
-  var possibleUsername = username + (suffix || '');
+  const _this = this;
+  const possibleUsername = username + (suffix || '');
 
   _this.findOne({
     username: possibleUsername
@@ -194,8 +191,8 @@ UserSchema.statics.findUniqueUsername = function (username, suffix, callback) {
  */
 UserSchema.statics.generateRandomPassphrase = function () {
   return new Promise(function (resolve, reject) {
-    var password = '';
-    var repeatingCharacters = new RegExp('(.)\\1{2,}', 'g');
+    let password = '';
+    const repeatingCharacters = new RegExp('(.)\\1{2,}', 'g');
 
     // iterate until the we have a valid passphrase
     // NOTE: Should rarely iterate more than once, but we need this to ensure no repeating characters are present
@@ -213,6 +210,8 @@ UserSchema.statics.generateRandomPassphrase = function () {
       password = password.replace(repeatingCharacters, '');
     }
 
+    const owasp = config.sharedModules.owaspPasswordStrengthTest;
+
     // Send the rejection back if the passphrase fails to pass the strength test
     if (owasp.test(password).errors.length) {
       reject(new Error('An unexpected problem occurred while generating the random passphrase'));
@@ -228,7 +227,7 @@ UserSchema.statics.generateRandomPassphrase = function () {
  * and provided options.
  */
 UserSchema.statics.seed = function (doc, options) {
-  var User = mongoose.model('User'),
+  const User = mongoose.model('User'),
     Roles = mongoose.model('Roles');
 
   return new Promise(function (resolve, reject) {
@@ -287,7 +286,7 @@ UserSchema.statics.seed = function (doc, options) {
           .then(function (passphrase) {
             async.series([
               function (callback) {
-                var roleIds = [];
+                let roleIds = [];
                 async.each(doc.roles, (role, done) => {
                   Roles.findOne({
                     name: new RegExp(_.escapeRegExp(role))
@@ -312,7 +311,7 @@ UserSchema.statics.seed = function (doc, options) {
                 })
               },
               function (callback) {
-                var user = new User(doc);
+                let user = new User(doc);
 
                 user.provider = 'local';
                 user.displayName = user.firstName + ' ' + user.lastName;

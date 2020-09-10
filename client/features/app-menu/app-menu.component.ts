@@ -1,11 +1,11 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { filter, intersection, map, orderBy } from 'lodash-es';
+import { filter, intersection, map, orderBy } from 'lodash';
 
 import { environment } from '@env';
 
-import { UserAccessControlService } from '../user-access-control/services/user-access-control.service'
+import { UserAccessControlService } from '../user-access-control/services/user-access-control.service';
 import { ConfigService, AuthService, MenuConfig } from '../utils';
 
 @Component({

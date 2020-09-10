@@ -1,13 +1,11 @@
-'use strict';
-
 // A relational database sequence is a database product that creates unique values by getting
 // an auto increment with a value which could be of a step of 1, 2, and so on.
 // This model attempts to recreate this feature in MongoDb.
 
-var mongoose = require('mongoose'),
-  Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+const  Schema = mongoose.Schema;
 
-var sequenceCounterSchema = new Schema({
+const sequenceCounterSchema = new Schema({
   seq: {
     type: Number
   }

@@ -1,4 +1,4 @@
-var puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 // In-memory cache of rendered pages. Note: this will be cleared whenever the
 // server process stops. If you need true persistence, use something like
@@ -11,7 +11,7 @@ const RENDER_CACHE = new Map();
  *     provided, Puppeteer's reconnects to the browser instance. Otherwise,
  *     a new browser instance is launched.
  */
-async function ssr(url, browserWSEndpoint) {
+export async function ssr(url, browserWSEndpoint) {
   if (RENDER_CACHE.has(url)) {
     return {
       html: RENDER_CACHE.get(url),
@@ -80,11 +80,6 @@ async function ssr(url, browserWSEndpoint) {
   };
 }
 
-function clearCache() {
+export function clearCache() {
   RENDER_CACHE.clear();
 }
-
-module.exports = {
-  ssr,
-  clearCache
-};

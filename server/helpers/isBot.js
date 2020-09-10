@@ -1,8 +1,6 @@
-var CrawlerDetector = require('./crawler-detector/crawler-detector')
+import CrawlerDetector from './crawler-detector/crawler-detector.js';
 
-module.exports = isBot;
-
-function isBot(userAgent) {
+export function isBot(userAgent) {
   // create a new Crawler instance
   var crawlerDetector = new CrawlerDetector();
 

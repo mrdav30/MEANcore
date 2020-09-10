@@ -1,15 +1,12 @@
-'use strict';
-
-var _ = require('lodash'),
-  mongoose = require('mongoose'),
-  errorHandler = require('../errors.server.controller'),
-  SequenceCounter = mongoose.model('SequenceCounter'),
-  Features = mongoose.model('Features'),
-  Roles = mongoose.model('Roles');
+import _ from 'lodash';
+import mongoose from 'mongoose';
+const SequenceCounter = mongoose.model('SequenceCounter');
+const Features = mongoose.model('Features');
+const Roles = mongoose.model('Roles');
 
 // Features
 
-exports.createFeature = function (req, res) {
+export function createFeature (req, res) {
   Features(req.body.feature).save(function (err, feature) {
     if (err) {
       return res.status(200).send({
@@ -20,11 +17,11 @@ exports.createFeature = function (req, res) {
 
     res.status(200).send(feature);
   });
-};
+}
 
-exports.updateFeature = function (req, res) {
+export function updateFeature (req, res) {
   // fields to update
-  var set = _.omit(req.body.feature, '_id');
+  const set = _.omit(req.body.feature, '_id');
 
   Features.updateOne({
       _id: mongoose.Types.ObjectId(req.params.feature_id)
@@ -40,9 +37,9 @@ exports.updateFeature = function (req, res) {
 
       res.status(200).send();
     });
-};
+}
 
-exports.deleteFeature = function (req, res) {
+export function deleteFeature (req, res) {
   Features.findOneAndDelete({
       _id: mongoose.Types.ObjectId(req.params.feature_id)
     },
@@ -85,12 +82,12 @@ exports.deleteFeature = function (req, res) {
         res.status(200).send();
       }
     });
-};
+}
 
 // Feature Permissions
 
-exports.createPermission = function (req, res) {
-  var permissionParms = req.body.permission;
+export function createPermission (req, res) {
+  const permissionParms = req.body.permission;
   SequenceCounter.getValueForNextSequence('perm_id', (err, counter) => {
     if (err) {
       return res.status(500).send({
@@ -119,9 +116,9 @@ exports.createPermission = function (req, res) {
         });
       });
   });
-};
+}
 
-exports.updatePermission = function (req, res) {
+export function updatePermission (req, res) {
   Features.updateOne({
       permissions: {
         $in: {
@@ -140,9 +137,9 @@ exports.updatePermission = function (req, res) {
 
       res.status(200).send();
     });
-};
+}
 
-exports.deletePermission = function (req, res) {
+export function deletePermission (req, res) {
   Features.updateOne({
       _id: mongoose.Types.ObjectId(req.params.feature_id)
     }, {
@@ -180,4 +177,4 @@ exports.deletePermission = function (req, res) {
         res.status(200).send();
       })
     });
-};
+}
