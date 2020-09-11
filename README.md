@@ -1,10 +1,9 @@
 [![MEANcore Logo](https://github.com/mrdav30/MEANcore/blob/master/client/assets/images/logo.png) MEANcore](https://github.com/mrdav30/MEANcore) 
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MEANcore/community)
-[![Dependencies Status](https://david-dm.org/mrdav30/MEANcore.svg)](https://david-dm.org/mrdav30/MEANcore)
-[![devDependencies Status](https://david-dm.org/mrdav30/MEANcore/dev-status.svg)](https://david-dm.org/mrdav30/MEANcore?type=dev)
-[![Known Vulnerabilities](https://snyk.io/test/github/mrdav30/MEANcore/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mrdav30/MEANcore?targetFile=package.json)
-
+[![Gitter](https://img.shields.io/gitter/room/mrdav30/MEANcore)](https://gitter.im/MEANcore/community)
+[![depencies status](https://img.shields.io/david/mrdav30/MEANcore)](https://david-dm.org/mrdav30/MEANcore)
+[![devDependencies Status](https://img.shields.io/david/dev/mrdav30/MEANcore)](https://david-dm.org/mrdav30/MEANcore?type=dev)
+[![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/mrdav30/MEANcore)](https://snyk.io/test/github/mrdav30/MEANcore?targetFile=package.json)
 # MEAN Stack Starter Kit
 
 MEANcore is an open-source boilerplate solution based on the MEAN stack and provides a solid starting point for [MongoDB](http://www.mongodb.org/), [Node.js](http://www.nodejs.org/), [Express](http://expressjs.com/), and [Angular](https://angular.io/) based applications. This project includes modern tools and workflow based on [angular-cli](https://github.com/angular/angular-cli), best practices from the community, a scalable base template and a good learning base.
@@ -31,8 +30,8 @@ Checkout our blog [Techievor](https://techievor.com) built on meancore for a ful
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
 * Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
-* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.9.0 of Node.js.
-* MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017).
+* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.0.0 of Node.js, v14.9.0 being the recommended.
+* MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017). This version of MEANcore requires at minimum version >=4.0.0, v4.0.5 being the recommended.
 
 # Getting started
 
@@ -41,7 +40,7 @@ Make sure you have installed all of the following prerequisites on your developm
 NODE_ENV='development'
 PRODUCTION=false
 HOST_SECURE=
-PROXY=
+HTTP_PROXY=
 
 APP_NAME='meancore'
 APP_LOGO='assets/images/logo.png'
@@ -198,8 +197,7 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - Server-side rendering for web-crawlers using [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 - Unit tests using [Jasmine](http://jasmine.github.io) and [Karma](https://karma-runner.github.io)
 - End-to-end tests using [Protractor](https://github.com/angular/protractor)
-- Static code analysis: [TSLint](https://github.com/palantir/tslint), [Codelyzer](https://github.com/mgechev/codelyzer),
-  [Stylelint](http://stylelint.io) and [HTMLHint](http://htmlhint.com/)
+- Static code analysis: [TSLint](https://github.com/palantir/tslint), [ESLint](https://github.com/eslint/eslint), [Codelyzer](https://github.com/mgechev/codelyzer), [Stylelint](http://stylelint.io) and [HTMLHint](http://htmlhint.com/)
 
 #### Libraries
 
