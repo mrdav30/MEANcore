@@ -1,6 +1,6 @@
 export const app = {
   title: 'MEANcore - MeanStack Web Projects!',
-  name: process.env.APP_NAME || 'meancore',
+  name: 'meancore',
   description: 'Applications running on mean stack',
   keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
   appBaseUrl: process.env.APP_BASE_URL || '/',

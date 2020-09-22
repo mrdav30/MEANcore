@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/src
 
 # dependencies
 /node_modules
@@ -111,3 +112,5 @@ config/env/local.js
 config/env/local-*.js
 _content/
 .env
+modules/*
+!modules/core

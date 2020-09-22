@@ -5,10 +5,13 @@ import config from '../config.js';
 import express from 'express';
 import morgan from 'morgan';
 import logger from './logger.js';
+import {
+  startTaskScheduler
+} from './agenda.js';
 import bodyparser from 'body-parser';
 import session from 'express-session';
 import {
-  loadModels
+  loadMongoModels
 } from './mongoose-manager.js';
 import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
@@ -23,17 +26,12 @@ import expresshbs from 'express-hbs';
 import url from 'url';
 import fse from 'fs-extra';
 import {
-  resolve
+  resolve,
+  join
 } from 'path';
+import chalk from 'chalk';
 import _ from 'lodash';
 import vhost from 'vhost';
-
-/**
- * Configure the models
- */
-const initServerModels = async () => {
-  await loadModels();
-};
 
 /**
  * Initialize local variables
@@ -130,8 +128,8 @@ const initMiddleware = (app, config) => {
 /**
  * Configure handlebars Helpers
  */
-const initHandlebars = () => {
-  expresshbs.registerHelper('currency', function (number) {
+const initHandlebars = function () {
+  expresshbs.registerHelper('currency', (number) => {
     if (number === null || isNaN(number)) {
       return number;
     }
@@ -141,7 +139,7 @@ const initHandlebars = () => {
     });
   });
 
-  expresshbs.registerHelper('decimal', function (number) {
+  expresshbs.registerHelper('decimal', (number) => {
     if (number === null || isNaN(number)) {
       return number;
     }
@@ -360,6 +358,13 @@ const initErrorRoutes = (app, config) => {
   });
 };
 
+const initTaskScheduler = async (db, config) => {
+  // Start Agenda task scheduler
+  await startTaskScheduler(db).then((scheduler) => {
+    config.taskScheduler = scheduler;
+  });
+}
+
 /**
  * Configure Socket.io
  */
@@ -424,17 +429,18 @@ const init = async (config, db) => {
   // Initialize error routes
   initErrorRoutes(app, config);
 
-  //  Configure mongodb models
-  await initServerModels().then(async () => {
-    Promise.all([
-      // Initialize modules server configuration
-      await initServerConfiguration(app, config),
-      // Initialize modules server routes
-      await initServerRoutes(app, config)
-    ])
-  });
+  // Initialize Agenda for task scheduling 
+  initTaskScheduler(db, config);
 
-  console.log('Loading Completed for: ' + config.app.name);
+  await Promise.all([
+    // Initialize modules server configuration
+    await initServerConfiguration(app, config),
+    // Initialize modules server routes
+    await initServerRoutes(app, config)
+  ]);
+
+  console.log('--');
+  console.log(chalk.green('Loading Completed for: ' + config.app.name));
 
   return app;
 };
@@ -446,13 +452,49 @@ async function initApps(db) {
   // Initialize global globbed shared config
   await initSharedConfiguration(config);
 
-  await init(config, db).then((app) => {
-    if (config.app.appBaseUrl) {
-      rootApp.use(config.app.appBaseUrl, app);
-    } else if (config.app.domainPattern) {
-      rootApp.use(vhost(config.app.domainPattern, app));
-    }
-  })
+  //  Configure mongodb models
+  await loadMongoModels(config);
+
+  let allConfigs = [];
+  await Promise.all(config.submodules.map(async (module) => {
+    const originalConfig = _.cloneDeep(config);
+    const appConfigPath = url.pathToFileURL(module.appConfig).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    let appConfig = await import(appConfigPath);
+    const newConfig = _.mergeWith({}, originalConfig, appConfig, (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    });
+
+    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/env', process.env.NODE_ENV + '.js')).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const moduleEnvConfig = await import(moduleEnvConfigPath);
+
+    // Merge default core config with submodules specific config
+    appConfig = _.mergeWith({}, newConfig, moduleEnvConfig, (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    });
+    allConfigs.push(appConfig);
+  }));
+
+  if (allConfigs.length === 0) {
+    console.log(chalk.bold.yellow('No submodules loaded...loading default core!'))
+    allConfigs.push(config);
+  }
+
+  // Now each submodule
+  await Promise.all(allConfigs.map(async (moduleConfig) => {
+    await init(moduleConfig, db).then((module) => {
+      if (moduleConfig.app.appBaseUrl) {
+        rootApp.use(moduleConfig.app.appBaseUrl, module);
+      } else if (moduleConfig.app.domainPattern) {
+        rootApp.use(vhost(moduleConfig.app.domainPattern, module));
+      }
+    });
+  }));
 
   rootApp = await configureSocketIO(rootApp, db);
 

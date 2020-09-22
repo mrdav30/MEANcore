@@ -19,7 +19,7 @@ import connectMongo from 'connect-mongo';
 const MongoStore = connectMongo(session);
 
 // Define the Socket.io configuration method
-export default function (app, db) {
+export default (app, db) => {
   let server;
   if (config.secure && config.secure.ssl) {
     // Load SSL key and certificate

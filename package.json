@@ -16,9 +16,12 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "config": "node ./scripts/set-env.js",
-    "build:dev": "npm run config && ng build",
-    "build:prod": "npm run config && ng build -c production",
+    "preinstall": "npm run merge:packages",
+    "config": "node ./tools/set-env.js",
+    "merge:packages": "node ./tools/merge-packages.js",
+    "bundle:modules": "node ./tools/bundle-modules.js",
+    "build:dev": "npm run config && npm run bundle:modules && ng build",
+    "build:prod": "npm run config && npm run bundle:modules && ng build -c production",
     "client:dev": "ng serve --aot --progress=false",
     "client:prod": "ng serve -c production --progress=false",
     "server:dev": "nodemon server.js",
@@ -27,10 +30,10 @@
     "start:prod": "npm run build:prod && npm run server:prod",
     "test:client": "ng test",
     "lint:client": "ng lint",
-    "lint:server": "./node_modules/.bin/eslint './server/**/*.js'",
+    "lint:server": "./node_modules/.bin/eslint ./config/**/*.js ./modules/**/server/**/*.js",
     "e2e": "npm run config && ng e2e",
-    "generate-ssl-certs": "./scripts/generate-ssl-certs.sh",
-    "seed": "node ./scripts/seed-db.js"
+    "generate-ssl-certs": "./tools/generate-ssl-certs.sh",
+    "seed": "node ./tools/seed-db.js"
   },
   "dependencies": {
     "@angular/animations": "^10.0.12",
@@ -44,6 +47,7 @@
     "@angular/platform-browser-dynamic": "^10.0.12",
     "@angular/router": "^10.0.12",
     "@ng-bootstrap/ng-bootstrap": "^7.0.0",
+    "agenda": "^3.1.0",
     "async": "^3.1.0",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
@@ -101,14 +105,17 @@
     "tslib": "^2.0.1",
     "vhost": "3.0.2",
     "winston": "^3.2.1",
-    "zone.js": "^0.11.1"
+    "zone.js": "^0.11.1",
+    "@ckeditor/ckeditor5-angular": "^1.1.2",
+    "ag-grid-angular": "^22.1.1",
+    "ag-grid-community": "^22.1.1",
+    "ngx-gravatar": "^8.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1001.1",
     "@angular/cli": "^10.0.7",
     "@angular/compiler-cli": "^10.0.12",
     "@angular/language-service": "^10.0.12",
-    "@types/file-saver": "^2.0.1",
     "@types/jasmine": "^3.5.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/lodash": "^4.14.149",
@@ -125,6 +132,9 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "tslint": "~6.1.0",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "@types/file-saver": "^2.0.1",
+    "file-saver": "^2.0.1",
+    "highlight.js": "^10.2.0"
   }
 }

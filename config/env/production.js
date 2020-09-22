@@ -110,13 +110,12 @@ export const mailer = {
   }
 };
 export const seedDB = {
-  seed: process.env.MONGO_SEED || 'false',
   options: {
     logResults: process.env.MONGO_SEED_LOG_RESULTS || 'false'
   },
   // Order of collections in configuration will determine order of seeding.
-  // i.e. given these settings, the User seeds will be complete before
-  // Article seed is performed.
+  // i.e. given these settings, the Features seeds will be complete before
+  // Roles seed is performed.
   collections: [{
     model: 'Features',
     docs: [{

@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "client",
     "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
@@ -21,10 +20,16 @@
       "dom"
     ],
     "paths": {
-      "@env": ["environments/environment.ts"],
-      "@sharedModules/owasp-password-strength-test": ["../sharedModules/owasp-password-strength-test.js"],
-      "core-js/es6/*": ["../node_modules/core-js/es/*"],
-      "core-js/es7/*": ["../node_modules/core-js/es/*"]
+      "@env": ["./environments/environment.ts"],
+      "@utils": ["./features/utils.ts"],
+      "@assets": ["./assets"],
+      "@shared_modules/owasp-password-strength-test": ["../../../shared_modules/owasp-password-strength-test.js"],
+      "core-js/es6/*": ["../../../node_modules/core-js/es/*"],
+      "core-js/es7/*": ["../../../node_modules/core-js/es/*"]
     }
-  }
+  },
+  "exclude": [
+    "../../../dist",
+    "../../../src"
+  ]
 }

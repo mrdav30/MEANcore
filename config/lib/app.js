@@ -1,17 +1,18 @@
 /**
  * Module dependencies.
  */
-import config from '../config.js';
 import {
-  connectDB
+  connectMongoDB,
+  disconnectMongoDB
 } from './mongoose-manager.js';
+import config from '../config.js';
 import {
   initAllApps
 } from './express.js';
 import chalk from 'chalk';
 
-export function init(callback) {
-  connectDB((db) => {
+export async function init(callback) {
+  await connectMongoDB(config).then(async (db) => {
     initAllApps(db, (app) => {
       if (callback) {
         callback(app, config);
@@ -35,6 +36,15 @@ export function start(callback) {
         if (err) console.log(err.stack);
         // eslint-disable-next-line no-process-exit
         if (options.exit) process.exit();
+        // close db connection
+        disconnectMongoDB((disconnectError) => {
+          if (disconnectError) {
+            console.log('Error disconnecting from the database, but was preceded by a Mongo Seed error.');
+          }
+
+          // Finish task with error
+          console.error(err);
+        });
       }
 
       //do something when app is closing
@@ -65,10 +75,9 @@ export function start(callback) {
       // Logging initialization
       console.log('--');
       console.log(chalk.green(config.app.title));
-      console.log();
       console.log(chalk.green('Environment:     ' + process.env.NODE_ENV));
-      console.log(chalk.green('Server:          ' + serverUrl));
       console.log(chalk.green('Database:        ' + config.mongoDB.uri));
+      console.log(chalk.green('Server:          ' + serverUrl));
       console.log(chalk.green('App version:     ' + config.version));
       console.log('--');
 

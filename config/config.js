@@ -91,7 +91,7 @@ function validateSecureMode(config) {
 
   if (!privateKey || !certificate) {
     console.log(chalk.red('+ Error: Certificate file or key file is missing, falling back to non-SSL mode'));
-    console.log(chalk.red('  To create them, simply run the following from your shell: sh ./scripts/generate-ssl-certs.sh'));
+    console.log(chalk.red('  To create them, simply run the following from your shell: sh ./tools/generate-ssl-certs.sh'));
     console.log();
     config.secure.ssl = false;
   }
@@ -149,6 +149,16 @@ function initGlobalConfigFiles(config, assets) {
 
   // Setting Globbed shared modules files
   config.files.sharedModules = getGlobbedPaths(assets.server.sharedModules);
+
+  // Setting Globbed submodules base path
+  config.submodules = [];
+  const modulePath = getGlobbedPaths(assets.submodules.basePath);
+  modulePath.forEach((path) => {
+    config.submodules.push({
+      basePath: path,
+      appConfig: path + '/env/default.js'
+    });
+  })
 }
 
 /**

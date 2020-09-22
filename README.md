@@ -102,29 +102,31 @@ To enable/disable SSL mode in a production environment, set the HOST_SECURE vari
 # Project structure
 
 ```
-client/                      project source code for client
-|- app/                      app components
-|  |- app.component.*        app root component (shell)
-|  |- app.module.ts          app root module definition
-|  |- app-routing.module.ts  app routes
-|- assets/                   app assets (images, fonts, sounds...)
-|- environments/             values for various build environments
-|  features/                 additional modules and components
-|- theme/                    app global scss variables and theme
-|- index.html                html entry point
-|- main.scss                 global style entry point
-|- main.ts                   app entry point
-|- polyfills.ts              polyfills needed by Angular
-+- test.ts                   unit tests entry point
 config/                      configuration for express
-dist/                        compiled client version
-e2e/                         end-to-end tests
-scripts/                     scripts for configuration and managing the application
+dist/                        compiled bundled client version
+modules/**                   contains various modules that can be bundled together
+|- client/                      project source code for client
+|  |- app/                      app components
+|  |  |- app.component.*        app root component (shell)
+|  |  |- app.module.ts          app root module definition
+|  |  |- app-routing.module.ts  app routes
+|  |- assets/                   app assets (images, fonts, sounds...)
+|  |- environments/             values for various build environments
+|  |  features/                 additional modules and components
+|  |- theme/                    app global scss variables and theme
+|  |- index.html                html entry point
+|  |- main.scss                 global style entry point
+|  |- main.ts                   app entry point
+|  |- polyfills.ts              polyfills needed by Angular
+|  +- test.ts                   unit tests entry point
+|- e2e/                         end-to-end tests
+|- server/                      project source code for server
+shared_modules/              custom modules that are shared between the client and server
+src/                         bundled client modules
+tools/                       scripts for configuration and managing the application
 |- generate-ssl-certs.sh     generate self-signed certs for dev testing
 |- seed-db.js                seeds the db with default configuration based on config
 |- set-env.ts                run to configure environment configuration based on process.env
-server/                      project source code for server
-sharedModules/               custom modules that are shared between the client and server
 reports/                     test and coverage reports
 .env                         process.env variable configuration
 proxy.conf.js                backend proxy configuration
