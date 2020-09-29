@@ -35,7 +35,7 @@ export class ProjectConfig {
      */
     this.APP_BASE = '/';
 
-    
+
     this.APP_DEFAULT_ROUTE = '/home';
 
     this.APP_TAG_NAME = 'core';
@@ -60,19 +60,29 @@ export class ProjectConfig {
      */
     this.CORE_SRC = 'modules/core';
 
+    this.CORE_CLIENT_SRC = join(this.CORE_SRC, '/client');
+
+    this.CORE_E2E_SRC = join(this.CORE_SRC, '/e2e');
+
     /**
      * The folder for temporary staging before running ng build.
      */
-    this.TMP_DIR = 'src/tmp';
+    this.TMP_DIR = 'projects';
 
-    this.BOOTSTRAP_CORE = `${this.TMP_DIR}/client/app/app.module.ts`;
+    this.BOOTSTRAP_CORE = join(this.TMP_DIR, '/client/app/app.module.ts');
 
-    this.CORE_PKG = `./package-base.json`;
+    this.CORE_PKG = './base.package.json';
 
-    /*
-     *  The base folder for all other modules
+    this.BASE_NG_JSON = join(this.PROJECT_ROOT, '/tools/templates/base.angular.json');
+
+    this.CHILD_NG_JSON = join(this.PROJECT_ROOT, '/tools/templates/child.angular.json');
+
+    this.NG_OUTPUT = join(this.PROJECT_ROOT, '/angular.json');
+
+    /**
+     * The default project that angular-cli will build for.
      */
-    //this.CORE_FEATURES = `${this.TMP_DIR}/client/features`;
+    this.DEFAULT_PROJECT = "";
   }
 
   init(done) {
@@ -94,20 +104,22 @@ export class ProjectConfig {
       const moduleDirName = basename(dir);
       const module = {
         MODULE_SRC: dir,
+        MODULE_CLIENT_SRC: dir + '/client',
+        MODULE_E2E_SRC: dir + '/e2e',
         APP_TITLE: modConfig.APP_TITLE,
         APP_BASE: modConfig.APP_BASE || this.APP_BASE,
         APP_TAG_NAME: moduleDirName,
         APP_NAME: modConfig.APP_NAME,
         APP_DEFAULT_ROUTE: modConfig.APP_DEFAULT_ROUTE || this.APP_DEFAULT_ROUTE,
-       // TMP_DIR: this.CORE_FEATURES + '/' + moduleDirName,
+        TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, '/' + moduleDirName),
         BOOSTRAP_MODULE: dir + '/client/base.module.ts',
-        CHILD_PKG: this.MODULE_SRC + '/' + moduleDirName + '/package-child.json'
+        CHILD_PKG: this.MODULE_SRC + '/' + moduleDirName + '/child.package.json'
       };
 
       this.ALL_MODULES.push(module);
     }));
 
-   // await this.setModulePaths();
+    // await this.setModulePaths();
     done();
   }
 

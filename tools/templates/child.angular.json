@@ -1,11 +1,7 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "meancore": {
+    "{{child}}": {
       "root": "",
-      "sourceRoot": "src/tmp/client",
+      "sourceRoot": "projects/{{child}}/client",
       "projectType": "application",
       "prefix": "app",
       "schematics": {
@@ -18,19 +14,19 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "aot": true,
-            "outputPath": "dist/meancore",
-            "index": "src/tmp/client/index.html",
-            "main": "src/tmp/client/main.ts",
-            "polyfills": "src/tmp/client/polyfills.ts",
-            "tsConfig": "src/tmp/client/tsconfig.app.json",
+            "outputPath": "dist/{{child}}",
+            "index": "projects/{{child}}/client/index.html",
+            "main": "projects/{{child}}/client/main.ts",
+            "polyfills": "projects/{{child}}/client/polyfills.ts",
+            "tsConfig": "projects/{{child}}/client/tsconfig.app.json",
             "assets": [
-              "src/tmp/client/favicon.ico",
-              "src/tmp/client/robots.txt",
-              "src/tmp/client/manifest.json",
-              "src/tmp/client/assets"
+              "projects/{{child}}/client/favicon.ico",
+              "projects/{{child}}/client/robots.txt",
+              "projects/{{child}}/client/manifest.json",
+              "projects/{{child}}/client/assets"
             ],
             "styles": [
-              "src/tmp/client/main.scss"
+              "projects/{{child}}/client/main.scss"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [
@@ -49,8 +45,7 @@
               "vendorChunk": true,
               "commonChunk": true,
               "buildOptimizer": true,
-              "budgets": [
-                {
+              "budgets": [{
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
@@ -66,12 +61,12 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "meancore:build",
+            "browserTarget": "{{child}}:build",
             "proxyConfig": "proxy.conf.cjs"
           },
           "configurations": {
             "production": {
-              "browserTarget": "meancore:build:production"
+              "browserTarget": "{{child}}:build:production"
             },
             "test": {
               "browserTarget": "ng-configuration:build:test"
@@ -81,24 +76,24 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "meancore:build"
+            "browserTarget": "{{child}}:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "src/tmp/client/test.ts",
-            "polyfills": "src/tmp/client/polyfills.ts",
-            "tsConfig": "src/tmp/client/tsconfig.spec.json",
-            "karmaConfig": "src/tmp/client/karma.conf.js",
+            "main": "projects/{{child}}/client/test.ts",
+            "polyfills": "projects/{{child}}/client/polyfills.ts",
+            "tsConfig": "projects/{{child}}/client/tsconfig.spec.json",
+            "karmaConfig": "projects/{{child}}/client/karma.conf.js",
             "styles": [
-              "src/tmp/client/main.scss"
+              "projects/{{child}}/client/main.scss"
             ],
             "scripts": [],
             "assets": [
-              "src/tmp/client/favicon.ico",
-              "src/tmp/client/assets",
-              "src/tmp/client/features/**/assets"
+              "projects/{{child}}/client/favicon.ico",
+              "projects/{{child}}/client/assets",
+              "projects/{{child}}/client/features/**/assets"
             ]
           }
         },
@@ -106,8 +101,8 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src/tmp/client/tsconfig.app.json",
-              "src/tmp/client/tsconfig.spec.json"
+              "projects/{{child}}/client/tsconfig.app.json",
+              "projects/{{child}}/client/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -116,34 +111,33 @@
         }
       }
     },
-    "meancore-e2e": {
-      "root": "src/e2e/",
-      "projectType": "application",
-      "prefix": "",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "src/e2e/protractor.conf.js",
-            "devServerTarget": "meancore:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "meancore:serve:production"
+    "{{child}}-e2e": {
+        "root": "projects/{{child}}/e2e/",
+        "projectType": "application",
+        "prefix": "",
+        "architect": {
+          "e2e": {
+            "builder": "@angular-devkit/build-angular:protractor",
+            "options": {
+              "protractorConfig": "projects/{{child}}/e2e/protractor.conf.js",
+              "devServerTarget": "{{child}}:serve"
+            },
+            "configurations": {
+              "production": {
+                "devServerTarget": "{{child}}:serve:production"
+              }
             }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "src/e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+          },
+          "lint": {
+            "builder": "@angular-devkit/build-angular:tslint",
+            "options": {
+              "tsConfig": "projects/{{child}}/e2e/tsconfig.e2e.json",
+              "exclude": [
+                "**/node_modules/**"
+              ]
+            }
           }
         }
       }
-    }
-  },
-  "defaultProject": "meancore"
-}
+  }
+  

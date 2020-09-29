@@ -15,7 +15,7 @@ import config from './config.js';
 
 import 'dotenv/config.js';
 
-const blackList = ['tsconfig.json', 'tsconfig.app.json', 'tslint.json'];
+const blackList = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
 
 const bundleModules = async (done) => {
   async.series([
@@ -23,20 +23,22 @@ const bundleModules = async (done) => {
         await cleanOnce();
       },
       async () => {
-          console.log(chalk.green('Copying Core'));
-          await copyCore();
-        },
-        async () => {
           await Promise.all(config.ALL_MODULES.map(async (mod) => {
-
             await config.mergeObject(config, mod);
 
             console.log(chalk.green('==================================='));
             console.log(chalk.green('Bundling: ' + config.APP_NAME));
             console.log(chalk.green('==================================='));
 
-            await copyModule(config);
+            console.log(chalk.green('Copying Core'));
+
+            await copyCore();
+
+            await copyModule();
           }));
+        },
+        async () => {
+          await buildAngularJson();
         }
   ], (err) => {
     if (err) {
@@ -66,16 +68,20 @@ const cleanAll = async () => {
 
 const copyCore = async () => {
   // copy client directory
-  await copyFolderRecursiveSync(join(config.CORE_SRC, 'client'), join(config.PROJECT_ROOT, config.TMP_DIR));
+  await copyFolderRecursiveSync(config.CORE_CLIENT_SRC, config.TMP_DIR);
   // copy e2e directory
-  await copyFolderRecursiveSync(join(config.CORE_SRC, 'e2e'), join(config.PROJECT_ROOT, config.TMP_DIR));
+  await copyFolderRecursiveSync(config.CORE_E2E_SRC, config.TMP_DIR);
 }
 
 const copyModule = async () => {
   // copy client directory
-  await copyFolderRecursiveSync(join(config.MODULE_SRC, 'client'), join(config.PROJECT_ROOT, config.TMP_DIR), blackList);
+  if (fse.existsSync(config.MODULE_CLIENT_SRC)) {
+    await copyFolderRecursiveSync(config.MODULE_CLIENT_SRC, config.TMP_DIR, blackList);
+  }
   // copy e2e directory
-  await copyFolderRecursiveSync(join(config.MODULE_SRC, 'e2e'), join(config.PROJECT_ROOT, config.TMP_DIR));
+  if (fse.existsSync(config.MODULE_E2E_SRC)) {
+    await copyFolderRecursiveSync(config.MODULE_E2E_SRC, config.TMP_DIR, blackList);
+  }
 }
 
 async function copyFileSync(source, target) {
@@ -97,10 +103,6 @@ async function copyFolderRecursiveSync(source, target, blackList = []) {
 
   // check if folder needs to be created or integrated
   let targetFolder = join(target, basename(source));
-  if (config.APP_TAG_NAME !== 'core') {
-    // modules don't need the client directory
-    targetFolder = targetFolder.replace(`${config.APP_TAG_NAME}` + '\\client', `${config.APP_TAG_NAME}`);
-  }
 
   if (!fse.existsSync(targetFolder)) {
     await fse.ensureDir(targetFolder);
@@ -123,8 +125,66 @@ async function copyFolderRecursiveSync(source, target, blackList = []) {
   }
 }
 
+// Create the bundles Angular.json file
+async function buildAngularJson() {
+  const baseJsonStr = fse.readFileSync(config.BASE_NG_JSON);
+  let baseJsonData = JSON.parse(baseJsonStr);
+
+  baseJsonData.defaultProject = config.DEFAULT_PROJECT;
+
+  for (const mod of config.ALL_MODULES) {
+    const childJsonStr = fse.readFileSync(config.CHILD_NG_JSON)
+
+    let childJsonData = JSON.parse(childJsonStr);
+
+    await renameKeys(childJsonData, mod);
+
+    childJsonData = await replacePropertyValues(childJsonData, mod);
+
+    baseJsonData.projects = _.mergeWith({}, baseJsonData.projects, childJsonData, (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    });
+
+    if(baseJsonData.defaultProject.length <= 0){
+      baseJsonData.defaultProject = mod.APP_TAG_NAME;
+    }
+  }
+
+  baseJsonData = JSON.stringify(baseJsonData);
+
+  fse.writeFile(config.NG_OUTPUT, baseJsonData, (err) => {
+    if (err) {
+      throw console.error(err);
+    } else {
+      console.log(chalk.cyan(`Angular.json file generated correctly at ${config.NG_OUTPUT} \n`));
+    }
+  });
+}
+
+async function renameKeys(obj, mod) {
+  obj[mod.APP_TAG_NAME] = obj['{{child}}'];
+  delete obj['{{child}}'];
+  obj[mod.APP_TAG_NAME + '-e2e'] = obj['{{child}}-e2e'];
+  delete obj['{{child}}-e2e'];
+}
+
+async function replacePropertyValues(obj, mod) {
+  const newObject = _.clone(obj);
+
+  await _.each(obj, async (val, key) => {
+    if (typeof (val) === 'object') {
+      newObject[key] = await replacePropertyValues(val, mod);
+    } else if (_.includes(val, '{{child}}')) {
+      newObject[key] = _.replace(val, new RegExp("{{child}}", "g"), mod.APP_TAG_NAME);
+    }
+  })
+
+  return newObject
+}
+
 config.init(() => {
-  //console.log('config', config);
   console.log(chalk.cyan('Bundling started...'));
   bundleModules(() => {
     console.log(chalk.cyan('Bundling complete!'));
