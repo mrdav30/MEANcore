@@ -1,3 +1,7 @@
+//  This script combines the core module with each mod listed inside the modules folder. 
+//  **Note: Only the mod's client folder is merged. 
+//  **Note: The purpose of these files is stricly for development/build purposes.  
+
 import {
   join,
   basename
@@ -8,14 +12,16 @@ import async from 'async';
 import chalk from 'chalk';
 
 import {
+  createAngularEnv
+} from './utils/set-env.js';
+
+import {
   clean
 } from './utils/clean.js';
 
-import config from './config.js';
+import projectConfig from './config.init.js';
 
 import 'dotenv/config.js';
-
-const blackList = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
 
 const bundleModules = async (done) => {
   async.series([
@@ -23,11 +29,11 @@ const bundleModules = async (done) => {
         await cleanOnce();
       },
       async () => {
-          await Promise.all(config.ALL_MODULES.map(async (mod) => {
-            await config.mergeObject(config, mod);
+          await Promise.all(projectConfig.ALL_MODULES.map(async (mod) => {
+            await projectConfig.mergeObject(projectConfig, mod);
 
             console.log(chalk.green('==================================='));
-            console.log(chalk.green('Bundling: ' + config.APP_NAME));
+            console.log(chalk.green('Bundling: ' + projectConfig.APP_NAME));
             console.log(chalk.green('==================================='));
 
             console.log(chalk.green('Copying Core'));
@@ -35,6 +41,8 @@ const bundleModules = async (done) => {
             await copyCore();
 
             await copyModule();
+
+            await createAngularEnv(projectConfig);
           }));
         },
         async () => {
@@ -63,24 +71,24 @@ const cleanOnce = async () => {
 }
 
 const cleanAll = async () => {
-  await clean([config.TMP_DIR, config.COVERAGE_DIR]);
+  await clean([projectConfig.TMP_DIR, projectConfig.COVERAGE_DIR]);
 }
 
 const copyCore = async () => {
   // copy client directory
-  await copyFolderRecursiveSync(config.CORE_CLIENT_SRC, config.TMP_DIR);
+  await copyFolderRecursiveSync(projectConfig.CORE_CLIENT_SRC, projectConfig.TMP_DIR);
   // copy e2e directory
-  await copyFolderRecursiveSync(config.CORE_E2E_SRC, config.TMP_DIR);
+  await copyFolderRecursiveSync(projectConfig.CORE_E2E_SRC, projectConfig.TMP_DIR);
 }
 
 const copyModule = async () => {
   // copy client directory
-  if (fse.existsSync(config.MODULE_CLIENT_SRC)) {
-    await copyFolderRecursiveSync(config.MODULE_CLIENT_SRC, config.TMP_DIR, blackList);
+  if (fse.existsSync(projectConfig.MODULE_CLIENT_SRC)) {
+    await copyFolderRecursiveSync(projectConfig.MODULE_CLIENT_SRC, projectConfig.TMP_DIR, projectConfig.BLACK_LIST);
   }
   // copy e2e directory
-  if (fse.existsSync(config.MODULE_E2E_SRC)) {
-    await copyFolderRecursiveSync(config.MODULE_E2E_SRC, config.TMP_DIR, blackList);
+  if (fse.existsSync(projectConfig.MODULE_E2E_SRC)) {
+    await copyFolderRecursiveSync(projectConfig.MODULE_E2E_SRC, projectConfig.TMP_DIR, projectConfig.BLACK_LIST);
   }
 }
 
@@ -127,47 +135,43 @@ async function copyFolderRecursiveSync(source, target, blackList = []) {
 
 // Create the bundles Angular.json file
 async function buildAngularJson() {
-  const baseJsonStr = fse.readFileSync(config.BASE_NG_JSON);
-  let baseJsonData = JSON.parse(baseJsonStr);
+  const coreJsonStr = fse.readFileSync(projectConfig.CORE_NG_JSON);
+  let coreJsonData = JSON.parse(coreJsonStr);
 
-  baseJsonData.defaultProject = config.DEFAULT_PROJECT;
+  coreJsonData.defaultProject = projectConfig.DEFAULT_PROJECT;
 
-  for (const mod of config.ALL_MODULES) {
-    const childJsonStr = fse.readFileSync(config.CHILD_NG_JSON)
+  for (const mod of projectConfig.ALL_MODULES) {
+    const modJsonStr = fse.readFileSync(projectConfig.MODULE_NG_JSON)
 
-    let childJsonData = JSON.parse(childJsonStr);
+    let modJsonData = JSON.parse(modJsonStr);
 
-    await renameKeys(childJsonData, mod);
+    await renameKeys(modJsonData, mod);
 
-    childJsonData = await replacePropertyValues(childJsonData, mod);
+    modJsonData = await replacePropertyValues(modJsonData, mod);
 
-    baseJsonData.projects = _.mergeWith({}, baseJsonData.projects, childJsonData, (objValue, srcValue) => {
+    coreJsonData.projects = _.mergeWith({}, coreJsonData.projects, modJsonData, (objValue, srcValue) => {
       if (_.isArray(objValue)) {
         return objValue.concat(srcValue);
       }
     });
 
-    if(baseJsonData.defaultProject.length <= 0){
-      baseJsonData.defaultProject = mod.APP_TAG_NAME;
+    if (coreJsonData.defaultProject.length <= 0) {
+      coreJsonData.defaultProject = mod.APP_NAME;
     }
   }
 
-  baseJsonData = JSON.stringify(baseJsonData);
-
-  fse.writeFile(config.NG_OUTPUT, baseJsonData, (err) => {
-    if (err) {
-      throw console.error(err);
-    } else {
-      console.log(chalk.cyan(`Angular.json file generated correctly at ${config.NG_OUTPUT} \n`));
-    }
+  return projectConfig.writeFilePromise(projectConfig.NG_OUTPUT, projectConfig.stringify(coreJsonData), 'utf-8').then(() => {
+    console.log(chalk.cyan(`Angular.json file generated successfully at ${projectConfig.NG_OUTPUT} \n`));
+  }).catch((err) => {
+    console.error(err);
   });
 }
 
 async function renameKeys(obj, mod) {
-  obj[mod.APP_TAG_NAME] = obj['{{child}}'];
-  delete obj['{{child}}'];
-  obj[mod.APP_TAG_NAME + '-e2e'] = obj['{{child}}-e2e'];
-  delete obj['{{child}}-e2e'];
+  obj[mod.APP_NAME] = obj['{{mod}}'];
+  delete obj['{{mod}}'];
+  obj[mod.APP_NAME + '-e2e'] = obj['{{mod}}-e2e'];
+  delete obj['{{mod}}-e2e'];
 }
 
 async function replacePropertyValues(obj, mod) {
@@ -176,15 +180,15 @@ async function replacePropertyValues(obj, mod) {
   await _.each(obj, async (val, key) => {
     if (typeof (val) === 'object') {
       newObject[key] = await replacePropertyValues(val, mod);
-    } else if (_.includes(val, '{{child}}')) {
-      newObject[key] = _.replace(val, new RegExp("{{child}}", "g"), mod.APP_TAG_NAME);
+    } else if (_.includes(val, '{{mod}}')) {
+      newObject[key] = _.replace(val, new RegExp("{{mod}}", "g"), mod.APP_NAME);
     }
   })
 
   return newObject
 }
 
-config.init(() => {
+projectConfig.init(() => {
   console.log(chalk.cyan('Bundling started...'));
   bundleModules(() => {
     console.log(chalk.cyan('Bundling complete!'));

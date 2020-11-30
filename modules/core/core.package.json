@@ -17,12 +17,13 @@
   "scripts": {
     "ng": "ng",
     "preinstall": "npm run bundle:packages",
+    "config": "node ./tools/set-env.js",
     "bundle:packages": "node ./tools/bundle-packages.js",
     "link:install": "node ./tools/link-packages.js --place install --package %npm_config_pkg% --depType %npm_config_dep_type% --mod %npm_config_mod% && npm run bundle:packages",
     "link:uninstall": "node ./tools/link-packages.js --place uninstall --package %npm_config_pkg% --depType %npm_config_dep_type% --mod %npm_config_mod% && npm run bundle:packages",
     "bundle:modules": "node ./tools/bundle-modules.js",
-    "build:dev": "npm run bundle:modules && ng build",
-    "build:prod": "npm run bundle:modules && ng build -c production",
+    "build:dev": "npm run bundle:modules && npm run config && ng build",
+    "build:prod": "npm run bundle:modules && npm run config  && ng build -c production",
     "client:dev": "ng serve --aot --progress=false",
     "client:prod": "ng serve -c production --progress=false",
     "server:dev": "nodemon server.js",
@@ -32,7 +33,7 @@
     "test:client": "ng test",
     "lint:client": "ng lint",
     "lint:server": "./node_modules/.bin/eslint ./config/**/*.js ./modules/**/server/**/*.js",
-    "e2e": "npm run bundle:modules && ng e2e",
+    "e2e": "npm run bundle:modules && npm run config  && ng e2e",
     "generate-ssl-certs": "./tools/generate-ssl-certs.sh",
     "seed": "node ./tools/seed-db.js"
   },
@@ -107,11 +108,7 @@
     "vhost": "3.0.2",
     "winston": "^3.2.1",
     "yargs": "^16.0.3",
-    "zone.js": "^0.11.1",
-    "@ckeditor/ckeditor5-angular": "^1.1.2",
-    "ag-grid-angular": "^22.1.1",
-    "ag-grid-community": "^22.1.1",
-    "ngx-gravatar": "^8.0.0"
+    "zone.js": "^0.11.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1001.1",
@@ -134,9 +131,6 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "tslint": "~6.1.0",
-    "typescript": "^3.9.7",
-    "@types/file-saver": "^2.0.1",
-    "file-saver": "^2.0.1",
-    "highlight.js": "^10.2.0"
+    "typescript": "^3.9.7"
   }
 }

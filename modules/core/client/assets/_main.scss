@@ -20,9 +20,9 @@ html {
 }
 
 body {
-  background: ghostwhite;
+  background-color: #eef0fe !important;
   margin: 0 0 50px 0;
-  font-family: 'Montserrat', 'Open Sans', sans-serif;
+  font-family: 'Montserrat', 'Open Sans', 'sans-serif' !important;
 }
 
 .active-link {
@@ -32,21 +32,6 @@ body {
 
 .nav-link:hover {
   font-weight: 900;
-}
-
-/*ck editor override*/
-.ck-editor pre {
-  background-color: #7b7b7b;
-  color: #000;
-}
-
-/*ag-grid override*/
-
-.center-btn-cell {
-  white-space: normal !important;
-  overflow: visible;
-  text-align: center;
-  padding-top: 5px;
 }
 
 /*bootstrap override*/
@@ -97,7 +82,7 @@ a:before {
 }
 
 .align-super {
-  vertical-align: super;
+  vertical-align: super !important;
 }
 
 label input,

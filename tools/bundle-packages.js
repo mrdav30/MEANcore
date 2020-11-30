@@ -1,14 +1,15 @@
+//  This script combines the core package json with each mods package.json.
+//  **Note: The purpose of this file is stricly for development/build purposes.  
+//  The generated core.package.json file will override upon commit.
+
 import {
   join
 } from 'path';
-import util from 'util';
 import fse from 'fs-extra';
 import _ from 'lodash';
 import chalk from 'chalk';
 
-import config from './config.js';
-
-const output = join(config.PROJECT_ROOT, './package.json');
+import projectConfig from './config.init.js';
 
 const blacklist = [];
 
@@ -25,21 +26,18 @@ const LEFT = 'LEFT';
 const RIGHT = 'RIGHT';
 const STRIP_NON_NUMERICS = /[^a-zA-Z0-9 ]/g;
 
-const stringify = (indentation, dependencyMap) => JSON.stringify(dependencyMap, null, indentation);
-
 const build = async ({
   dependencies,
-  output,
+  outputs,
   types = {},
-  blacklist = [],
-  indentation = 2
+  blacklist = []
 }) => {
   if (_.isEmpty(dependencies)) {
     return errorFactory('Missing required property dependencies');
   }
 
-  if (typeof output !== 'string') {
-    return errorFactory('Must provide output path for desired package.json')
+  if (typeof outputs !== 'object') {
+    return errorFactory('Must provide output paths for desired package.json')
   }
 
   if (_.isEmpty(types) || _.isEmpty(_.pick(types, Array.from(DEPENDENCY_TYPES)))) {
@@ -55,9 +53,9 @@ const build = async ({
     const filteredDependencies = await filter(blacklist, parsedDependencies);
     const dedupedDependencies = await dedupe(types, filteredDependencies);
 
-   // console.log(chalk.magenta(`::package-json-compose::Generating\n${stringify(indentation, dedupedDependencies)}`));
+    // console.log(chalk.magenta(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`));
 
-    await compose(output, indentation, dedupedDependencies);
+    await compose(outputs, dedupedDependencies);
   })
 }
 
@@ -162,16 +160,13 @@ const dedupe = async (types, filteredDependencies) => {
   }, {});
 };
 
-const readFilePromise = util.promisify(fse.readFile);
-const writeFilePromise = util.promisify(fse.writeFile);
-
-const write = (output, indentation, fileContents) => {
-  writeFilePromise(output, stringify(indentation, fileContents), 'utf-8').then(() => fileContents);
+const write = async (output, fileContents) => {
+  projectConfig.writeFilePromise(output, projectConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
 }
 
 // Non-destructive to all other package.json properties
-const compose = async (output, indentation, fileContents) => {
-  readFilePromise(output)
+const compose = async (outputs, fileContents) => {
+  projectConfig.readFilePromise(projectConfig.DEFAULT_PKG)
     .then((data) => {
       let parsed;
 
@@ -184,23 +179,46 @@ const compose = async (output, indentation, fileContents) => {
       const dupeKeys = (l, r) => r;
       const merged = _.mergeWith(parsed, fileContents, dupeKeys);
 
-      return write(output, indentation, merged);
+      _.forEach(outputs, (output) => {
+        write(output, merged)
+      });
     });
 }
 
-config.init(() => {
-
+projectConfig.init(() => {
   const dependencies = {
-    core: join(config.PROJECT_ROOT, config.CORE_PKG)
+    core: projectConfig.DEFAULT_PKG
   };
 
-  _.forEach(config.ALL_MODULES, (mod) => {
-    dependencies[mod.APP_TAG_NAME] = join(config.PROJECT_ROOT, mod.CHILD_PKG);
+  const outputs = [
+    projectConfig.DEFAULT_PKG
+  ];
+
+  if (fse.existsSync(projectConfig.CORE_PKG)) {
+    // Overwrite current core package.json with back up!
+    fse.copyFileSync(projectConfig.CORE_PKG, projectConfig.DEFAULT_PKG);
+  } else {
+    // Back up current core package.json
+    fse.copyFileSync(projectConfig.DEFAULT_PKG, projectConfig.CORE_PKG);
+  }
+
+  _.forEach(projectConfig.ALL_MODULES, (mod) => {
+    dependencies[mod.APP_NAME] = mod.MODULE_PKG;
+    outputs.push(mod.MODULE_PKG);
+
+    const modPkgJsonPath = join(mod.MODULE_SRC, '/mod.package.json');
+    if (fse.existsSync(modPkgJsonPath)) {
+      // Overwrite module package.json with back up!
+      fse.copyFileSync(modPkgJsonPath, mod.MODULE_PKG);
+    } else {
+      // Back up current module package.json
+      fse.copyFileSync(mod.MODULE_PKG, modPkgJsonPath);
+    }
   });
 
   build({
     dependencies,
-    output,
+    outputs,
     types,
     blacklist
   }).catch((err) => {

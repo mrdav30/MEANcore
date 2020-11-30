@@ -6,7 +6,7 @@ export const secure = {
 };
 export const port = process.env.PORT || 8443;
 export const host = process.env.HOST || '0.0.0.0';
-export const proxy = process.env.PROXY || false;
+export const proxy = process.env.HTTP_PROXY || false;
 export const splunkUrl = 'http://splunk.org:8088/services/collector';
 export const splunkToken = 'replace-with-spunk';
 export const mongoDB = {

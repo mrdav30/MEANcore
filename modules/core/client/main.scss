@@ -1,7 +1,7 @@
 // Theme variables, must be included before the libraries to allow overriding defaults
+@import './assets/_main.scss';
 @import "theme/theme-variables";
 
-@import './assets/_main.scss';
 @import './assets/_font-styles.css';
 
 // 3rd party libraries

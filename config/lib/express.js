@@ -27,7 +27,7 @@ import url from 'url';
 import fse from 'fs-extra';
 import {
   resolve,
-  join
+  dirname
 } from 'path';
 import chalk from 'chalk';
 import _ from 'lodash';
@@ -163,8 +163,8 @@ const initHandlebars = function () {
  * Configure view engine
  */
 const initViewEngine = (app, config) => {
-  let serverViewPath = resolve(config.serverViewPath ? config.serverViewPath : './');
-  app.set('views', [serverViewPath, config.staticFiles]);
+  let serverViewPaths = resolve(config.serverViewPaths ? config.serverViewPaths : './');
+  app.set('views', [serverViewPaths, config.staticFilesPath]);
 
   // server side html
   app.engine('server.view.html', expresshbs.express4({
@@ -226,11 +226,6 @@ const initSharedConfiguration = async (config) => {
   })).catch((err) => {
     console.log(err);
   });
-
-  // set up view
-  config.serverViewPath = 'server';
-  // set up static file location
-  config.staticFiles = 'dist/' + config.app.name + '/';
 
   // read package.json for MEANCore project information
   await fse.readFile(resolve('./package.json')).then((jsonStr) => {
@@ -302,13 +297,13 @@ const initClientRoutes = (app, config) => {
   }
 
   // in development mode files are loaded from node_modules
-  app.use('/node_modules', express.static(resolve(config.staticFiles + '../../node_modules/'), {
+  app.use('/node_modules', express.static(resolve(config.staticFilesPath + '../../node_modules/'), {
     maxAge: '30d', // Cache node modules in development as well as they are not updated that frequently.
     index: false,
   }));
 
   // Setting the app router and static folder
-  app.use('/', express.static(resolve(config.staticFiles), {
+  app.use('/', express.static(resolve(config.staticFilesPath), {
     maxAge: cacheTime,
     index: false,
   }));
@@ -396,23 +391,31 @@ const enableCORS = (app) => {
 };
 
 /**
- * Initialize the Express application
+ * Initialize each Express application listed in the modules directory
  */
-const init = async (config, db) => {
+const init = async (moduleConfig, db) => {
   // Initialize express app
   let app = express();
 
   // Initialize local variables
-  initLocalvariables(app, config);
+  initLocalvariables(app, moduleConfig);
 
   // Initialize Express middleware
-  initMiddleware(app, config);
+  initMiddleware(app, moduleConfig);
 
   // Initialize Handlebars helper
   initHandlebars();
 
+  // set up server views
+  moduleConfig.serverViewPaths = _.chain(moduleConfig.files.views).map((view) => {
+    return dirname(view);
+  }).uniq().toString().value();
+
+  // set up static file location
+  moduleConfig.staticFilesPath = 'dist/' + moduleConfig.app.name + '/';
+
   // Initialize Express view engine
-  initViewEngine(app, config);
+  initViewEngine(app, moduleConfig);
 
   // Initialize Helmet security headers
   initHelmetHeaders(app);
@@ -421,30 +424,31 @@ const init = async (config, db) => {
   enableCORS(app);
 
   // Initialize modules static client routes, before session!
-  initClientRoutes(app, config);
+  initClientRoutes(app, moduleConfig);
 
   // Initialize Express session
-  initSession(app, config, db);
+  initSession(app, moduleConfig, db);
 
   // Initialize error routes
-  initErrorRoutes(app, config);
+  initErrorRoutes(app, moduleConfig);
 
   // Initialize Agenda for task scheduling 
-  initTaskScheduler(db, config);
+  initTaskScheduler(db, moduleConfig);
 
   await Promise.all([
     // Initialize modules server configuration
-    await initServerConfiguration(app, config),
+    await initServerConfiguration(app, moduleConfig),
     // Initialize modules server routes
-    await initServerRoutes(app, config)
+    await initServerRoutes(app, moduleConfig)
   ]);
 
   console.log('--');
-  console.log(chalk.green('Loading Completed for: ' + config.app.name));
+  console.log(chalk.green('Loading Completed for: ' + moduleConfig.app.name));
 
   return app;
 };
 
+// Begin initialization of core and all mods 
 async function initApps(db) {
   // need to decide if use express or connect??
   let rootApp = express();
@@ -455,38 +459,15 @@ async function initApps(db) {
   //  Configure mongodb models
   await loadMongoModels(config);
 
-  let allConfigs = [];
-  await Promise.all(config.submodules.map(async (module) => {
-    const originalConfig = _.cloneDeep(config);
-    const appConfigPath = url.pathToFileURL(module.appConfig).href;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    let appConfig = await import(appConfigPath);
-    const newConfig = _.mergeWith({}, originalConfig, appConfig, (objValue, srcValue) => {
-      if (_.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      }
-    });
+  const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
 
-    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/env', process.env.NODE_ENV + '.js')).href;
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const moduleEnvConfig = await import(moduleEnvConfigPath);
-
-    // Merge default core config with submodules specific config
-    appConfig = _.mergeWith({}, newConfig, moduleEnvConfig, (objValue, srcValue) => {
-      if (_.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      }
-    });
-    allConfigs.push(appConfig);
-  }));
-
-  if (allConfigs.length === 0) {
+  if (moduleConfigs.length === 0) {
     console.log(chalk.bold.yellow('No submodules loaded...loading default core!'))
-    allConfigs.push(config);
+    moduleConfigs.push(config);
   }
 
-  // Now each submodule
-  await Promise.all(allConfigs.map(async (moduleConfig) => {
+  // Now initialize each module set in allConfigs
+  await Promise.all(moduleConfigs.map(async (moduleConfig) => {
     await init(moduleConfig, db).then((module) => {
       if (moduleConfig.app.appBaseUrl) {
         rootApp.use(moduleConfig.app.appBaseUrl, module);

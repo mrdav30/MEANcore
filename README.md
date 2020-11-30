@@ -16,6 +16,8 @@ MEANcore is an open-source boilerplate solution based on the MEAN stack and prov
 
 - Scalable architecture with base app template including example components, services and tests
 
+- Module based development for both client and server
+
 ## Before You Begin
 Before you begin, it's recommend you read about the basic building blocks that assemble a MEAN stack application:
 * MongoDB - Go through [MongoDB Official Website](https://www.mongodb.com/) and proceed to their [Official Manual](http://docs.mongodb.org/manual/), which should help you understand NoSQL and MongoDB better.
@@ -33,29 +35,15 @@ Make sure you have installed all of the following prerequisites on your developm
 * Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.0.0 of Node.js, v14.9.0 being the recommended.
 * MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017). This version of MEANcore requires at minimum version >=4.0.0, v4.0.5 being the recommended.
 
-# Getting started
+# Getting Started
 
 1. Go to project folder and create a .env file to setup your environment
 ```
 NODE_ENV='development'
-PRODUCTION=false
-HOST_SECURE=
+PRODUCTION=
 HTTP_PROXY=
 
-APP_NAME='meancore'
-APP_LOGO='assets/images/logo.png'
-APP_DEFAULT_ROUTE=''
-APP_BASE_URL='/'
-API_BASE_URL='api'
-IMAGE_BASE_URL='/image-uploads'
-IMAGE_STORAGE='./_content/image-uploads/'
-TWITTER_HANDLE=''
 MONGO_SEED_LOG_RESULTS=true
-META_TITLE_SUFFIX=' | MEANcore'
-
-SESSION_SECRET='MEANCORE'
-SESSION_KEY='meancore-key'
-SESSION_COLLECTION='meancore-sessions'
 
 GOOGLE_ANALYTICS_ID=''
 GOOGLE_CLIENT_EMAIL=''
@@ -68,8 +56,8 @@ MAILER_FROM='support@meancore.com'
 MAILER_SERVICE_PROVIDER=
 MAILER_HOST='smtp.ethereal.email'
 MAILER_PORT=587
-MAILER_USER="username"
-MAILER_SECRET="pass"
+MAILER_USER='username'
+MAILER_SECRET='pass'
 MAILER_TEST=true
 ```
 
@@ -77,29 +65,40 @@ MAILER_TEST=true
  ```bash
  npm install
  ```
+ This command will preemptively bundle all package.json files located under the modules directory.
 
-3. Then launch development server, and open `localhost:4200` in your browser:
- ```bash
- npm run start:dev
- ```
-
-4. Run the MongoDB Seed
+3. Run the MongoDB Seed (Optional)
 To have the default menu feature(s), role(s), and/or user account(s) at runtime:
 ```bash
 npm run seed
 ```
 This will try to seed the features, roles, and users based on the defined NODE_ENV in your env config. You have to copy the user passwords from the console and store it somewhere safe.
 
-5. Running with TLS (Optional)
+4. Running with TLS (Optional)
 The application will start by default with the secuire configuration (SSL mode) turned off and listen on port 3000.  To run your application in a secure manner, you'll need to use OpenSSL and generate a set of self-signed certificates.  Unix-based users can use the following command:
 ```bash
 npm run generate-ssl-certs
 ```
 Windows users can follow the instructions found [here](https://support.citrix.com/article/CTX128656).  After you've generated the key and certificate, ensure they are placed in the config/sslcerts folder.
 
+5. Then launch development server, and open `localhost:4200` in your browser:
+ ```bash
+ npm run start:dev
+ ```
+
+# Running in Production
+
+To run MEANcore with production environment settings, you must set the following env variables:
+```
+NODE_ENV='production'
+PRODUCTION=true
+```
+
 To enable/disable SSL mode in a production environment, set the HOST_SECURE variable in your env config.
 
-# Project structure
+Explore config/env/production.js for additional production environment configuration options.
+
+# Project Structure
 
 ```
 config/                      configuration for express
@@ -133,7 +132,7 @@ proxy.conf.js                backend proxy configuration
 server.js                    script to launch express
 ```
 
-# Main tasks
+# Main Tasks
 
 Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 
@@ -155,13 +154,13 @@ npm run generate-ssl-certs    | Generates self-signed certificates on Unix-based
 npm run seed                  | Seeds the database with defaults based on defined configuration
 
 
-## Development server
+## Development Server
 
 Run `npm run start:dev` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change
 any of the source files.
 You should not use `ng serve` directly, as it does not use the backend express configuration.
 
-## Code scaffolding
+## Code Scaffolding
 
 Run `npm run generate -- component <name>` to generate a new component. You can also use
 `npm run generate -- directive|pipe|service|class|module`.
@@ -169,20 +168,20 @@ Run `npm run generate -- component <name>` to generate a new component. You can 
 If you have installed [angular-cli](https://github.com/angular/angular-cli) globally with `npm install -g @angular/cli`,
 you can also use the command `ng generate` directly.
 
-## Running unit tests
+## Running Unit Tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+## Running End-to-End Tests
 
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 
-## Further help
+## Further Help
 
 Tasks are mostly based on the `angular-cli` tool. Use `ng help` to get more help or go check out the
 [Angular-CLI README](https://github.com/angular/angular-cli).
 
-# What's in the box
+# What's In The Box
 
 The app template is based on [HTML5](http://whatwg.org/html), [TypeScript](http://www.typescriptlang.org) and
 [Sass](http://sass-lang.com).

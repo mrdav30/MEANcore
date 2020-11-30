@@ -1,19 +1,19 @@
 import {
   join,
-  dirname,
-  basename,
-  resolve
+  dirname
 } from 'path';
 import url from 'url';
-import glob from 'glob';
 import _ from 'lodash';
+import fse from 'fs-extra';
+import util from 'util';
+
+import config from '../../config/config.js';
 
 /*
  * Configuration for bundling modules
  */
 
 export class ProjectConfig {
-
 
   constructor() {
     /*
@@ -30,22 +30,6 @@ export class ProjectConfig {
     this.COVERAGE_DIR = 'coverage/meancore';
 
     /*
-     * The path for the base of the application at runtime.
-     * The default path is based on the environment '/',
-     */
-    this.APP_BASE = '/';
-
-
-    this.APP_DEFAULT_ROUTE = '/home';
-
-    this.APP_TAG_NAME = 'core';
-
-    /*
-     * Name of the Application which name of the directory under dist.
-     */
-    this.APP_NAME = 'MEANCore';
-
-    /*
      *  All the modules for which build needs to run
      */
     this.ALL_MODULES = [];
@@ -58,7 +42,7 @@ export class ProjectConfig {
     /*
      *  Common core directory
      */
-    this.CORE_SRC = 'modules/core';
+    this.CORE_SRC = join(this.PROJECT_ROOT, 'modules/core');
 
     this.CORE_CLIENT_SRC = join(this.CORE_SRC, '/client');
 
@@ -69,13 +53,11 @@ export class ProjectConfig {
      */
     this.TMP_DIR = 'projects';
 
-    this.BOOTSTRAP_CORE = join(this.TMP_DIR, '/client/app/app.module.ts');
+    this.DEFAULT_PKG = join(this.PROJECT_ROOT, '/package.json');
+    this.CORE_PKG = join(this.CORE_SRC, '/core.package.json');
 
-    this.CORE_PKG = './base.package.json';
-
-    this.BASE_NG_JSON = join(this.PROJECT_ROOT, '/tools/templates/base.angular.json');
-
-    this.CHILD_NG_JSON = join(this.PROJECT_ROOT, '/tools/templates/child.angular.json');
+    this.CORE_NG_JSON = join(this.CORE_SRC, '/core.angular.template.json');
+    this.MODULE_NG_JSON_NAME = 'mod.angular.template.json';
 
     this.NG_OUTPUT = join(this.PROJECT_ROOT, '/angular.json');
 
@@ -83,51 +65,59 @@ export class ProjectConfig {
      * The default project that angular-cli will build for.
      */
     this.DEFAULT_PROJECT = "";
+
+    // Files that will be ignored during the build process
+    this.BLACK_LIST = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
+
+
+    this.indentation = 2
+
+    this.stringify = (dependencyMap) => JSON.stringify(dependencyMap, null, this.indentation);
+
+    this.readFilePromise = util.promisify(fse.readFile);
+    this.writeFilePromise = util.promisify(fse.writeFile);
   }
 
-  init(done) {
-    this.setModules(() => {
+  async init(done) {
+    this.setConfig(() => {
       done.bind(this)();
     });
   }
 
-  async setModules(done) {
-    // glob all non core modules
-    const clientDirs = glob.sync(`${this.MODULE_SRC}/*`, {
-      ignore: '**/core'
+  // Retrive the mod specific env config 
+  async setConfig(done){
+    const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
+
+    await moduleConfigs.map(async (modConfig) => {
+      await this.setModules(modConfig);
     });
 
-    await Promise.all(clientDirs.map(async (dir) => {
-      const modConfigPath = url.pathToFileURL(resolve(join(dir, 'config.js'))).href;
-      // eslint-disable-next-line node/no-unsupported-features/es-syntax
-      const modConfig = await import(modConfigPath);
-      const moduleDirName = basename(dir);
-      const module = {
-        MODULE_SRC: dir,
-        MODULE_CLIENT_SRC: dir + '/client',
-        MODULE_E2E_SRC: dir + '/e2e',
-        APP_TITLE: modConfig.APP_TITLE,
-        APP_BASE: modConfig.APP_BASE || this.APP_BASE,
-        APP_TAG_NAME: moduleDirName,
-        APP_NAME: modConfig.APP_NAME,
-        APP_DEFAULT_ROUTE: modConfig.APP_DEFAULT_ROUTE || this.APP_DEFAULT_ROUTE,
-        TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, '/' + moduleDirName),
-        BOOSTRAP_MODULE: dir + '/client/base.module.ts',
-        CHILD_PKG: this.MODULE_SRC + '/' + moduleDirName + '/child.package.json'
-      };
-
-      this.ALL_MODULES.push(module);
-    }));
-
-    // await this.setModulePaths();
     done();
   }
 
-  // async setModulePaths() {
-  //   await Promise.all(this.ALL_MODULES.map(async (mod) => {
-  //     await this.mergeObject(this, mod);
-  //   }));
-  // }
+  async setModules(modConfig) {
+      const moduleDir = join(this.PROJECT_ROOT, this.MODULE_SRC, modConfig.app.name);
+
+      const module = {
+        MODULE_SRC: moduleDir,
+        MODULE_CLIENT_SRC: join(moduleDir, '/client'),
+        MODULE_E2E_SRC: join(moduleDir, '/e2e'),
+        APP_TITLE: modConfig.app.title || '',
+        APP_BASE_URL: modConfig.app.appBaseUrl || '',
+        API_BASE_URL: modConfig.app.apiBaseUrl || '',
+        APP_NAME: modConfig.app.name || '',
+        APP_LOGO: modConfig.app.logo || '',
+        APP_DEFAULT_ROUTE: modConfig.app.defaultRoute || '',
+        IMAGE_BASE_URL: modConfig.uploads.images.baseUrl || '',
+        TWITTER_HANDLE: modConfig.TWITTER_HANDLE || '',
+        META_TITLE_SUFFIX: modConfig.app.metaTitleSuffix || '',
+        TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, modConfig.app.name),
+        MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
+        MODULE_PKG: join(moduleDir, '/package.json')
+      };
+
+      this.ALL_MODULES.push(module);
+  }
 
   /**
    * Recursively merge source onto target.

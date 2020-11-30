@@ -114,4 +114,4 @@ _content/
 .env
 modules/*
 !modules/core
-angular.json
+/angular.json

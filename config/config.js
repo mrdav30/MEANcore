@@ -5,10 +5,13 @@ import _ from 'lodash';
 import chalk from 'chalk';
 import glob from 'glob';
 import fse from 'fs-extra';
+import url from 'url';
 import {
   resolve,
   join
 } from 'path';
+
+import 'dotenv/config.js';
 
 // Get the default assets
 import * as defaultAssets from './assets/default.js';
@@ -106,7 +109,7 @@ function validateSessionSecret(config, testing) {
     return true;
   }
 
-  if (config.sessionSecret === 'MEANcore') {
+  if (config.sessionSecret === 'MEANcore' || config.sessionSecret === '') {
     if (!testing) {
       console.log(chalk.red('+ WARNING: It is strongly recommended that you change sessionSecret config while running in production!'));
       console.log(chalk.red('  Please add `sessionSecret: process.env.SESSION_SECRET || \'super amazing secret\'` to '));
@@ -150,13 +153,15 @@ function initGlobalConfigFiles(config, assets) {
   // Setting Globbed shared modules files
   config.files.sharedModules = getGlobbedPaths(assets.server.sharedModules);
 
+  config.files.views = getGlobbedPaths(assets.server.views);
+
   // Setting Globbed submodules base path
   config.submodules = [];
   const modulePath = getGlobbedPaths(assets.submodules.basePath);
   modulePath.forEach((path) => {
     config.submodules.push({
       basePath: path,
-      appConfig: path + '/env/default.js'
+      appDefaultConfig: path + '/config/env/default.js'
     });
   })
 }
@@ -190,16 +195,51 @@ function initGlobalConfig() {
   // Validate session secret
   validateSessionSecret(config);
 
-  // Print a warning if config.domain is not set
-  // validateDomainIsSet(config);
-
   // Expose configuration utilities
   config.utils = {
     getGlobbedPaths: getGlobbedPaths,
-    validateSessionSecret: validateSessionSecret
+    validateSessionSecret: validateSessionSecret,
+    retrieveModuleConfigs: retrieveModuleConfigs
   };
 
   return config;
+}
+
+const retrieveModuleConfigs = async (config) => {
+  let moduleConfigs = [];
+  await Promise.all(config.submodules.map(async (module) => {
+    const originalConfig = _.cloneDeep(config);
+    const appConfigPath = url.pathToFileURL(module.appDefaultConfig).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    let appConfig = await import(appConfigPath);
+    const newConfig = _.mergeWith({}, originalConfig, appConfig, (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    });
+
+    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const moduleEnvConfig = await import(moduleEnvConfigPath);
+
+    // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
+    const modLocalConfig = url.pathToFileURL(join(process.cwd(), module.basePath + 'config/env/local-' + process.env.NODE_ENV + '.js')).href;
+    if (fse.existsSync(modLocalConfig)) {
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
+      appConfig = _.merge(appConfig, import(modLocalConfig));
+    }
+
+    // Merge default core config with submodules specific config
+    appConfig = _.mergeWith({}, newConfig, moduleEnvConfig, (objValue, srcValue) => {
+      if (_.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      }
+    });
+
+    moduleConfigs.push(appConfig);
+  }));
+
+  return moduleConfigs;
 }
 
 /**
