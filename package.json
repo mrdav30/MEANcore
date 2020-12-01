@@ -108,11 +108,7 @@
     "vhost": "3.0.2",
     "winston": "^3.2.1",
     "yargs": "^16.0.3",
-    "zone.js": "^0.11.1",
-    "@ckeditor/ckeditor5-angular": "^1.1.2",
-    "ag-grid-angular": "^22.1.1",
-    "ag-grid-community": "^22.1.1",
-    "ngx-gravatar": "^8.0.0"
+    "zone.js": "^0.11.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1001.1",
@@ -135,9 +131,6 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "tslint": "~6.1.0",
-    "typescript": "^3.9.7",
-    "@types/file-saver": "^2.0.1",
-    "file-saver": "^2.0.1",
-    "highlight.js": "^10.2.0"
+    "typescript": "^3.9.7"
   }
 }
