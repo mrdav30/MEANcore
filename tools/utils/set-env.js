@@ -6,7 +6,7 @@ import {
 import chalk from 'chalk';
 
 export const createAngularEnv = async (modConfig) => {
-  const pkgData = fse.readFileSync(modConfig.DEFAULT_PKG);
+  const pkgData = fse.readFileSync(modConfig.LINK_PKG);
   const data = JSON.parse(pkgData);
 
   const coreDevEnvPath = join(modConfig.CORE_SRC, '/client/environments/environment.ts');

@@ -13,7 +13,7 @@ import config from '../../config/config.js';
  * Configuration for bundling modules
  */
 
-export class ProjectConfig {
+export class BundleConfig {
 
   constructor() {
     /*
@@ -53,7 +53,9 @@ export class ProjectConfig {
      */
     this.TMP_DIR = 'projects';
 
-    this.DEFAULT_PKG = join(this.PROJECT_ROOT, '/package.json');
+    // Path to the bundled package.json
+    this.LINK_PKG = join(this.PROJECT_ROOT, '/package.json');
+    // Path to the backup of COREs specific package.json 
     this.CORE_PKG = join(this.CORE_SRC, '/core.package.json');
 
     this.CORE_NG_JSON = join(this.CORE_SRC, '/core.angular.template.json');
@@ -85,7 +87,7 @@ export class ProjectConfig {
   }
 
   // Retrive the mod specific env config 
-  async setConfig(done){
+  async setConfig(done) {
     const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
 
     await moduleConfigs.map(async (modConfig) => {
@@ -96,27 +98,28 @@ export class ProjectConfig {
   }
 
   async setModules(modConfig) {
-      const moduleDir = join(this.PROJECT_ROOT, this.MODULE_SRC, modConfig.app.name);
+    const moduleDir = join(this.PROJECT_ROOT, this.MODULE_SRC, modConfig.app.name);
 
-      const module = {
-        MODULE_SRC: moduleDir,
-        MODULE_CLIENT_SRC: join(moduleDir, '/client'),
-        MODULE_E2E_SRC: join(moduleDir, '/e2e'),
-        APP_TITLE: modConfig.app.title || '',
-        APP_BASE_URL: modConfig.app.appBaseUrl || '',
-        API_BASE_URL: modConfig.app.apiBaseUrl || '',
-        APP_NAME: modConfig.app.name || '',
-        APP_LOGO: modConfig.app.logo || '',
-        APP_DEFAULT_ROUTE: modConfig.app.defaultRoute || '',
-        IMAGE_BASE_URL: modConfig.uploads.images.baseUrl || '',
-        TWITTER_HANDLE: modConfig.TWITTER_HANDLE || '',
-        META_TITLE_SUFFIX: modConfig.app.metaTitleSuffix || '',
-        TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, modConfig.app.name),
-        MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
-        MODULE_PKG: join(moduleDir, '/package.json')
-      };
+    const module = {
+      MODULE_SRC: moduleDir,
+      MODULE_CLIENT_SRC: join(moduleDir, '/client'),
+      MODULE_E2E_SRC: join(moduleDir, '/e2e'),
+      APP_TITLE: modConfig.app.title || '',
+      APP_BASE_URL: modConfig.app.appBaseUrl || '',
+      API_BASE_URL: modConfig.app.apiBaseUrl || '',
+      APP_NAME: modConfig.app.name || '',
+      APP_LOGO: modConfig.app.logo || '',
+      APP_DEFAULT_ROUTE: modConfig.app.defaultRoute || '',
+      IMAGE_BASE_URL: modConfig.uploads.images.baseUrl || '',
+      TWITTER_HANDLE: modConfig.TWITTER_HANDLE || '',
+      META_TITLE_SUFFIX: modConfig.app.metaTitleSuffix || '',
+      TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, modConfig.app.name),
+      MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
+      LINK_MOD_PKG: join(moduleDir, '/mod.package.json'),
+      MOD_PKG: join(moduleDir, '/package.json')
+    };
 
-      this.ALL_MODULES.push(module);
+    this.ALL_MODULES.push(module);
   }
 
   /**

@@ -7,7 +7,7 @@ import {
 import async from 'async';
 import yargs from 'yargs';
 
-import projectConfig from './config.init.js';
+import bundleConfig from './config.init.js';
 
 const args = yargs(process.argv).argv;
 
@@ -15,29 +15,6 @@ let DEPENDENCY_TYPE;
 let SAVE_FLG;
 
 const initPkgLink = async () => {
-
-  if (args.package === '%npm_config_pkg%') {
-    console.log(chalk.red('You need to pass a package name!'));
-    return 1;
-  }
-
-  if (args.depType === 'dev' || args.depType === 'devDependencies') {
-    DEPENDENCY_TYPE = 'devDependencies';
-    SAVE_FLG = '--save-dev';
-  } else if (args.depType === 'dependencies' || args.depType === '%npm_config_dep_type%') {
-    DEPENDENCY_TYPE = 'dependencies';
-    SAVE_FLG = '--save';
-  } else {
-    console.log(chalk.red('Invalid dependency type!...', args.depType));
-    return 1;
-  }
-
-  if (args.mod !== '%npm_config_mod%' && !projectConfig.ALL_MODULES.some(e => e.APP_NAME === args.mod)) {
-    console.log(chalk.red('Module does not exist!'))
-    return 1;
-  }
-  4
-
   let npmCmd = args.place === 'install' ? 'npm install' : 'npm uninstall';
   npmCmd += ' ' + args.package + ' ' + SAVE_FLG;
 
@@ -81,13 +58,14 @@ const execNpmCommand = (npmCmd, cb) => {
 };
 
 const backupPkg = async (cb) => {
-  const basePkgPath = args.mod === '%npm_config_mod%' ? projectConfig.CORE_PKG : `./modules/${args.mod}/mod.package.json`;
+  const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG : `./modules/${args.mod}/mod.package.json`;
   console.log('basePkgPath', basePkgPath);
+
   const output = join(process.cwd(), basePkgPath);
   let version;
 
   if (args.place === 'install') {
-    projectConfig.readFilePromise(join(process.cwd(), './package.json')).then((pkgStr) => {
+    bundleConfig.readFilePromise(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
       try {
         pkgData = JSON.parse(pkgStr);
@@ -101,7 +79,7 @@ const backupPkg = async (cb) => {
     });
   }
 
-  projectConfig.readFilePromise(output).then(async (pkgStr) => {
+  bundleConfig.readFilePromise(output).then(async (pkgStr) => {
     let pkgData;
     try {
       pkgData = JSON.parse(pkgStr);
@@ -123,7 +101,7 @@ const backupPkg = async (cb) => {
       delete pkgData[DEPENDENCY_TYPE][args.package]
     }
 
-    await projectConfig.writeFilePromise(output, projectConfig.stringify(pkgData), 'utf-8').then(() => {
+    await bundleConfig.writeFilePromise(output, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
       console.log(chalk.cyan(`mods package.json file backed up successfully at ${output} \n`));
       return cb();
     }).catch((err) => {
@@ -134,6 +112,27 @@ const backupPkg = async (cb) => {
   });
 };
 
-projectConfig.init(() => {
+bundleConfig.init(() => {
+  if (args.package === '%npm_config_pkg%') {
+    console.log(chalk.red('You need to pass a package name!'));
+    return 1;
+  }
+
+  if (args.depType === 'dev' || args.depType === 'devDependencies') {
+    DEPENDENCY_TYPE = 'devDependencies';
+    SAVE_FLG = '--save-dev';
+  } else if (args.depType === 'dependencies' || args.depType === '%npm_config_dep_type%') {
+    DEPENDENCY_TYPE = 'dependencies';
+    SAVE_FLG = '--save';
+  } else {
+    console.log(chalk.red('Invalid dependency type!...', args.depType));
+    return 1;
+  }
+
+  if (args.mod !== '%npm_config_mod%' && !bundleConfig.ALL_MODULES.some(e => e.APP_NAME === args.mod)) {
+    console.log(chalk.red('Module does not exist!'))
+    return 1;
+  }
+
   initPkgLink();
 });

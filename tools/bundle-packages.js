@@ -2,14 +2,11 @@
 //  **Note: The purpose of this file is stricly for development/build purposes.  
 //  The generated core.package.json file will override upon commit.
 
-import {
-  join
-} from 'path';
 import fse from 'fs-extra';
 import _ from 'lodash';
 import chalk from 'chalk';
 
-import projectConfig from './config.init.js';
+import bundleConfig from './config.init.js';
 
 const blacklist = [];
 
@@ -161,12 +158,12 @@ const dedupe = async (types, filteredDependencies) => {
 };
 
 const write = async (output, fileContents) => {
-  projectConfig.writeFilePromise(output, projectConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
+  bundleConfig.writeFilePromise(output, bundleConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
 }
 
 // Non-destructive to all other package.json properties
 const compose = async (outputs, fileContents) => {
-  projectConfig.readFilePromise(projectConfig.DEFAULT_PKG)
+  bundleConfig.readFilePromise(bundleConfig.LINK_PKG)
     .then((data) => {
       let parsed;
 
@@ -185,34 +182,33 @@ const compose = async (outputs, fileContents) => {
     });
 }
 
-projectConfig.init(() => {
+bundleConfig.init(() => {
   const dependencies = {
-    core: projectConfig.DEFAULT_PKG
+    core: bundleConfig.LINK_PKG
   };
 
   const outputs = [
-    projectConfig.DEFAULT_PKG
+    bundleConfig.LINK_PKG
   ];
 
-  if (fse.existsSync(projectConfig.CORE_PKG)) {
+  if (fse.existsSync(bundleConfig.CORE_PKG)) {
     // Overwrite current core package.json with back up!
-    fse.copyFileSync(projectConfig.CORE_PKG, projectConfig.DEFAULT_PKG);
+    fse.copyFileSync(bundleConfig.CORE_PKG, bundleConfig.LINK_PKG);
   } else {
     // Back up current core package.json
-    fse.copyFileSync(projectConfig.DEFAULT_PKG, projectConfig.CORE_PKG);
+    fse.copyFileSync(bundleConfig.LINK_PKG, bundleConfig.CORE_PKG);
   }
 
-  _.forEach(projectConfig.ALL_MODULES, (mod) => {
-    dependencies[mod.APP_NAME] = mod.MODULE_PKG;
-    outputs.push(mod.MODULE_PKG);
+  _.forEach(bundleConfig.ALL_MODULES, (mod) => {
+    dependencies[mod.APP_NAME] = mod.MOD_PKG;
+    outputs.push(mod.MOD_PKG);
 
-    const modPkgJsonPath = join(mod.MODULE_SRC, '/mod.package.json');
-    if (fse.existsSync(modPkgJsonPath)) {
+    if (fse.existsSync(mod.LINK_MOD_PKG)) {
       // Overwrite module package.json with back up!
-      fse.copyFileSync(modPkgJsonPath, mod.MODULE_PKG);
+      fse.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG);
     } else {
       // Back up current module package.json
-      fse.copyFileSync(mod.MODULE_PKG, modPkgJsonPath);
+      fse.copyFileSync(mod.MOD_PKG, mod.LINK_MOD_PKG);
     }
   });
 

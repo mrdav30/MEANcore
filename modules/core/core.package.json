@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "preinstall": "npm run bundle:packages",
+    "preinstall": "git config core.hooksPath .githooks && npm run bundle:packages",
     "config": "node ./tools/set-env.js",
     "bundle:packages": "node ./tools/bundle-packages.js",
     "link:install": "node ./tools/link-packages.js --place install --package %npm_config_pkg% --depType %npm_config_dep_type% --mod %npm_config_mod% && npm run bundle:packages",

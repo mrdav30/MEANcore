@@ -5,7 +5,7 @@ import {
 import fse from 'fs-extra';
 import chalk from 'chalk';
 
-import projectConfig from '../config.init.js';
+import bundleConfig from '../config.init.js';
 
 /**
  * Cleans the given path(s) using `remove`.
@@ -21,7 +21,7 @@ export async function clean(paths) {
 
   const promises = pathsToClean.map(p => {
     return new Promise((resolve, reject) => {
-      const relativePath = relative(projectConfig.PROJECT_ROOT, p);
+      const relativePath = relative(bundleConfig.PROJECT_ROOT, p);
       if (relativePath.startsWith('..')) {
         console.log(chalk.red(`Cannot remove files outside the project root but tried "${normalize(p)}"`));
         reject();

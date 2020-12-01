@@ -1,4 +1,6 @@
-import { ProjectConfig } from './config/project.config.js';
+import { BundleConfig } from './config/bundle.config.js';
 
-const projectConfig = new ProjectConfig();
-export default projectConfig;
+import 'dotenv/config.js';
+
+const bundleConfig = new BundleConfig();
+export default bundleConfig;

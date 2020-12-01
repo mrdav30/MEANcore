@@ -19,9 +19,7 @@ import {
   clean
 } from './utils/clean.js';
 
-import projectConfig from './config.init.js';
-
-import 'dotenv/config.js';
+import bundleConfig from './config.init.js';
 
 const bundleModules = async (done) => {
   async.series([
@@ -29,11 +27,11 @@ const bundleModules = async (done) => {
         await cleanOnce();
       },
       async () => {
-          await Promise.all(projectConfig.ALL_MODULES.map(async (mod) => {
-            await projectConfig.mergeObject(projectConfig, mod);
+          await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
+            await bundleConfig.mergeObject(bundleConfig, mod);
 
             console.log(chalk.green('==================================='));
-            console.log(chalk.green('Bundling: ' + projectConfig.APP_NAME));
+            console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
             console.log(chalk.green('==================================='));
 
             console.log(chalk.green('Copying Core'));
@@ -42,7 +40,7 @@ const bundleModules = async (done) => {
 
             await copyModule();
 
-            await createAngularEnv(projectConfig);
+            await createAngularEnv(bundleConfig);
           }));
         },
         async () => {
@@ -71,24 +69,24 @@ const cleanOnce = async () => {
 }
 
 const cleanAll = async () => {
-  await clean([projectConfig.TMP_DIR, projectConfig.COVERAGE_DIR]);
+  await clean([bundleConfig.TMP_DIR, bundleConfig.COVERAGE_DIR]);
 }
 
 const copyCore = async () => {
   // copy client directory
-  await copyFolderRecursiveSync(projectConfig.CORE_CLIENT_SRC, projectConfig.TMP_DIR);
+  await copyFolderRecursiveSync(bundleConfig.CORE_CLIENT_SRC, bundleConfig.TMP_DIR);
   // copy e2e directory
-  await copyFolderRecursiveSync(projectConfig.CORE_E2E_SRC, projectConfig.TMP_DIR);
+  await copyFolderRecursiveSync(bundleConfig.CORE_E2E_SRC, bundleConfig.TMP_DIR);
 }
 
 const copyModule = async () => {
   // copy client directory
-  if (fse.existsSync(projectConfig.MODULE_CLIENT_SRC)) {
-    await copyFolderRecursiveSync(projectConfig.MODULE_CLIENT_SRC, projectConfig.TMP_DIR, projectConfig.BLACK_LIST);
+  if (fse.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
+    await copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
   // copy e2e directory
-  if (fse.existsSync(projectConfig.MODULE_E2E_SRC)) {
-    await copyFolderRecursiveSync(projectConfig.MODULE_E2E_SRC, projectConfig.TMP_DIR, projectConfig.BLACK_LIST);
+  if (fse.existsSync(bundleConfig.MODULE_E2E_SRC)) {
+    await copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
 }
 
@@ -135,13 +133,13 @@ async function copyFolderRecursiveSync(source, target, blackList = []) {
 
 // Create the bundles Angular.json file
 async function buildAngularJson() {
-  const coreJsonStr = fse.readFileSync(projectConfig.CORE_NG_JSON);
+  const coreJsonStr = fse.readFileSync(bundleConfig.CORE_NG_JSON);
   let coreJsonData = JSON.parse(coreJsonStr);
 
-  coreJsonData.defaultProject = projectConfig.DEFAULT_PROJECT;
+  coreJsonData.defaultProject = bundleConfig.DEFAULT_PROJECT;
 
-  for (const mod of projectConfig.ALL_MODULES) {
-    const modJsonStr = fse.readFileSync(projectConfig.MODULE_NG_JSON)
+  for (const mod of bundleConfig.ALL_MODULES) {
+    const modJsonStr = fse.readFileSync(bundleConfig.MODULE_NG_JSON)
 
     let modJsonData = JSON.parse(modJsonStr);
 
@@ -160,8 +158,8 @@ async function buildAngularJson() {
     }
   }
 
-  return projectConfig.writeFilePromise(projectConfig.NG_OUTPUT, projectConfig.stringify(coreJsonData), 'utf-8').then(() => {
-    console.log(chalk.cyan(`Angular.json file generated successfully at ${projectConfig.NG_OUTPUT} \n`));
+  return bundleConfig.writeFilePromise(bundleConfig.NG_OUTPUT, bundleConfig.stringify(coreJsonData), 'utf-8').then(() => {
+    console.log(chalk.cyan(`Angular.json file generated successfully at ${bundleConfig.NG_OUTPUT} \n`));
   }).catch((err) => {
     console.error(err);
   });
@@ -188,7 +186,7 @@ async function replacePropertyValues(obj, mod) {
   return newObject
 }
 
-projectConfig.init(() => {
+bundleConfig.init(() => {
   console.log(chalk.cyan('Bundling started...'));
   bundleModules(() => {
     console.log(chalk.cyan('Bundling complete!'));
