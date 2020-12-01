@@ -11,7 +11,6 @@ echo >&2 "Unbundling development packages for commit".
 git stash -q --keep-index
 
 # Revert package
-echo >&2 "Unbundling development packages for commit".
 bckupPkg=./modules/core/core.package.json
 curPkg=./package.json
 if test -f "$bckupPkg"; then
