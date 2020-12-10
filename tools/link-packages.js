@@ -15,7 +15,7 @@ let DEPENDENCY_TYPE;
 let SAVE_FLG;
 
 const initPkgLink = async () => {
-  let npmCmd = args.place === 'install' ? 'npm install' : 'npm uninstall';
+  let npmCmd = args.switch === 'install' ? 'npm install' : 'npm uninstall';
   npmCmd += ' ' + args.package + ' ' + SAVE_FLG;
 
   async.series([
@@ -37,7 +37,7 @@ const initPkgLink = async () => {
 
 // Install the package in the current package.json
 const execNpmCommand = (npmCmd, cb) => {
-  let msg = args.place === 'install' ? 'Installing...' : 'Uninstalling...';
+  let msg = args.switch === 'install' ? 'Installing...' : 'Uninstalling...';
   console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
   const child = cp.exec(npmCmd, (err) => {
     if (err) {
@@ -51,7 +51,7 @@ const execNpmCommand = (npmCmd, cb) => {
     console.log(chalk.cyan(data));
   });
   child.on('close', () => {
-    msg = args.place === 'install' ? 'Installed...' : 'Uninstalled...';
+    msg = args.switch === 'install' ? 'Installed...' : 'Uninstalled...';
     console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
     cb();
   });
@@ -64,7 +64,7 @@ const backupPkg = async (cb) => {
   const output = join(process.cwd(), basePkgPath);
   let version;
 
-  if (args.place === 'install') {
+  if (args.switch === 'install') {
     bundleConfig.readFilePromise(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
       try {
@@ -87,7 +87,7 @@ const backupPkg = async (cb) => {
       pkgData = {};
     }
 
-    if (args.place === 'install') {
+    if (args.switch === 'install') {
       pkgData[DEPENDENCY_TYPE][args.package] = version;
 
       const sorted = {};
