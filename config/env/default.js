@@ -16,10 +16,12 @@ export const app = {
   defaultRoute: process.env.APP_DEFAULT_ROUTE || '',
   metaTitleSuffix: process.env.META_TITLE_SUFFIX || ' | MEANcore'
 };
-export const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL;
-export const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY;
-export const GOOGLE_VIEW_ID = process.env.GOOGLE_VIEW_ID;
-export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
+export const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL || '';
+export const GOOGLE_ANALYTICS_ID = process.env.GOOGLE_ANALYTICS_ID || '';
+export const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY || '';
+export const GOOGLE_VIEW_ID = process.env.GOOGLE_VIEW_ID || '';
+export const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY || '';
+export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '';
 export const TWITTER_HANDLE = process.env.TWITTER_HANDLE || '';
 export const mongoDB = {
   promise: global.Promise,
@@ -81,6 +83,13 @@ export const cps = {
 export const illegalUsernames = ['meancore', 'administrator', 'password', 'admin', 'user',
   'unknown', 'anonymous', 'null', 'undefined', 'api'
 ];
+export const owaspConfig = {
+  allowPassphrases: true,
+  maxLength: 128,
+  minLength: 10,
+  minPhraseLength: 20,
+  minOptionalTestsToPass: 4
+};
 export const aws = {
   s3: {
     accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
@@ -104,3 +113,9 @@ export const uploads = {
     }
   }
 };
+export const scriptStore = [{
+  // Required for google analytics 
+  name: 'gtag',
+  src: 'https://www.googletagmanager.com/gtag/js?id=' + GOOGLE_ANALYTICS_ID,
+  async: true
+}];

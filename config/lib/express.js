@@ -217,11 +217,14 @@ const initSharedConfiguration = async (config) => {
   await Promise.all(config.files.sharedModules.map(async (sharedModuleFile) => {
     let sharedModulePath = url.pathToFileURL(resolve(sharedModuleFile)).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    await import(sharedModulePath).then((shareModule) => {
+    await import(sharedModulePath).then(async (shareModule) => {
       config.shareModules = {
         ...config.shareModules,
         ...shareModule
       };
+      if (shareModule.default) {
+        await shareModule.default();
+      }
     });
   })).catch((err) => {
     console.log(err);

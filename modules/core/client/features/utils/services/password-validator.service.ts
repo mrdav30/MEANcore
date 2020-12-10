@@ -3,10 +3,18 @@
 import {
   Injectable
 } from '@angular/core';
+import {
+  environment
+} from '@env';
 import * as owasp from '@shared_modules/owasp-password-strength-test';
 
 @Injectable()
 export class PasswordValidatorService {
+
+  constructor() {
+    const owaspConfig = environment && environment.owaspConfig ? environment.owaspConfig : {};
+    owasp.owaspConfig = owaspConfig;
+  }
 
   public getResult(password: string) {
     const result = owasp.passwordTest(password);

@@ -1,5 +1,6 @@
 // Configure Angular `environment.ts` file path
 import fse from 'fs-extra';
+import util from 'util';
 import {
   join
 } from 'path';
@@ -24,10 +25,12 @@ export const createAngularEnv = async (modConfig) => {
       appBaseUrl: '${modConfig.APP_BASE_URL}',
       apiBaseUrl: '${modConfig.API_BASE_URL}',
       imageBaseUrl: '${modConfig.IMAGE_BASE_URL}',
-      googleAnalyticsID: '${process.env.GOOGLE_ANALYTICS_ID}',
-      recaptchaSiteKey: '${process.env.RECAPTCHA_SITE_KEY}',
+      googleAnalyticsID: '${modConfig.GOOGLE_ANALYTICS_ID}',
+      recaptchaSiteKey: '${modConfig.RECAPTCHA_SITE_KEY}',
       twitterHandle: '${modConfig.TWITTER_HANDLE}',
-      metaTitleSuffix: '${modConfig.META_TITLE_SUFFIX}'
+      metaTitleSuffix: '${modConfig.META_TITLE_SUFFIX}',
+      scriptStore: ` + util.inspect(modConfig.SCRIPT_STORE) + `,
+      owaspConfig: ` + util.inspect(modConfig.OWASP_CONFIG) + `
 };
 `;
 

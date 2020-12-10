@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
-import { ScriptStore } from './script.store';
+import { environment } from '@env';
 
 @Injectable()
 export class ScriptInjectorService {
@@ -11,7 +11,7 @@ export class ScriptInjectorService {
     constructor(
         @Inject(DOCUMENT) private doc: any
     ) {
-        ScriptStore.forEach((script: any) => {
+        environment.scriptStore.forEach((script: any) => {
             this.scripts[script.name] = {
                 loaded: false,
                 src: script.src
