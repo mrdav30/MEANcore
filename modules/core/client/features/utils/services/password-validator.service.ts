@@ -13,7 +13,7 @@ export class PasswordValidatorService {
 
   constructor() {
     const owaspConfig = environment && environment.owaspConfig ? environment.owaspConfig : {};
-    owasp.owaspConfig = owaspConfig;
+    owasp.setOwaspConfig(owaspConfig);
   }
 
   public getResult(password: string) {
@@ -23,7 +23,7 @@ export class PasswordValidatorService {
 
   public getPopoverMsg() {
     const popoverMsg = 'Please enter a passphrase or password with ' +
-      owasp.owaspConfig.minLength +
+      owasp.getOwaspConfig().minLength +
       ' or more characters, numbers, lowercase, uppercase, and special characters.';
 
     return popoverMsg;

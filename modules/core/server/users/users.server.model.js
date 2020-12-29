@@ -10,7 +10,9 @@ import {
   randomBytes,
   pbkdf2Sync
 } from 'crypto';
+import config from '../../../../config/config.js';
 import {
+  setOwaspConfig,
   passwordTest
 } from '../../../../shared_modules/owasp-password-strength-test.js';
 import generatePassword from 'generate-password';
@@ -205,6 +207,8 @@ UserSchema.statics = {
         // check if we need to remove any repeating characters
         password = password.replace(repeatingCharacters, '');
       }
+
+      setOwaspConfig(config.owaspConfig);
 
       // Send the rejection back if the passphrase fails to pass the strength test
       if (passwordTest(password).errors.length) {

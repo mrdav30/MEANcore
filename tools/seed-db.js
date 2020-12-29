@@ -25,11 +25,11 @@ const inititalSeedSetup = async () => {
 
   // bundle seed configs for all submodules
   await Promise.all(config.submodules.map(async (module) => {
-    const appConfigPath = url.pathToFileURL(module.appConfig).href;
+    const appConfigPath = url.pathToFileURL(module.appDefaultConfig).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     let appConfig = await import(appConfigPath);
 
-    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/env', process.env.NODE_ENV + '.js')).href;
+    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const moduleEnvConfig = await import(moduleEnvConfigPath);
 
