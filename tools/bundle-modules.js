@@ -2,10 +2,6 @@
 //  **Note: Only the mod's client folder is merged. 
 //  **Note: The purpose of these files is stricly for development/build purposes.  
 
-import {
-  join,
-  basename
-} from 'path';
 import fse from 'fs-extra';
 import _ from 'lodash';
 import async from 'async';
@@ -19,6 +15,10 @@ import {
   clean
 } from './utils/clean.js';
 
+import {
+  copyFolderRecursiveSync
+} from './utils/copy-recursive.js';
+
 import bundleConfig from './config.init.js';
 
 const bundleModules = async (done) => {
@@ -26,26 +26,26 @@ const bundleModules = async (done) => {
     async () => {
         await cleanOnce();
       },
-      async () => {
-          await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
-            await bundleConfig.mergeObject(bundleConfig, mod);
+    async () => {
+        await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
+          await bundleConfig.mergeObject(bundleConfig, mod);
 
-            console.log(chalk.green('==================================='));
-            console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
-            console.log(chalk.green('==================================='));
+          console.log(chalk.green('==================================='));
+          console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
+          console.log(chalk.green('==================================='));
 
-            console.log(chalk.green('Copying Core'));
+          console.log(chalk.green('Copying Core'));
 
-            await copyCore();
+          await copyCore();
 
-            await copyModule();
+          await copyModule();
 
-            await createAngularEnv(bundleConfig);
-          }));
-        },
-        async () => {
-          await buildAngularJson();
-        }
+          await createAngularEnv(bundleConfig);
+        }));
+      },
+    async () => {
+        await buildAngularJson();
+      }
   ], (err) => {
     if (err) {
       console.log(err);
@@ -87,47 +87,6 @@ const copyModule = async () => {
   // copy e2e directory
   if (fse.existsSync(bundleConfig.MODULE_E2E_SRC)) {
     await copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
-  }
-}
-
-async function copyFileSync(source, target) {
-
-  var targetFile = target;
-
-  //if target is a directory a new file with the same name will be created
-  if (fse.existsSync(target)) {
-    if (fse.lstatSync(target).isDirectory()) {
-      targetFile = join(target, basename(source));
-    }
-  }
-
-  fse.writeFileSync(targetFile, fse.readFileSync(source));
-}
-
-async function copyFolderRecursiveSync(source, target, blackList = []) {
-  let files = [];
-
-  // check if folder needs to be created or integrated
-  let targetFolder = join(target, basename(source));
-
-  if (!fse.existsSync(targetFolder)) {
-    await fse.ensureDir(targetFolder);
-  }
-
-  // copy
-  if (fse.lstatSync(source).isDirectory()) {
-    files = fse.readdirSync(source);
-
-    files = _.difference(files, blackList);
-
-    await Promise.all(files.map(async (file) => {
-      var curSource = join(source, file);
-      if (fse.lstatSync(curSource).isDirectory()) {
-        await copyFolderRecursiveSync(curSource, targetFolder);
-      } else {
-        await copyFileSync(curSource, targetFolder);
-      }
-    }));
   }
 }
 

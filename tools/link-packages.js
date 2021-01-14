@@ -61,7 +61,6 @@ const backupPkg = async (cb) => {
   const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG : `./modules/${args.mod}/mod.package.json`;
   console.log('basePkgPath', basePkgPath);
 
-  const output = join(process.cwd(), basePkgPath);
   let version;
 
   if (args.switch === 'install') {
@@ -79,7 +78,7 @@ const backupPkg = async (cb) => {
     });
   }
 
-  bundleConfig.readFilePromise(output).then(async (pkgStr) => {
+  bundleConfig.readFilePromise(basePkgPath).then(async (pkgStr) => {
     let pkgData;
     try {
       pkgData = JSON.parse(pkgStr);
@@ -101,8 +100,8 @@ const backupPkg = async (cb) => {
       delete pkgData[DEPENDENCY_TYPE][args.package]
     }
 
-    await bundleConfig.writeFilePromise(output, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
-      console.log(chalk.cyan(`mods package.json file backed up successfully at ${output} \n`));
+    await bundleConfig.writeFilePromise(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
+      console.log(chalk.cyan(`package.json file backed up successfully at ${basePkgPath} \n`));
       return cb();
     }).catch((err) => {
       return cb(err);
@@ -121,7 +120,7 @@ bundleConfig.init(() => {
   if (args.depType === 'dev' || args.depType === 'devDependencies') {
     DEPENDENCY_TYPE = 'devDependencies';
     SAVE_FLG = '--save-dev';
-  } else if (args.depType === 'dependencies' || args.depType === '%npm_config_dep_type%') {
+  } else if (args.depType === 'dependencies' || args.depType === 'dep' || args.depType === '%npm_config_dep_type%') {
     DEPENDENCY_TYPE = 'dependencies';
     SAVE_FLG = '--save';
   } else {

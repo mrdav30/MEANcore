@@ -25,9 +25,7 @@ const STRIP_NON_NUMERICS = /[^a-zA-Z0-9 ]/g;
 
 const build = async ({
   dependencies,
-  outputs,
-  types = {},
-  blacklist = []
+  outputs
 }) => {
   if (_.isEmpty(dependencies)) {
     return errorFactory('Missing required property dependencies');
@@ -214,9 +212,7 @@ bundleConfig.init(() => {
 
   build({
     dependencies,
-    outputs,
-    types,
-    blacklist
+    outputs
   }).catch((err) => {
     console.log(chalk.red(err));
   });

@@ -1,6 +1,8 @@
 class ChangeFileManager {
-  private _files: string[] = [];
-  private _pristine = true;
+  constructor() {
+    this._files = [];
+    this._pristine = true;
+  }
 
   get lastChangedFiles() {
     return this._files.slice();
@@ -10,12 +12,12 @@ class ChangeFileManager {
     return this._pristine;
   }
 
-  addFile(file: string) {
+  addFile(file) {
     this._pristine = false;
     this._files.push(file);
   }
 
-  addFiles(files: string[]) {
+  addFiles(files) {
     files.forEach(f => this.addFile(f));
   }
 

@@ -23,6 +23,8 @@ export class BundleConfig {
       import.meta.url));
     this.PROJECT_ROOT = join(this.__dirname, '../..');
 
+    this.APP_NAME = 'meancore';
+
     /*
      * The path to the coverage output
      * NB: this must match what is configured in ./karma.conf.js
@@ -37,7 +39,7 @@ export class BundleConfig {
     /*
      *  Module's directory
      */
-    this.MODULE_SRC = 'modules';
+    this.MODULE_DIR = join(this.PROJECT_ROOT, 'modules');
 
     /*
      *  Common core directory
@@ -71,6 +73,12 @@ export class BundleConfig {
     // Files that will be ignored during the build process
     this.BLACK_LIST = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
 
+    /**
+     * The list of editor temporary files to ignore in watcher and asset builder.
+     */
+    this.TEMP_FILES = [
+      '**/*~',
+    ];
 
     this.indentation = 2
 
@@ -98,7 +106,7 @@ export class BundleConfig {
   }
 
   async setModules(modConfig) {
-    const moduleDir = join(this.PROJECT_ROOT, this.MODULE_SRC, modConfig.app.name);
+    const moduleDir = join(this.MODULE_DIR, modConfig.app.name);
 
     const module = {
       MODULE_SRC: moduleDir,
@@ -120,7 +128,8 @@ export class BundleConfig {
       TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, modConfig.app.name),
       MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
       LINK_MOD_PKG: join(moduleDir, '/mod.package.json'),
-      MOD_PKG: join(moduleDir, '/package.json')
+      MOD_PKG: join(moduleDir, '/package.json'),
+      BLACK_LIST: modConfig.coreBlackList || []
     };
 
     this.ALL_MODULES.push(module);
