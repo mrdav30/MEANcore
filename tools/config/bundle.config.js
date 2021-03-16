@@ -129,7 +129,7 @@ export class BundleConfig {
       MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
       LINK_MOD_PKG: join(moduleDir, '/mod.package.json'),
       MOD_PKG: join(moduleDir, '/package.json'),
-      BLACK_LIST: modConfig.coreBlackList || []
+      BLACK_LIST: modConfig.coreBlackList || this.BLACK_LIST || []
     };
 
     this.ALL_MODULES.push(module);

@@ -80,6 +80,7 @@ const copyCore = async () => {
 }
 
 const copyModule = async () => {
+  console.log('blacklist', bundleConfig.BLACK_LIST);
   // copy client directory
   if (fse.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
     await copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);

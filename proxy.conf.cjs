@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const HttpsProxyAgent = require('https-proxy-agent');
 
 /*

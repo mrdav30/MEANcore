@@ -6,5 +6,9 @@ export const AppHomeRoutes: Routes = [
   {
     path: '',
     component: AppHomeComponent
+  },
+  {
+    path: 'home',
+    component: AppHomeComponent
   }
 ];

@@ -36,22 +36,22 @@ import vhost from 'vhost';
 /**
  * Initialize local variables
  */
-const initLocalvariables = function (app, config) {
+const initLocalvariables = function (app, moduleConfig) {
   // Setting application local variables
-  app.locals.title = config.app.title;
-  app.locals.description = config.app.description;
-  if (config.secure && config.secure.ssl) {
-    app.locals.secure = config.secure.ssl;
+  app.locals.title = moduleConfig.app.title;
+  app.locals.description = moduleConfig.app.description;
+  if (moduleConfig.secure && moduleConfig.secure.ssl) {
+    app.locals.secure = moduleConfig.secure.ssl;
   }
-  app.locals.keywords = config.app.keywords;
-  app.locals.livereload = config.livereload;
+  app.locals.keywords = moduleConfig.app.keywords;
+  app.locals.livereload = moduleConfig.livereload;
   app.locals.env = process.env.NODE_ENV;
 
   // Passing entire config to app locals
-  app.locals.config = config;
+  app.locals.config = moduleConfig;
 
   // if behind a proxy, such as nginx...
-  if (config.proxy) {
+  if (moduleConfig.proxy) {
     app.set('trust proxy', 'loopback');
   }
 
@@ -66,21 +66,21 @@ const initLocalvariables = function (app, config) {
 /**
  * Configure Express session
  */
-const initSession = (app, config, db) => {
+const initSession = (app, moduleConfig, db) => {
   app.use(session({
     saveUninitialized: false, // dont save unmodified
     resave: false, // forces the session to be saved back to the store
-    secret: config.sessionSecret,
+    secret: moduleConfig.sessionSecret,
     cookie: {
-      maxAge: config.sessionCookie.maxAge,
-      httpOnly: config.sessionCookie.httpOnly,
-      secure: config.sessionCookie.secure && config.secure.ssl
+      maxAge: moduleConfig.sessionCookie.maxAge,
+      httpOnly: moduleConfig.sessionCookie.httpOnly,
+      secure: moduleConfig.sessionCookie.secure && moduleConfig.secure.ssl
     },
-    name: config.sessionKey,
+    name: moduleConfig.sessionKey,
     store: new MongoStore({
       db: db,
-      collection: config.sessionCollection,
-      url: config.mongoDB.uri
+      collection: moduleConfig.sessionCollection,
+      url: moduleConfig.mongoDB.uri
     })
   }));
 };
@@ -88,7 +88,7 @@ const initSession = (app, config, db) => {
 /**
  * Initialize application middleware
  */
-const initMiddleware = (app, config) => {
+const initMiddleware = (app, moduleConfig) => {
   // Should be placed before express.static
   app.use(compress({
     level: 9,
@@ -96,7 +96,7 @@ const initMiddleware = (app, config) => {
   }));
 
   // Enable logger (morgan) if enabled in the configuration file
-  if (_.has(config, 'log.format')) {
+  if (_.has(moduleConfig, 'log.format')) {
     app.use(morgan(logger.getLogFormat(), logger.getMorganOptions()));
   }
 
@@ -162,9 +162,9 @@ const initHandlebars = function () {
 /**
  * Configure view engine
  */
-const initViewEngine = (app, config) => {
-  let serverViewPaths = resolve(config.serverViewPaths ? config.serverViewPaths : './');
-  app.set('views', [serverViewPaths, config.staticFilesPath]);
+const initViewEngine = (app, moduleConfig) => {
+  let serverViewPaths = resolve(moduleConfig.serverViewPaths ? moduleConfig.serverViewPaths : './');
+  app.set('views', [serverViewPaths, moduleConfig.staticFilesPath]);
 
   // server side html
   app.engine('server.view.html', expresshbs.express4({
@@ -257,7 +257,7 @@ const initServerConfiguration = async (app, config) => {
 /**
  * Configure Helmet headers configuration
  */
-const initHelmetHeaders = (app) => {
+const initHelmetHeaders = (app, moduleConfig) => {
   // Use helmet to secure Express headers
   let SIX_MONTHS = 15778476000;
   app.use(helmet.frameguard({
@@ -276,7 +276,7 @@ const initHelmetHeaders = (app) => {
 
   // Disable cps during dev testing to prevent issues with ng-dev proxy
   if (process.env.NODE_ENV === 'production') {
-    app.use(csp(config.cps));
+    app.use(csp(moduleConfig.cps));
   }
 
   // POST any CSP violations
@@ -293,29 +293,29 @@ const initHelmetHeaders = (app) => {
 /**
  * Configure the modules static routes
  */
-const initClientRoutes = (app, config) => {
+const initClientRoutes = (app, moduleConfig) => {
   let cacheTime = -9999;
   if (process.env.NODE_ENV !== 'development') {
     cacheTime = '30d';
   }
 
   // in development mode files are loaded from node_modules
-  app.use('/node_modules', express.static(resolve(config.staticFilesPath + '../../node_modules/'), {
+  app.use('/node_modules', express.static(resolve(moduleConfig.staticFilesPath + '../../node_modules/'), {
     maxAge: '30d', // Cache node modules in development as well as they are not updated that frequently.
     index: false,
   }));
 
   // Setting the app router and static folder
-  app.use('/', express.static(resolve(config.staticFilesPath), {
+  app.use('/', express.static(resolve(moduleConfig.staticFilesPath), {
     maxAge: cacheTime,
     index: false,
   }));
 
   // Setting the app router and static folder for image paths
-  const imageOptions = _.map(config.uploads.images.options);
-  const defaultRoute = config.app.appBaseUrl + config.app.apiBaseUrl + config.uploads.images.baseUrl;
+  const imageOptions = _.map(moduleConfig.uploads.images.options);
+  const defaultRoute = moduleConfig.app.appBaseUrl + moduleConfig.app.apiBaseUrl + moduleConfig.uploads.images.baseUrl;
   _.forEach(imageOptions, (option) => {
-    app.use(defaultRoute + '/' + option.finalDest, express.static(resolve(config.uploads.images.uploadRepository + option.finalDest), {
+    app.use(defaultRoute + '/' + option.finalDest, express.static(resolve(moduleConfig.uploads.images.uploadRepository + option.finalDest), {
       maxAge: option.maxAge,
       index: option.index
     }));
@@ -340,7 +340,7 @@ const initServerRoutes = async (app, config) => {
 /**
  * Configure error handling
  */
-const initErrorRoutes = (app, config) => {
+const initErrorRoutes = (app, moduleConfig) => {
   app.use((err, req, res, next) => {
     // If the error object doesn't exists
     if (!err) {
@@ -351,15 +351,15 @@ const initErrorRoutes = (app, config) => {
     console.error(err.stack);
 
     // Redirect to error page
-    const appBaseUrl = config.appBaseUrl || '/';
+    const appBaseUrl = moduleConfig.appBaseUrl || '/';
     res.redirect(appBaseUrl + 'server-error');
   });
 };
 
-const initTaskScheduler = async (db, config) => {
+const initTaskScheduler = async (db, moduleConfig) => {
   // Start Agenda task scheduler
   await startTaskScheduler(db).then((scheduler) => {
-    config.taskScheduler = scheduler;
+    moduleConfig.taskScheduler = scheduler;
   });
 }
 
@@ -421,7 +421,7 @@ const init = async (moduleConfig, db) => {
   initViewEngine(app, moduleConfig);
 
   // Initialize Helmet security headers
-  initHelmetHeaders(app);
+  initHelmetHeaders(app, moduleConfig);
 
   // Enable cors
   enableCORS(app);

@@ -1,11 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { Title } from '@angular/platform-browser';
-import { distinctUntilChanged } from 'rxjs/operators';
+import {
+  Component,
+  OnInit
+} from '@angular/core';
+import {
+  Router,
+  NavigationEnd
+} from '@angular/router';
+import {
+  Title
+} from '@angular/platform-browser';
+import {
+  distinctUntilChanged
+} from 'rxjs/operators';
 
-import { environment } from '@env';
+import {
+  environment
+} from '@env';
 
-import { ScriptInjectorService } from '@utils';
+import {
+  ScriptInjectorService
+} from '@utils';
 
 declare const gtag: (type: string, googleAnalyticsID: string, pageProperties: any) => void;
 
@@ -38,13 +52,14 @@ export class AppComponent implements OnInit {
         return true;
       })
     ).subscribe((x: any) => {
-        const title = this.titleService.getTitle();
-        const path = x.url;
+      const title = this.titleService.getTitle();
+      const path = x.url;
 
-        gtag('config', environment.googleAnalyticsID, {
-          page_title: title,
-          page_path: path
-        });
+      gtag('config', environment.googleAnalyticsID, {
+        page_title: title,
+        page_path: path,
+        cookie_flags: 'SameSite=None;Secure'
+      });
     });
   }
 }

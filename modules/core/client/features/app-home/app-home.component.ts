@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { AuthService } from '@utils';
 
@@ -13,8 +12,7 @@ export class AppHomeComponent implements OnInit {
     isLoggedIn = false;
 
     constructor(
-        public authService: AuthService,
-        public router: Router
+        public authService: AuthService
     ) { }
 
     ngOnInit() {

@@ -15,8 +15,8 @@ let DEPENDENCY_TYPE;
 let SAVE_FLG;
 
 const initPkgLink = async () => {
-  let npmCmd = args.switch === 'install' ? 'npm install' : 'npm uninstall';
-  npmCmd += ' ' + args.package + ' ' + SAVE_FLG;
+ let npmCmd = args.switch === 'install' ? 'npm install' : 'npm uninstall';
+ npmCmd += ' ' + args.package + ' ' + SAVE_FLG;
 
   async.series([
     (callback) => {
@@ -27,7 +27,6 @@ const initPkgLink = async () => {
     }
   ], (err) => {
     if (err) {
-      console.log(chalk.red(err));
       return 1;
     }
 
@@ -35,35 +34,40 @@ const initPkgLink = async () => {
   });
 };
 
-// Install the package in the current package.json
+//Install the package in the current package.json
 const execNpmCommand = (npmCmd, cb) => {
   let msg = args.switch === 'install' ? 'Installing...' : 'Uninstalling...';
   console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
+
   const child = cp.exec(npmCmd, (err) => {
     if (err) {
-      return cb(err);
+      console.log(chalk.red(err));
+      return cb(true);
     }
-  });
-  child.stderr.on('data', (data) => {
-    console.log(chalk.bold.yellow(data));
-  });
-  child.stdout.on('data', (data) => {
-    console.log(chalk.cyan(data));
-  });
-  child.on('close', () => {
+
     msg = args.switch === 'install' ? 'Installed...' : 'Uninstalled...';
     console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
-    cb();
+
+    return cb();
+  });
+
+  child.stdout.on('data', (data) => {
+    console.log(chalk.cyan(data));
   });
 };
 
 const backupPkg = async (cb) => {
   const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG : `./modules/${args.mod}/mod.package.json`;
-  console.log('basePkgPath', basePkgPath);
 
   let version;
+  let pkg = args.package;
 
-  if (args.switch === 'install') {
+  // Need to check if the version number was included in the package parameter...
+  // Always skip the first instance of @ to exclude pkg names (i.e. @angular)
+  if(pkg.includes('@', 1)){
+    pkg = args.package.substring(0, args.package.indexOf('@', 1));
+    version = args.package.substring(args.package.indexOf('@', 1)).replace('@', '');
+  } else if (args.switch === 'install') {
     bundleConfig.readFilePromise(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
       try {
@@ -72,7 +76,7 @@ const backupPkg = async (cb) => {
         pkgData = {};
       }
 
-      version = pkgData[DEPENDENCY_TYPE][args.package];
+      version = pkgData[DEPENDENCY_TYPE][pkg];
     }).catch((err) => {
       return cb(err);
     });
@@ -87,7 +91,13 @@ const backupPkg = async (cb) => {
     }
 
     if (args.switch === 'install') {
-      pkgData[DEPENDENCY_TYPE][args.package] = version;
+
+      // Default to compatible with version if not provided
+      if(!version.includes('^') && !version.includes('~')){
+        version = '^' + version;
+      }
+
+      pkgData[DEPENDENCY_TYPE][pkg] = version;
 
       const sorted = {};
       Object.keys(pkgData[DEPENDENCY_TYPE]).sort().forEach((key) => {
@@ -97,17 +107,19 @@ const backupPkg = async (cb) => {
       const dupeKeys = (l, r) => r;
       pkgData[DEPENDENCY_TYPE] = _.mergeWith(sorted, pkgData[DEPENDENCY_TYPE], dupeKeys);
     } else {
-      delete pkgData[DEPENDENCY_TYPE][args.package]
+      delete pkgData[DEPENDENCY_TYPE][pkg]
     }
 
     await bundleConfig.writeFilePromise(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
       console.log(chalk.cyan(`package.json file backed up successfully at ${basePkgPath} \n`));
       return cb();
     }).catch((err) => {
-      return cb(err);
+      console.log(chalk.red(err));
+      return cb(true);
     });
   }).catch((err) => {
-    return cb(err);
+    console.log(chalk.red(err));
+    return cb(true);
   });
 };
 
@@ -120,7 +132,7 @@ bundleConfig.init(() => {
   if (args.depType === 'dev' || args.depType === 'devDependencies') {
     DEPENDENCY_TYPE = 'devDependencies';
     SAVE_FLG = '--save-dev';
-  } else if (args.depType === 'dependencies' || args.depType === 'dep' || args.depType === '%npm_config_dep_type%') {
+  } else if (args.depType === 'dependencies' || args.depType === 'dep' || args.depType === '%npm_config_type%') {
     DEPENDENCY_TYPE = 'dependencies';
     SAVE_FLG = '--save';
   } else {

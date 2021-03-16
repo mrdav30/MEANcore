@@ -20,6 +20,6 @@ if test -f "$bckupPkg"; then
 git add -u
 
 # Re-apply original unstaged changes
-git stash pop -q
+#git stash pop -q
 
 fi
