@@ -8,17 +8,10 @@ import chalk from 'chalk';
 
 import bundleConfig from './config.init.js';
 
-const blacklist = [];
-
-const types = {
-  dependencies: true,
-  devDependencies: true,
-  peerDependencies: false
-};
-
 const errorFactory = msg => Promise.reject(new Error(`::package-json-compose::Error:: ${msg}`));
 
 const DEPENDENCY_TYPES = new Set(['dependencies', 'devDependencies', 'peerDependencies']);
+
 const LEFT = 'LEFT';
 const RIGHT = 'RIGHT';
 const STRIP_NON_NUMERICS = /[^a-zA-Z0-9 ]/g;
@@ -35,9 +28,11 @@ const build = async ({
     return errorFactory('Must provide output paths for desired package.json')
   }
 
-  if (_.isEmpty(types) || _.isEmpty(_.pick(types, Array.from(DEPENDENCY_TYPES)))) {
+  if (_.isEmpty(bundleConfig.PKG_DEP_TYPES) || _.isEmpty(_.pick(bundleConfig.PKG_DEP_TYPES, Array.from(DEPENDENCY_TYPES)))) {
     return errorFactory(`Must provide at least one of package.json dependency types: ${Array.from(DEPENDENCY_TYPES)}`);
   }
+
+  console.log(chalk.cyan("Bundling linked packages"));
 
   const mappedDependencies = _.map(dependencies, (key) => key);
 
@@ -45,10 +40,10 @@ const build = async ({
     return fse.readFile(url);
   })).then(async (deps) => {
     const parsedDependencies = await parse(deps);
-    const filteredDependencies = await filter(blacklist, parsedDependencies);
-    const dedupedDependencies = await dedupe(types, filteredDependencies);
+    const filteredDependencies = await filter(bundleConfig.PKG_BLK_LIST, parsedDependencies);
+    const dedupedDependencies = await dedupe(bundleConfig.PKG_DEP_TYPES, filteredDependencies);
 
-    // console.log(chalk.magenta(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`));
+    //  console.log(chalk.magenta(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`));
 
     await compose(outputs, dedupedDependencies);
   })
@@ -156,64 +151,70 @@ const dedupe = async (types, filteredDependencies) => {
 };
 
 const write = async (output, fileContents) => {
-  bundleConfig.writeFilePromise(output, bundleConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
+  await bundleConfig.writeFilePromise(output, bundleConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
 }
 
 // Non-destructive to all other package.json properties
 const compose = async (outputs, fileContents) => {
-  bundleConfig.readFilePromise(bundleConfig.LINK_PKG)
-    .then((data) => {
-      let parsed;
+  for (let output of outputs) {
+    bundleConfig.readFilePromise(output)
+      .then(async (data) => {
+        let parsed;
 
-      try {
-        parsed = JSON.parse(data);
-      } catch (e) {
-        parsed = {};
-      }
+        try {
+          parsed = JSON.parse(data);
+        } catch (e) {
+          parsed = {};
+        }
 
-      const dupeKeys = (l, r) => r;
-      const merged = _.mergeWith(parsed, fileContents, dupeKeys);
+        const dupeKeys = (l, r) => r;
+        const merged = _.mergeWith(parsed, fileContents, dupeKeys);
 
-      _.forEach(outputs, (output) => {
-        write(output, merged)
-      });
-    });
+        console.log(chalk.cyan("Linked package.json created at: " + output));
+
+        await write(output, merged)
+      })
+  }
 }
 
 bundleConfig.init(() => {
   const dependencies = {
-    core: bundleConfig.LINK_PKG
+    core: bundleConfig.LINK_CORE_PKG
   };
 
   const outputs = [
-    bundleConfig.LINK_PKG
+    bundleConfig.LINK_CORE_PKG
   ];
 
-  if (fse.existsSync(bundleConfig.CORE_PKG)) {
+  // back up unbundled package files
+  if (fse.existsSync(bundleConfig.CORE_PKG_BKP)) {
     // Overwrite current core package.json with back up!
-    fse.copyFileSync(bundleConfig.CORE_PKG, bundleConfig.LINK_PKG);
+    fse.copyFileSync(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
   } else {
     // Back up current core package.json
-    fse.copyFileSync(bundleConfig.LINK_PKG, bundleConfig.CORE_PKG);
+    fse.copyFileSync(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
   }
 
   _.forEach(bundleConfig.ALL_MODULES, (mod) => {
-    dependencies[mod.APP_NAME] = mod.MOD_PKG;
-    outputs.push(mod.MOD_PKG);
+    dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
+    outputs.push(mod.LINK_MOD_PKG);
 
-    if (fse.existsSync(mod.LINK_MOD_PKG)) {
+    if (fse.existsSync(mod.MOD_PKG_BKP)) {
       // Overwrite module package.json with back up!
-      fse.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG);
+      fse.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
     } else {
       // Back up current module package.json
-      fse.copyFileSync(mod.MOD_PKG, mod.LINK_MOD_PKG);
+      fse.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
     }
   });
 
   build({
-    dependencies,
-    outputs
-  }).catch((err) => {
-    console.log(chalk.red(err));
-  });
+      dependencies,
+      outputs
+    }).then(() => {
+      console.log(chalk.cyan("Bundling linked packages complete"))
+    })
+    .catch((err) => {
+      console.log(chalk.red(err));
+    });
 });

@@ -56,9 +56,9 @@ export class BundleConfig {
     this.TMP_DIR = 'projects';
 
     // Path to the bundled package.json
-    this.LINK_PKG = join(this.PROJECT_ROOT, '/package.json');
+    this.LINK_CORE_PKG = join(this.PROJECT_ROOT, '/package.json');
     // Path to the backup of COREs specific package.json 
-    this.CORE_PKG = join(this.CORE_SRC, '/core.package.json');
+    this.CORE_PKG_BKP = join(this.CORE_SRC, '/core.package.json');
 
     this.CORE_NG_JSON = join(this.CORE_SRC, '/core.angular.template.json');
     this.MODULE_NG_JSON_NAME = 'mod.angular.template.json';
@@ -72,6 +72,14 @@ export class BundleConfig {
 
     // Files that will be ignored during the build process
     this.BLACK_LIST = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
+
+    this.PKG_BLK_LIST = [];
+
+    this.PKG_DEP_TYPES = {
+      dependencies: true,
+      devDependencies: true,
+      peerDependencies: false
+    };
 
     /**
      * The list of editor temporary files to ignore in watcher and asset builder.
@@ -127,9 +135,10 @@ export class BundleConfig {
       OWASP_CONFIG: modConfig.owaspConfig || {},
       TMP_DIR: join(this.PROJECT_ROOT, '/' + this.TMP_DIR, modConfig.app.name),
       MODULE_NG_JSON: join(moduleDir, this.MODULE_NG_JSON_NAME),
-      LINK_MOD_PKG: join(moduleDir, '/mod.package.json'),
-      MOD_PKG: join(moduleDir, '/package.json'),
-      BLACK_LIST: modConfig.coreBlackList || this.BLACK_LIST || []
+      MOD_PKG_BKP: join(moduleDir, '/mod.package.json'),
+      LINK_MOD_PKG: join(moduleDir, '/package.json'),
+      BLACK_LIST: modConfig.coreBlackList || this.BLACK_LIST || [],
+      MERGE_LIST: modConfig.mergeList || this.MERGE_LIST || []
     };
 
     this.ALL_MODULES.push(module);

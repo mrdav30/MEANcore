@@ -8,16 +8,11 @@ import async from 'async';
 import chalk from 'chalk';
 
 import {
-  createAngularEnv
-} from './utils/set-env.js';
-
-import {
-  clean
-} from './utils/clean.js';
-
-import {
-  copyFolderRecursiveSync
-} from './utils/copy-recursive.js';
+  clean,
+  copyRecursive,
+  setNgEnv,
+  rebuildObject
+} from './utils/index.js';
 
 import bundleConfig from './config.init.js';
 
@@ -26,26 +21,26 @@ const bundleModules = async (done) => {
     async () => {
         await cleanOnce();
       },
-    async () => {
-        await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
-          await bundleConfig.mergeObject(bundleConfig, mod);
+      async () => {
+          await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
+            await bundleConfig.mergeObject(bundleConfig, mod);
 
-          console.log(chalk.green('==================================='));
-          console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
-          console.log(chalk.green('==================================='));
+            console.log(chalk.green('==================================='));
+            console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
+            console.log(chalk.green('==================================='));
 
-          console.log(chalk.green('Copying Core'));
+            console.log(chalk.green('Copying Core'));
 
-          await copyCore();
+            await copyCore();
 
-          await copyModule();
+            await copyModule();
 
-          await createAngularEnv(bundleConfig);
-        }));
-      },
-    async () => {
-        await buildAngularJson();
-      }
+            await setNgEnv.createAngularEnv(bundleConfig);
+          }));
+        },
+        async () => {
+          await buildAngularJson();
+        }
   ], (err) => {
     if (err) {
       console.log(err);
@@ -61,33 +56,32 @@ let firstRun = true;
 const cleanOnce = async () => {
   if (firstRun) {
     firstRun = false;
-    await cleanAll();
+    await cleanNow();
   } else {
     console.log('Skipping clean on rebuild');
     return;
   }
 }
 
-const cleanAll = async () => {
-  await clean([bundleConfig.TMP_DIR, bundleConfig.COVERAGE_DIR]);
+const cleanNow = async () => {
+  await clean.cleanPaths([bundleConfig.TMP_DIR, bundleConfig.COVERAGE_DIR]);
 }
 
 const copyCore = async () => {
   // copy client directory
-  await copyFolderRecursiveSync(bundleConfig.CORE_CLIENT_SRC, bundleConfig.TMP_DIR);
+  await copyRecursive.copyFolderRecursiveSync(bundleConfig.CORE_CLIENT_SRC, bundleConfig.TMP_DIR);
   // copy e2e directory
-  await copyFolderRecursiveSync(bundleConfig.CORE_E2E_SRC, bundleConfig.TMP_DIR);
+  await copyRecursive.copyFolderRecursiveSync(bundleConfig.CORE_E2E_SRC, bundleConfig.TMP_DIR);
 }
 
 const copyModule = async () => {
-  console.log('blacklist', bundleConfig.BLACK_LIST);
   // copy client directory
   if (fse.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
-    await copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
+    await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
   // copy e2e directory
   if (fse.existsSync(bundleConfig.MODULE_E2E_SRC)) {
-    await copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
+    await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
 }
 
@@ -103,9 +97,9 @@ async function buildAngularJson() {
 
     let modJsonData = JSON.parse(modJsonStr);
 
-    await renameKeys(modJsonData, mod);
+    await rebuildObject.renameKeys(modJsonData, mod);
 
-    modJsonData = await replacePropertyValues(modJsonData, mod);
+    modJsonData = await rebuildObject.replacePropertyValues(modJsonData, mod);
 
     coreJsonData.projects = _.mergeWith({}, coreJsonData.projects, modJsonData, (objValue, srcValue) => {
       if (_.isArray(objValue)) {
@@ -123,27 +117,6 @@ async function buildAngularJson() {
   }).catch((err) => {
     console.error(err);
   });
-}
-
-async function renameKeys(obj, mod) {
-  obj[mod.APP_NAME] = obj['{{mod}}'];
-  delete obj['{{mod}}'];
-  obj[mod.APP_NAME + '-e2e'] = obj['{{mod}}-e2e'];
-  delete obj['{{mod}}-e2e'];
-}
-
-async function replacePropertyValues(obj, mod) {
-  const newObject = _.clone(obj);
-
-  await _.each(obj, async (val, key) => {
-    if (typeof (val) === 'object') {
-      newObject[key] = await replacePropertyValues(val, mod);
-    } else if (_.includes(val, '{{mod}}')) {
-      newObject[key] = _.replace(val, new RegExp("{{mod}}", "g"), mod.APP_NAME);
-    }
-  })
-
-  return newObject
 }
 
 bundleConfig.init(() => {

@@ -1,4 +1,6 @@
-import { BundleConfig } from './config/bundle.config.js';
+import {
+  BundleConfig
+} from './config/bundle.config.js';
 
 import 'dotenv/config.js';
 

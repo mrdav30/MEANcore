@@ -11,7 +11,7 @@ import bundleConfig from '../config.init.js';
  * Cleans the given path(s) using `remove`.
  * @param paths - The path or list of paths to clean.
  */
-export async function clean(paths) {
+export async function cleanPaths(paths) {
   let pathsToClean = [];
   if (paths instanceof Array) {
     pathsToClean = paths;
