@@ -51,7 +51,7 @@
       <label for="password" class="col-sm-2"><strong>Password</strong></label>
       <div class="col-sm-4">
         <div>
-          <input type="password" id="password" name="password" type="password" class="form-control inline-control"
+          <input type="password" id="password" name="password" type="password" autocomplete="new-password" class="form-control inline-control"
             [(ngModel)]="profile.password" #password="ngModel" spellcheck="false" appPasswordToggle
             ngbTooltip="{{passwordTooltip}}" />
         </div>
