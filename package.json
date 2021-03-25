@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "ng": "ng",
-    "init": "node ./tools/install.js",
+    "init": "node ./tools/init-core.js core",
     "preinstall": "npm run init && npm run bundle:packages",
     "bundle:packages": "node %npm_config_core_prj_root%/tools/bundle-packages.js",
     "unbundle:packages": "node %npm_config_core_prj_root%/tools/unbundle-packages.js",
@@ -64,7 +64,6 @@
     "connect-redis": "^5.0.0",
     "cookie-parser": "~1.4.1",
     "core-js": "^3.6.4",
-    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-hbs": "^2.3.4",
