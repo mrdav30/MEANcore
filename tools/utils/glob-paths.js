@@ -12,7 +12,12 @@ export const getGlobs = (searchPath, globpattern, targetpath) => {
     return [targetpath];
   }
 
-  let splitPattern = globpattern.split('/');
+  if (globpattern.startsWith(searchPath)) {
+    globpattern = globpattern.replace(searchPath, '').substr(1, globpattern.length);
+  }
+
+  // replace all backslashes with forward slashes before splitting by forward slash
+  let splitPattern = globpattern.replace(/\\/g, '/').split('/');
 
   let allFolders = fs.lstatSync(searchPath).isDirectory() ? fs.readdirSync(searchPath) : [];
   let allFiles = [];

@@ -63,7 +63,7 @@ export default async function (app) {
   });
 
   const __dirname = dirname(url.fileURLToPath(import.meta.url));
-  const strategies = config.utils.getGlobbedPaths(join(__dirname, 'strategies/**/*.js'));
+  const strategies = config.utils.getGlobbedPaths(join(__dirname, 'strategies/*.js'));
 
   await Promise.all(strategies.map(async (strategyFile) => {
     let strategyPath = url.pathToFileURL(resolve(strategyFile)).href;
