@@ -39,4 +39,8 @@ export class MessagingComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.messagingService.messages$.unsubscribe();
     }
+
+    dismiss(){
+        this.messages = [];
+    }
 }

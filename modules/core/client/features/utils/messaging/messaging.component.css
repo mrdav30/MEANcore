@@ -6,6 +6,6 @@
   z-index: 1000000;
 }
 
-.messageContainer .alert {
-  margin-bottom: 10px;
+.messageContainer>.alert>button {
+  padding-left: 5px;
 }
