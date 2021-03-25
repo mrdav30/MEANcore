@@ -168,8 +168,9 @@ function initGlobalConfig() {
 
 const retrieveModuleConfigs = async (config) => {
   let moduleConfigs = [];
+
   await Promise.all(config.submodules.map(async (module) => {
-    const originalConfig = JSON.parse(JSON.stringify(config));
+    const originalConfig = objectHelpers.merge(null, {}, config);
 
     const appConfigPath = url.pathToFileURL(module.appDefaultConfig).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -180,7 +181,7 @@ const retrieveModuleConfigs = async (config) => {
       } else {
         return srcValue;
       }
-    }, {}, originalConfig, appConfig);
+    }, originalConfig, appConfig);
 
     const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -200,7 +201,7 @@ const retrieveModuleConfigs = async (config) => {
       } else {
         return srcValue;
       }
-    }, {}, newConfig, moduleEnvConfig);
+    }, newConfig, moduleEnvConfig);
 
     moduleConfigs.push(appConfig);
   }));
