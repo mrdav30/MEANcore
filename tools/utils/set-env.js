@@ -1,5 +1,5 @@
 // Configure Angular `environment.ts` file path
-import fse from 'fs-extra';
+import fs from 'fs';
 import util from 'util';
 import {
   join
@@ -7,7 +7,7 @@ import {
 import chalk from 'chalk';
 
 export const createAngularEnv = async (modConfig) => {
-  const pkgData = fse.readFileSync(modConfig.LINK_PKG);
+  const pkgData = fs.readFileSync(modConfig.LINK_CORE_PKG);
   const data = JSON.parse(pkgData);
 
   const coreDevEnvPath = join(modConfig.CORE_SRC, '/client/environments/environment.ts');
@@ -38,11 +38,11 @@ export const createAngularEnv = async (modConfig) => {
   console.log(chalk.grey(envConfigFile));
 
   let writePromises = [
-    modConfig.writeFilePromise(targetPath, envConfigFile, 'utf-8')
+    fs.promises.writeFile(targetPath, envConfigFile, 'utf-8')
   ]
 
   if (!process.env.PRODUCTION) {
-    writePromises.push(modConfig.writeFilePromise(coreDevEnvPath, envConfigFile, 'utf-8'))
+    writePromises.push(fs.promises.writeFile(coreDevEnvPath, envConfigFile, 'utf-8'))
   }
 
   return Promise.all(writePromises).then(() => {

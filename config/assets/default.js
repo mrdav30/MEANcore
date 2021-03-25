@@ -7,9 +7,9 @@ export const server = {
   routes: ['modules/**/server/!(core)/**/*routes.js', 'modules/core/server/core/**/*routes.js'],
   sockets: 'modules/**/server/**/*sockets.js',
   models: 'modules/**/server/**/*model.js',
-  config: ['modules/**/server/*/config/*.js'],
+  config: ['modules/**/server/**/config/*.js'],
   services: ['modules/**/server/services/*.js'],
   helpers: ['modules/**/server/helpers/*.js'],
   sharedModules: ['shared_modules/*.js'],
-  views: ['modules/**/server/*/views/*.html']
+  views: ['modules/**/server/**/views/*.html']
 };

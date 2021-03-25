@@ -3,9 +3,6 @@ import {
   dirname
 } from 'path';
 import url from 'url';
-import _ from 'lodash';
-import fse from 'fs-extra';
-import util from 'util';
 
 import config from '../../config/config.js';
 
@@ -91,9 +88,6 @@ export class BundleConfig {
     this.indentation = 2
 
     this.stringify = (dependencyMap) => JSON.stringify(dependencyMap, null, this.indentation);
-
-    this.readFilePromise = util.promisify(fse.readFile);
-    this.writeFilePromise = util.promisify(fse.writeFile);
   }
 
   async init(done) {
@@ -142,14 +136,5 @@ export class BundleConfig {
     };
 
     this.ALL_MODULES.push(module);
-  }
-
-  /**
-   * Recursively merge source onto target.
-   * @param target The target object (to receive values from source)
-   * @param source The source object (to be merged onto target)
-   */
-  async mergeObject(target, source) {
-    _.extend(target, source);
   }
 }

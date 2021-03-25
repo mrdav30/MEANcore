@@ -1,6 +1,7 @@
 import cp from 'child_process';
 import chalk from 'chalk';
 import _ from 'lodash';
+import fs from 'fs';
 import {
   join
 } from 'path';
@@ -57,7 +58,7 @@ const execNpmCommand = (npmCmd, cb) => {
 };
 
 const backupPkg = async (cb) => {
-  const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG : `./modules/${args.mod}/mod.package.json`;
+  const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG_BKP : `./modules/${args.mod}/mod.package.json`;
 
   let version;
   let pkg = args.package;
@@ -68,7 +69,7 @@ const backupPkg = async (cb) => {
     pkg = args.package.substring(0, args.package.indexOf('@', 1));
     version = args.package.substring(args.package.indexOf('@', 1)).replace('@', '');
   } else if (args.switch === 'install') {
-    bundleConfig.readFilePromise(join(process.cwd(), './package.json')).then((pkgStr) => {
+    fs.promises.readFile(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
       try {
         pkgData = JSON.parse(pkgStr);
@@ -82,7 +83,7 @@ const backupPkg = async (cb) => {
     });
   }
 
-  bundleConfig.readFilePromise(basePkgPath).then(async (pkgStr) => {
+  fs.promises.readFile(basePkgPath).then(async (pkgStr) => {
     let pkgData;
     try {
       pkgData = JSON.parse(pkgStr);
@@ -110,7 +111,7 @@ const backupPkg = async (cb) => {
       delete pkgData[DEPENDENCY_TYPE][pkg]
     }
 
-    await bundleConfig.writeFilePromise(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
+    await fs.promises.writeFile(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
       console.log(chalk.cyan(`package.json file backed up successfully at ${basePkgPath} \n`));
       return cb();
     }).catch((err) => {

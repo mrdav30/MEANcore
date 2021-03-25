@@ -2,7 +2,7 @@
 //  **Note: Only the mod's client folder is merged. 
 //  **Note: The purpose of these files is stricly for development/build purposes.  
 
-import fse from 'fs-extra';
+import fs from 'fs';
 import _ from 'lodash';
 import async from 'async';
 import chalk from 'chalk';
@@ -11,7 +11,7 @@ import {
   clean,
   copyRecursive,
   setNgEnv,
-  rebuildObject
+  objectHelpers
 } from './utils/index.js';
 
 import bundleConfig from './config.init.js';
@@ -23,7 +23,7 @@ const bundleModules = async (done) => {
       },
       async () => {
           await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
-            await bundleConfig.mergeObject(bundleConfig, mod);
+            objectHelpers.extend(bundleConfig, mod);
 
             console.log(chalk.green('==================================='));
             console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
@@ -76,30 +76,31 @@ const copyCore = async () => {
 
 const copyModule = async () => {
   // copy client directory
-  if (fse.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
+  if (fs.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
     await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
   // copy e2e directory
-  if (fse.existsSync(bundleConfig.MODULE_E2E_SRC)) {
+  if (fs.existsSync(bundleConfig.MODULE_E2E_SRC)) {
     await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
   }
 }
 
 // Create the bundles Angular.json file
 async function buildAngularJson() {
-  const coreJsonStr = fse.readFileSync(bundleConfig.CORE_NG_JSON);
+  const coreJsonStr = fs.readFileSync(bundleConfig.CORE_NG_JSON);
   let coreJsonData = JSON.parse(coreJsonStr);
 
   coreJsonData.defaultProject = bundleConfig.DEFAULT_PROJECT;
 
   for (const mod of bundleConfig.ALL_MODULES) {
-    const modJsonStr = fse.readFileSync(bundleConfig.MODULE_NG_JSON)
+    const modJsonStr = fs.readFileSync(bundleConfig.MODULE_NG_JSON)
 
     let modJsonData = JSON.parse(modJsonStr);
 
-    await rebuildObject.renameKeys(modJsonData, mod);
+    modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME, '{{mod}}');
+    modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME + '-e2e', '{{mod}}-e2e');
 
-    modJsonData = await rebuildObject.replacePropertyValues(modJsonData, mod);
+    modJsonData = await objectHelpers.replacePropertyValues(modJsonData, '{{mod}}', mod.APP_NAME);
 
     coreJsonData.projects = _.mergeWith({}, coreJsonData.projects, modJsonData, (objValue, srcValue) => {
       if (_.isArray(objValue)) {
@@ -112,7 +113,7 @@ async function buildAngularJson() {
     }
   }
 
-  return bundleConfig.writeFilePromise(bundleConfig.NG_OUTPUT, bundleConfig.stringify(coreJsonData), 'utf-8').then(() => {
+  return fs.promises.writeFile(bundleConfig.NG_OUTPUT, bundleConfig.stringify(coreJsonData), 'utf-8').then(() => {
     console.log(chalk.cyan(`Angular.json file generated successfully at ${bundleConfig.NG_OUTPUT} \n`));
   }).catch((err) => {
     console.error(err);

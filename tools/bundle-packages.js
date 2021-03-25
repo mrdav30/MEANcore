@@ -2,9 +2,8 @@
 //  **Note: The purpose of this file is stricly for development/build purposes.  
 //  The generated core.package.json file will override upon commit.
 
-import fse from 'fs-extra';
-import _ from 'lodash';
-import chalk from 'chalk';
+import fs from 'fs';
+import * as objectHelpers from './utils/object-helpers.js';
 
 import bundleConfig from './config.init.js';
 
@@ -20,7 +19,7 @@ const build = async ({
   dependencies,
   outputs
 }) => {
-  if (_.isEmpty(dependencies)) {
+  if (dependencies && objectHelpers.isEmpty(dependencies)) {
     return errorFactory('Missing required property dependencies');
   }
 
@@ -28,28 +27,27 @@ const build = async ({
     return errorFactory('Must provide output paths for desired package.json')
   }
 
-  if (_.isEmpty(bundleConfig.PKG_DEP_TYPES) || _.isEmpty(_.pick(bundleConfig.PKG_DEP_TYPES, Array.from(DEPENDENCY_TYPES)))) {
+  if (bundleConfig.PKG_DEP_TYPES && objectHelpers.isEmpty(bundleConfig.PKG_DEP_TYPES) ||
+    objectHelpers.isEmpty(objectHelpers.pick(bundleConfig.PKG_DEP_TYPES, Array.from(DEPENDENCY_TYPES)))) {
     return errorFactory(`Must provide at least one of package.json dependency types: ${Array.from(DEPENDENCY_TYPES)}`);
   }
 
-  console.log(chalk.cyan("Bundling linked packages"));
-
-  const mappedDependencies = _.map(dependencies, (key) => key);
+  const mappedDependencies = Object.values(dependencies).map((value) => value);
 
   await Promise.all(mappedDependencies.map(async (url) => {
-    return fse.readFile(url);
+    return fs.promises.readFile(url);
   })).then(async (deps) => {
     const parsedDependencies = await parse(deps);
     const filteredDependencies = await filter(bundleConfig.PKG_BLK_LIST, parsedDependencies);
     const dedupedDependencies = await dedupe(bundleConfig.PKG_DEP_TYPES, filteredDependencies);
 
-    //  console.log(chalk.magenta(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`));
+    //  console.log(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`);
 
     await compose(outputs, dedupedDependencies);
   })
 }
 
-const parse = async (data) => _.map(data, (text) => {
+const parse = async (data) => data.map((text) => {
   const result = JSON.parse(text);
 
   const {
@@ -63,10 +61,9 @@ const parse = async (data) => _.map(data, (text) => {
 });
 
 const filter = async (blacklist, parsedDependencies) => {
-  return _.map(parsedDependencies, (packagedDependencies) => {
-    return _.reduce(packagedDependencies, (result, m, k) => {
-      const dependencies = _.omit(packagedDependencies[k], blacklist);
-      result[k] = dependencies;
+  return parsedDependencies.map((packagedDependencies) => {
+    return Object.keys(packagedDependencies).map((value) => value).reduce((result, m) => {
+      result[m] = objectHelpers.omit(blacklist, packagedDependencies[m]);
       return result;
     }, {})
   });
@@ -80,7 +77,7 @@ const getTypes = (types) => {
     return !!types[dependencyType];
   };
 
-  let test = _.filter(_.filter(_.keys(types), (type) => isAllowed(type)), (t) => isInTypes(t));
+  const test = Object.keys(types).map((key) => key).filter((type) => isAllowed(type)).filter((t) => isInTypes(t));
 
   return test;
 };
@@ -139,25 +136,31 @@ const dedupe = async (types, filteredDependencies) => {
   };
 
   const getLatestVersion = (l, r) => {
-    return _.mergeWith(l, r, parseLatestVersion)
+    return objectHelpers.merge(parseLatestVersion, l, r);
   };
 
-  return _.reduce(filteredDependencies, (result, dependencies) => {
-    const picked = _.pick(dependencies, allowedTypes);
+  return filteredDependencies.reduce((result, dependencies) => {
+    const picked = objectHelpers.pick(dependencies, allowedTypes);
     // NOTE: if it already exists, take the latest one
-    result = _.mergeWith(result, picked, getLatestVersion);
+
+    result = objectHelpers.merge(getLatestVersion, result, picked);
+
     return result;
   }, {});
 };
 
 const write = async (output, fileContents) => {
-  await bundleConfig.writeFilePromise(output, bundleConfig.stringify(fileContents), 'utf-8').then(() => fileContents);
+  await fs.promises.writeFile(output, bundleConfig.stringify(fileContents), 'utf-8')
+    .then(() => {
+      console.log("Linked package.json created at: " + output);
+      return fileContents;
+    });
 }
 
-// Non-destructive to all other package.json properties
+//Non-destructive to all other package.json properties
 const compose = async (outputs, fileContents) => {
   for (let output of outputs) {
-    bundleConfig.readFilePromise(output)
+    fs.promises.readFile(output)
       .then(async (data) => {
         let parsed;
 
@@ -168,9 +171,7 @@ const compose = async (outputs, fileContents) => {
         }
 
         const dupeKeys = (l, r) => r;
-        const merged = _.mergeWith(parsed, fileContents, dupeKeys);
-
-        console.log(chalk.cyan("Linked package.json created at: " + output));
+        const merged = objectHelpers.merge(dupeKeys, parsed, fileContents);
 
         await write(output, merged)
       })
@@ -187,24 +188,24 @@ bundleConfig.init(() => {
   ];
 
   // back up unbundled package files
-  if (fse.existsSync(bundleConfig.CORE_PKG_BKP)) {
+  if (fs.existsSync(bundleConfig.CORE_PKG_BKP)) {
     // Overwrite current core package.json with back up!
-    fse.copyFileSync(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
+    fs.copyFileSync(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
   } else {
     // Back up current core package.json
-    fse.copyFileSync(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
+    fs.copyFileSync(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
   }
 
-  _.forEach(bundleConfig.ALL_MODULES, (mod) => {
+  bundleConfig.ALL_MODULES.forEach((mod) => {
     dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
     outputs.push(mod.LINK_MOD_PKG);
 
-    if (fse.existsSync(mod.MOD_PKG_BKP)) {
+    if (fs.existsSync(mod.MOD_PKG_BKP)) {
       // Overwrite module package.json with back up!
-      fse.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
+      fs.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
     } else {
       // Back up current module package.json
-      fse.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
+      fs.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
     }
   });
 
@@ -212,9 +213,9 @@ bundleConfig.init(() => {
       dependencies,
       outputs
     }).then(() => {
-      console.log(chalk.cyan("Bundling linked packages complete"))
+      console.log("Bundling linked packages complete")
     })
     .catch((err) => {
-      console.log(chalk.red(err));
+      console.log(err);
     });
 });
