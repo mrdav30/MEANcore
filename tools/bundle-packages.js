@@ -43,7 +43,9 @@ const build = async ({
 
     //  console.log(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`);
 
-    await compose(outputs, dedupedDependencies);
+    await compose(outputs, dedupedDependencies).then(() => {
+      return 1;
+    });
   })
 }
 

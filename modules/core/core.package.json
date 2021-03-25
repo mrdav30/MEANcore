@@ -108,7 +108,6 @@
     "socket.io": "^2.3.0",
     "streamifier": "^0.1.1",
     "tslib": "^2.0.1",
-    "typescript": "^4.0.5",
     "vhost": "3.0.2",
     "winston": "^3.2.1",
     "yargs": "^16.0.3",
