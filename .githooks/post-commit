@@ -3,7 +3,11 @@ export PATH=/usr/local/bin:$PATH
 
 script_dir=$(dirname $0)
 cd $script_dir
-
 cd ..
 
-npm run bundle:packages
+echo >&2 "###POST-COMMIT###".
+echo >&2 "Bundling linked packages".
+
+node ./tools/bundle-packages.js
+
+echo >&2 "###END POST-COMMIT###".

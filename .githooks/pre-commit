@@ -5,21 +5,25 @@ script_dir=$(dirname $0)
 cd $script_dir
 cd ..
 
-echo >&2 "Unbundling development packages for commit".
+echo >&2 "###PRE-COMMIT###".
 
-# Stash unstaged changes
-git stash -q --keep-index
+pkg_chg=`git diff --name-only --cached --exit-code package.json`
 
-# Revert package
-bckupPkg=./modules/core/core.package.json
-curPkg=./package.json
-if test -f "$bckupPkg"; then
-	cp -f $bckupPkg $curPkg 
+if [ -n "$pkg_chg" ]
+then
+  echo >&2 "Unbundling linked packages".
 
-# Stage updated files
-git add -u
+  # Stash unstaged changes
+  git stash -q --keep-index
 
-# Re-apply original unstaged changes
-git stash pop -q
+  # Revert package
+  node ./tools/unbundle-packages.js
 
+  # Stage updated files
+  git add -u
+
+  # Re-apply original unstaged changes
+  git stash pop -q
 fi
+
+echo >&2 "###END PRE-COMMIT###".
