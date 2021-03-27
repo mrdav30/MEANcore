@@ -1,23 +1,69 @@
 #!/bin/sh
 export PATH=/usr/local/bin:$PATH
 
-script_dir=$(dirname $0)
-cd $script_dir
-cd ..
+PRJ_ROOT=`npm config get core_prj_root`
 
-echo >&2 "###PRE-COMMIT###".
+# This commit hook will replace any staged package or package-lock with the non-link version produced by CORE
+echo >&2 "###PRE-COMMIT - PACKGE LINK CHECK###".
 
-pkg_chg=`git diff --name-only --cached --exit-code package.json`
+PKG_CHG=`git diff --name-only --cached --exit-code package.json`
+PKG_LOCK_CHG=`git diff --name-only --cached --exit-code package-lock.json`
 
-if [ -n "$pkg_chg" ]
+if ([ -n "$PKG_CHG" ] &&  [ -n "$PKG_LOCK_CHG" ])
 then
-  echo >&2 "Unbundling linked packages".
+  # Both package & package-lock staged, need to unbundle and rebuild 
+  echo >&2 "Unbundling linked package & rebuilding package-lock".
 
   # Stash unstaged changes
   git stash -q --keep-index
 
   # Revert package
-  node ./tools/unbundle-packages.js
+  node $PRJ_ROOT\\tools\\unbundle-packages.js
+
+  npm config set core_link_rebundle 1
+
+  if [ -n "$PKG_LOCK_CHG" ]
+  then
+    npm i --package-lock-only
+    npm config set core_link_relock 1
+  fi
+
+  # Stage updated files
+  git add -u
+
+  # Re-apply original unstaged changes
+  git stash pop -q
+elif ([ -n "$PKG_CHG" ] && [ -z "$PKG_LOCK_CHG" ])
+then
+  # Only package staged, only unbundle linked package
+
+  # Stash unstaged changes
+  git stash -q --keep-index
+
+  # Revert package
+  node $PRJ_ROOT\\tools\\unbundle-packages.js
+
+  npm config set core_link_rebundle 1
+
+  # Stage updated files
+  git add -u
+
+  # Re-apply original unstaged changes
+  git stash pop -q
+elif ([ -z "$PKG_CHG" ] && [ -n "$PKG_LOCK_CHG" ])
+then
+  # Only lock staged, rebuilding unbundled lock
+  echo >&2 "Rebuilding package-lock".
+
+  # Stash unstaged changes
+  git stash -q --keep-index
+
+  # Revert package
+  node $PRJ_ROOT\\tools\\unbundle-packages.js
+  npm i --package-lock-only
+  node $PRJ_ROOT\\tools\\bundle-packages.js
+
+  npm config set core_link_relock 1
 
   # Stage updated files
   git add -u
@@ -26,4 +72,4 @@ then
   git stash pop -q
 fi
 
-echo >&2 "###END PRE-COMMIT###".
+echo >&2 "###END PRE-COMMIT CHECK###".

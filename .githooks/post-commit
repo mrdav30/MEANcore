@@ -1,13 +1,33 @@
 #!/bin/sh
 export PATH=/usr/local/bin:$PATH
 
-script_dir=$(dirname $0)
-cd $script_dir
-cd ..
+PRJ_ROOT=`npm config get core_prj_root`
+LINK_REBUNDLE=`npm config get core_link_rebundle`
+LINK_RELOCK=`npm config get core_link_relock`
 
-echo >&2 "###POST-COMMIT###".
-echo >&2 "Bundling linked packages".
+# This commit hook will reverse and rebundle if neccessary
+echo >&2 "###POST-COMMIT - PACKAGE LINK CHECK###".
 
-node ./tools/bundle-packages.js
+if [[ $LINK_REBUNDLE -eq 1 ]]
+then
 
-echo >&2 "###END POST-COMMIT###".
+  echo >&2 "Rebundling linked package".
+
+  node $PRJ_ROOT\\tools\\bundle-packages.js
+
+  npm config set core_link_rebundle 0
+
+fi
+
+if [[ $LINK_RELOCK -eq 1 ]]
+then
+
+  echo >&2 "Rebuilding package-lock".
+
+  npm i --package-lock-only
+
+  npm config set core_link_relock 0
+
+fi
+
+echo >&2 "###END POST-COMMIT CHECK###".
