@@ -2,7 +2,7 @@ import {
   join
 } from 'path';
 import multer from 'multer';
-import fse from 'fs-extra';
+import fs from 'fs';
 
 export const getUpload = (config) => {
   // file upload config using multer
@@ -26,7 +26,7 @@ export const upload = (req, res) => {
   const filename = req.file.filename;
   const finalDest = config.uploads.images.uploadRepository + dir + '/' + filename
 
-  fse.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
+  fs.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
     if (err) {
       console.error(err);
       return res.status(500).send({
@@ -48,7 +48,7 @@ export const upload = (req, res) => {
 
 export const removeImage = (req, res) => {
   const config = req.app.locals.config;
-  fse.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
+  fs.promises.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
     if (err) {
       console.error(err);
       return res.status(500).send({

@@ -3,7 +3,7 @@ import {
   join
 } from 'path';
 import url from 'url';
-import fse from 'fs-extra';
+import fs from 'fs';
 
 export const retrieveModuleConfigs = async (config) => {
   let moduleConfigs = [];
@@ -24,7 +24,7 @@ export const retrieveModuleConfigs = async (config) => {
 
     // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
     const modLocalConfig = url.pathToFileURL(join(process.cwd(), module.basePath + 'config/env/local-' + process.env.NODE_ENV + '.js')).href;
-    if (fse.existsSync(modLocalConfig)) {
+    if (fs.existsSync(modLocalConfig)) {
       // eslint-disable-next-line node/no-unsupported-features/es-syntax
       appConfig = _.merge(appConfig, import(modLocalConfig));
     }

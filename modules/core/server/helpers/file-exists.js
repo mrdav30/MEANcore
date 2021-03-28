@@ -1,8 +1,8 @@
-import fse from 'fs-extra';
+import fs from 'fs';
 
 export function fileExists(filePath) {
     try {
-        return fse.statSync(filePath).isFile();
+        return fs.statSync(filePath).isFile();
     } catch (e) {
         return false;
     }

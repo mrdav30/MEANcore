@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import config from '../config.js';
 import chalk from 'chalk';
-import fse from 'fs-extra';
+import fs from 'fs';
 import winston from 'winston';
 
 // list of valid formats for the logging
@@ -48,7 +48,7 @@ logger.setupFileLogger = function setupFileLogger() {
   try {
     // Check first if the configured path is writable and only then
     // instantiate the file logging transport
-    if (fse.openSync(fileLoggerTransport.filename, 'a+')) {
+    if (fs.openSync(fileLoggerTransport.filename, 'a+')) {
       logger.add(new winston.transports.File(fileLoggerTransport));
     }
 

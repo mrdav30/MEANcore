@@ -1,4 +1,4 @@
-import fse from 'fs-extra';
+import fs from 'fs';
 import got from 'got';
 import moment from 'moment';
 
@@ -7,7 +7,7 @@ const oneWeekSeconds = 24 * 7 * (60 * 60);
 // proxy file from remote url for page speed score
 export function fileProxy(fileUrl, filePath, req, res) {
     // ensure file exists and is less than 1 hour old
-    fse.stat(filePath, function (err, stats) {
+    fs.promises.stat(filePath, function (err, stats) {
         if (err) {
             // file doesn't exist so download and create it
             updateFileAndReturn();
@@ -24,7 +24,7 @@ export function fileProxy(fileUrl, filePath, req, res) {
     // update file from remote url then send to client
     function updateFileAndReturn() {
         got(fileUrl, function (error, response, body) {
-            fse.writeFileSync(filePath, body);
+            fs.writeFileSync(filePath, body);
             returnFile();
         });
     }

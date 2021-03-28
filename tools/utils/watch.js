@@ -2,7 +2,7 @@ import {
   join,
   relative
 } from 'path';
-import fse from 'fs-extra';
+import fs from 'fs';
 import watch from 'node-watch';
 import chalk from 'chalk';
 
@@ -24,7 +24,7 @@ async function copyToTmp(filename) {
     return bundleConfig.ALL_MODULES.forEach((mod) => {
       const dest = join(mod.TMP_DIR, '/client/', coreRelative);
 
-      if (fse.existsSync(dest)) {
+      if (fs.existsSync(dest)) {
         console.log(chalk.green('==================================='));
         console.log(chalk.green('Bundling Core change for: ' + mod.APP_NAME));
         console.log(chalk.green('    + ' + filename));
@@ -75,7 +75,7 @@ export function watchTask() {
   let timer;
 
   paths.map((path) => {
-    if (fse.existsSync(path)) {
+    if (fs.existsSync(path)) {
       watch(path, {
         recursive: true
       }, (event, filename) => {

@@ -1,6 +1,6 @@
 // Load dependencies
 import _ from 'lodash';
-import fse from 'fs-extra';
+import fs from 'fs';
 import {
   resolve,
   join,
@@ -88,7 +88,7 @@ export const ImageStorage = (config, options) => {
 
       if (this.options.storage == 'local') {
         // if upload path does not exist, create the upload path structure
-        !fse.existsSync(this.uploadPath) && fse.mkdirp.sync(this.uploadPath);
+        !fs.existsSync(this.uploadPath) && fs.mkdirp.sync(this.uploadPath);
       }
 
     }
@@ -110,7 +110,7 @@ export const ImageStorage = (config, options) => {
       const that = this;
 
       // create a writable stream from the filepath
-      const output = fse.createWriteStream(filepath);
+      const output = fs.createWriteStream(filepath);
 
       // set callback fn as handler for the error event
       output.on('error', cb);
@@ -310,7 +310,7 @@ export const ImageStorage = (config, options) => {
 
       // delete the files from the filesystem
       _.each(paths, (_path) => {
-        fse.unlink(_path, cb);
+        fs.promises.unlink(_path, cb);
       });
 
     }

@@ -1,10 +1,10 @@
-import fse from 'fs-extra';
+import fs from 'fs';
 import { join, basename, normalize } from 'path';
 
 export function responseFile(basePath, fileName, res) {
   var fullFileName = join(basePath, fileName);
 
-  fse.access(fullFileName, (exist) => {
+  fs.promises.access(fullFileName, (exist) => {
     if (exist) {
       var filename = basename(fullFileName);
 

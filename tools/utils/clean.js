@@ -2,7 +2,7 @@ import {
   relative,
   normalize
 } from 'path';
-import fse from 'fs-extra';
+import fs from 'fs';
 import chalk from 'chalk';
 
 import bundleConfig from '../config.init.js';
@@ -26,7 +26,7 @@ export async function cleanPaths(paths) {
         console.log(chalk.red(`Cannot remove files outside the project root but tried "${normalize(p)}"`));
         reject();
       } else {
-        fse.remove(p, (e) => {
+        fs.remove(p, (e) => {
           if (e) {
             console.log(chalk.red('Clean task failed with: ', e));
           } else {

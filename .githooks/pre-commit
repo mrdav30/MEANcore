@@ -4,7 +4,7 @@ export PATH=/usr/local/bin:$PATH
 PRJ_ROOT=`npm config get core_prj_root`
 
 # This commit hook will replace any staged package or package-lock with the non-link version produced by CORE
-echo >&2 "###PRE-COMMIT - PACKGE LINK CHECK###".
+echo >&2 "###PRE-COMMIT - PACKAGE LINK CHECK###".
 
 PKG_CHG=`git diff --name-only --cached --exit-code package.json`
 PKG_LOCK_CHG=`git diff --name-only --cached --exit-code package-lock.json`

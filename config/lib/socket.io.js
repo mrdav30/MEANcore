@@ -4,7 +4,7 @@ import {
   resolve
 } from 'path';
 import url from 'url';
-import fse from 'fs-extra';
+import fs from 'fs';
 import {
   createServer
 } from 'http';
@@ -23,12 +23,12 @@ export default (app, db) => {
   let server;
   if (config.secure && config.secure.ssl) {
     // Load SSL key and certificate
-    const privateKey = fse.readFileSync(resolve(config.secure.privateKey), 'utf8');
-    const certificate = fse.readFileSync(resolve(config.secure.certificate), 'utf8');
+    const privateKey = fs.readFileSync(resolve(config.secure.privateKey), 'utf8');
+    const certificate = fs.readFileSync(resolve(config.secure.certificate), 'utf8');
     let caBundle;
 
     try {
-      caBundle = fse.readFileSync(resolve(config.secure.caBundle), 'utf8');
+      caBundle = fs.readFileSync(resolve(config.secure.caBundle), 'utf8');
     } catch (err) {
       console.log('Warning: couldn\'t find or read caBundle file');
     }

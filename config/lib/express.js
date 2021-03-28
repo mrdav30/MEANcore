@@ -24,7 +24,7 @@ import nocache from 'nocache';
 import flash from 'connect-flash';
 import expresshbs from 'express-hbs';
 import url from 'url';
-import fse from 'fs-extra';
+import fs from 'fs';
 import {
   resolve,
   dirname
@@ -231,7 +231,7 @@ const initSharedConfiguration = async (config) => {
   });
 
   // read package.json for MEANCore project information
-  await fse.readFile(resolve('./package.json')).then((jsonStr) => {
+  await fs.promises.readFile(resolve('./package.json')).then((jsonStr) => {
     const data = JSON.parse(jsonStr);
     config.version = data.version;
   }).catch((err) => {
