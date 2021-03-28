@@ -11,11 +11,8 @@
    }
 
    bundleConfig.ALL_MODULES.forEach((mod) => {
-     if (fs.existsSync(mod.LINK_MOD_PKG)) {
+     if (fs.existsSync(mod.MOD_PKG_BKP)) {
        // Overwrite module package.json with back up!
-       fs.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
-     } else {
-       // Back up current module package.json
        fs.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
      }
    });
