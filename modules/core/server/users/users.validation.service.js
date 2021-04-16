@@ -87,6 +87,13 @@ export const validateChanges = (req, userUpdates, callback) => {
                 } else {
                   user.salt = Buffer.from(randomBytes(16).toString('base64'), 'base64');
                   user.password = user.hashPassword(userUpdates.password);
+
+                  // If password expiration set in config, set date of this accounts pw expiration
+                  if (config.owaspConfig && config.owaspConfig.passwordExpirationDays) {
+                    let today = new Date();
+                    userUpdates.passwordExpiryDate = today.setDate(today.getDate() + config.owaspConfig.passwordExpirationDays);
+                  }
+                  
                   // remove password after update to prevent issues with merge
                   delete userUpdates.password;
                 }

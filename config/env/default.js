@@ -88,7 +88,9 @@ export const owaspConfig = {
   maxLength: 128,
   minLength: 10,
   minPhraseLength: 20,
-  minOptionalTestsToPass: 4
+  minOptionalTestsToPass: 4,
+  passwordExpirationDays: 90,
+  resetPasswordExpiresMS: 3600000 // 1 hour
 };
 export const aws = {
   s3: {

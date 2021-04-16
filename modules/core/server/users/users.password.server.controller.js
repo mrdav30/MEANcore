@@ -40,7 +40,7 @@ export const forgot = (req, res, next) => {
           });
         } else {
           user.resetPasswordToken = token;
-          user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+          user.resetPasswordExpires = Date.now() + config.owaspConfig.resetPasswordExpiresMS; // 1 hour
 
           user.save((err) => {
             done(err, token, user);
@@ -121,6 +121,12 @@ export const reset = (req, res, next) => {
               user.password = passwordDetails.newPassword;
               user.resetPasswordToken = undefined;
               user.resetPasswordExpires = undefined;
+
+              // If password expiration set in config, set date of this accounts pw expiration
+              if (config.owaspConfig && config.owaspConfig.passwordExpirationDays) {
+                let today = new Date();
+                user.passwordExpiryDate = today.setDate(today.getDate() + config.owaspConfig.passwordExpirationDays);
+              }
 
               user.save((err) => {
                 if (err) {

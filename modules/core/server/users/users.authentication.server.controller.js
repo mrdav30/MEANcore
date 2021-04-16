@@ -3,8 +3,12 @@
  */
 import async from 'async';
 import _ from 'lodash';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import passport from 'passport';
+import {
+  randomBytes
+} from 'crypto';
 const User = mongoose.model('User');
 import {
   userExists
@@ -74,6 +78,12 @@ export const signUp = (req, res) => {
       user.appName = config.app.name.toLowerCase();
       // Set IP of a successful signup to prevent logins from unknown IPs.
       user.knownIPAddresses.push(req.connection.remoteAddress);
+
+      // If password expiration set in config, set date of this accounts pw expiration
+      if (config.owaspConfig && config.owaspConfig.passwordExpirationDays) {
+        let today = new Date();
+        user.passwordExpiryDate = today.setDate(today.getDate() + config.owaspConfig.passwordExpirationDays);
+      }
 
       user.save((err) => {
         if (err) {
@@ -146,17 +156,68 @@ export const signIn = (req, res, next) => {
           });
         }
 
-        req.login(user, (err) => {
-          if (err) {
-            return res.status(400).send({
-              message: config.helpers.getErrorMessage(err)
-            });
-          }
+        // Check if users password has expired
+        let passwordExpired = user.passwordExpiryDate && moment(new Date()).isAfter(user.passwordExpiryDate) ? true : false;
 
-          return res.status(200).send({
-            user: req.user
+        if (passwordExpired) {
+          // Do not login user if their password has expired
+          // Send email to follow instructions for reset
+
+          const token = randomBytes(20).toString('hex');
+
+          User.updateOne({
+            _id: mongoose.Types.ObjectId(user._id)
+          }, {
+            $set: {
+              resetPasswordToken: token,
+              resetPasswordExpires: Date.now() + config.owaspConfig.resetPasswordExpiresMS // 1 hour
+            }
+          }, (err) => {
+
+            if(err){
+              console.log('err', err);
+            }
+
+            const mailOptions = {
+              to: user.email,
+              from: config.mailer.from,
+              subject: 'Your password has expired',
+              path: 'expired-password.server.email.html',
+              data: {
+                name: user.displayName,
+                appTitle: config.app.title,
+                url: res.locals.host + '/api/auth/reset/' + user.username + '/' + token
+              }
+            };
+      
+            config.services.sendEmail(req, res, mailOptions, (err) => {
+
+              if(err){
+                console.log('err', err);
+              }
+  
+              return res.status(200).send({
+                user: null,
+                expiredPassword: true
+              });
+            }); 
+
           });
-        });
+
+        } else {
+          req.login(user, (err) => {
+            if (err) {
+              return res.status(400).send({
+                message: config.helpers.getErrorMessage(err)
+              });
+            }
+
+            return res.status(200).send({
+              user: req.user,
+              expiredPassword: false
+            });
+          });
+        }
       });
     }
   })(req, res, next);

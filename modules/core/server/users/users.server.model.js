@@ -61,6 +61,9 @@ const UserSchema = new Schema({
     type: String,
     default: ''
   },
+  passwordExpiryDate: {
+    type: Date
+  },
   salt: {
     type: String
   },

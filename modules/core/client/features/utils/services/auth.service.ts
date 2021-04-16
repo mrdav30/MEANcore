@@ -18,6 +18,7 @@ const httpOptions = {
 @Injectable()
 export class AuthService {
     public redirectUrl = environment.appDefaultRoute;
+    public expiredCredsUrl = '/password/expired';
     public user: any = false;
     public userChange$: Observable<any>;
     private authListener: Observer<any>;

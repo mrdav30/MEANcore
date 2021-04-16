@@ -1,11 +1,27 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { NgModel } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  AfterViewInit
+} from '@angular/core';
+import {
+  Title
+} from '@angular/platform-browser';
+import {
+  Router
+} from '@angular/router';
+import {
+  NgModel
+} from '@angular/forms';
 
-import { environment } from '@env';
+import {
+  environment
+} from '@env';
 
-import { AuthService } from '@utils';
+import {
+  AuthService
+} from '@utils';
 
 @Component({
   moduleId: module.id,
@@ -28,12 +44,12 @@ export class SignInComponent implements OnInit, AfterViewInit {
     public authService: AuthService,
     private router: Router,
     private titleService: Title
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.titleService.setTitle('Sign-In' + environment.metaTitleSuffix);
     if (this.authService.user) {
-      this.redirectPostLogin();
+      this.redirectPostLogin(false);
     }
   }
 
@@ -49,7 +65,9 @@ export class SignInComponent implements OnInit, AfterViewInit {
             this.isUserValidated = true;
             setTimeout(() => this.passFocus.nativeElement.focus());
           } else {
-            this.usernameOrEmail.control.setErrors({ notused: true });
+            this.usernameOrEmail.control.setErrors({
+              notused: true
+            });
           }
         }
       }
@@ -61,17 +79,21 @@ export class SignInComponent implements OnInit, AfterViewInit {
       (data: any) => {
         if (data) {
           if (data.invalidSecret) {
-            this.password.control.setErrors({ incorrect: true });
+            this.password.control.setErrors({
+              incorrect: true
+            });
+          } else if (data.expiredPassword) {
+            this.redirectPostLogin(true);
           } else if (this.authService.user) {
-            this.redirectPostLogin();
+            this.redirectPostLogin(false);
           }
         }
       });
   }
 
-  redirectPostLogin(): void {
+  redirectPostLogin(isExpired: boolean): void {
     // Get the redirect URL from our auth service
-    const redirect = this.authService.redirectUrl;
+    const redirect = !isExpired ? this.authService.redirectUrl : this.authService.expiredCredsUrl;
     // Redirect the user
     this.router.navigate([redirect]);
   }
