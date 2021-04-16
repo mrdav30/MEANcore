@@ -1,5 +1,4 @@
-﻿import { resolve } from 'path';
-import nodemailer from 'nodemailer';
+﻿import nodemailer from 'nodemailer';
 import async from 'async';
 
 var createTestAccount = function (config, cb) {
@@ -35,7 +34,7 @@ export function sendEmail (req, res, options, next) {
         if (options.data) {
           options.data.baseUrl = options.data.baseUrl || res.locals.host;
         }
-        res.render(resolve(options.path), options.data, function (err, emailHTML) {
+        res.render(options.path, options.data, (err, emailHTML) => {
           if (err) {
             console.error('Tmpl - Error : - ', err, err.message);
             console.error('Tmpl - Options ', options);

@@ -54,7 +54,7 @@ export const forgot = (req, res, next) => {
         to: user.email,
         from: config.mailer.from,
         subject: 'Password Reset',
-        path: 'server/users/templates/reset-password-email.server.html',
+        path: 'reset-password.server.email.html',
         data: {
           name: user.displayName,
           appTitle: config.app.title,
@@ -169,7 +169,7 @@ export const reset = (req, res, next) => {
         to: user.email,
         from: config.mailer.from,
         subject: 'Your password has been changed',
-        path: 'server/users/templates/reset-password-confirm-email.server.html',
+        path: 'reset-password-confirm.server.email.html',
         data: {
           name: user.displayName,
           appTitle: config.app.title

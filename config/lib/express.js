@@ -163,8 +163,12 @@ const initHandlebars = function () {
  * Configure view engine
  */
 const initViewEngine = (app, moduleConfig) => {
-  let serverViewPaths = resolve(moduleConfig.serverViewPaths ? moduleConfig.serverViewPaths : './');
-  app.set('views', [serverViewPaths, moduleConfig.staticFilesPath]);
+  let serverViewPaths = [];
+  for(let path of moduleConfig.serverViewPaths) {
+     serverViewPaths.push(resolve(path ? path : './'));
+  }
+
+  app.set('views', [...serverViewPaths, moduleConfig.staticFilesPath]);
 
   // server side html
   app.engine('server.view.html', expresshbs.express4({
@@ -412,7 +416,7 @@ const init = async (moduleConfig, db) => {
   // set up server views
   moduleConfig.serverViewPaths = _.chain(moduleConfig.files.views).map((view) => {
     return dirname(view);
-  }).uniq().toString().value();
+  }).uniq().map().value();
 
   // set up static file location
   moduleConfig.staticFilesPath = 'dist/' + moduleConfig.app.name + '/';

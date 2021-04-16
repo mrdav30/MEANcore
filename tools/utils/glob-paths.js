@@ -108,7 +108,7 @@ export const getGlobbedPaths = (globPatterns, excludes) => {
       output.push(globPatterns);
     } else {
       let files = getGlobs(process.cwd(), globPatterns);
-
+      
       if (excludes) {
         files = files.map(function (file) {
           if (Array.isArray(excludes)) {
@@ -124,6 +124,6 @@ export const getGlobbedPaths = (globPatterns, excludes) => {
       output = objectHelpers.union(output, files);
     }
   }
-
+  
   return output;
 }
