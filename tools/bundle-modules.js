@@ -4,7 +4,6 @@
 
 import fs from 'fs';
 import _ from 'lodash';
-import async from 'async';
 import chalk from 'chalk';
 
 import {
@@ -16,38 +15,29 @@ import {
 
 import bundleConfig from './config.init.js';
 
-const bundleModules = async (done) => {
-  async.series([
-    async () => {
-        await cleanOnce();
-      },
-      async () => {
-          await Promise.all(bundleConfig.ALL_MODULES.map(async (mod) => {
-            objectHelpers.extend(bundleConfig, mod);
+const bundleModules = async () => {
 
-            console.log(chalk.green('==================================='));
-            console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
-            console.log(chalk.green('==================================='));
+  await cleanOnce();
 
-            console.log(chalk.green('Copying Core'));
+  for (let mod of bundleConfig.ALL_MODULES) {
+    objectHelpers.extend(bundleConfig, mod);
 
-            await copyCore();
+    console.log(chalk.green('==================================='));
+    console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
+    console.log(chalk.green('==================================='));
 
-            await copyModule();
+    await Promise.all([    
+      await copyCore(),
+      await copyModule(),
+      await setNgEnv.createAngularEnv(bundleConfig)
+    ]).catch((e) => {
+      console.log('bundle err', e);
+    })
+  }
 
-            await setNgEnv.createAngularEnv(bundleConfig);
-          }));
-        },
-        async () => {
-          await buildAngularJson();
-        }
-  ], (err) => {
-    if (err) {
-      console.log(err);
-    }
-
-    done();
-  })
+  await buildAngularJson().then(() => {
+    return;
+  });
 };
 
 // Clean dev/coverage that will only run once
@@ -56,7 +46,7 @@ let firstRun = true;
 const cleanOnce = async () => {
   if (firstRun) {
     firstRun = false;
-    await cleanNow();
+    return await cleanNow();
   } else {
     console.log('Skipping clean on rebuild');
     return;
@@ -64,36 +54,38 @@ const cleanOnce = async () => {
 }
 
 const cleanNow = async () => {
-  await clean.cleanPaths([bundleConfig.TMP_DIR, bundleConfig.COVERAGE_DIR]);
+  return await clean.cleanPaths([bundleConfig.TMP_DIR, bundleConfig.COVERAGE_DIR, bundleConfig.DIST_DIR]);
 }
 
 const copyCore = async () => {
-  // copy client directory
-  await copyRecursive.copyFolderRecursiveSync(bundleConfig.CORE_CLIENT_SRC, bundleConfig.TMP_DIR);
-  // copy e2e directory
-  await copyRecursive.copyFolderRecursiveSync(bundleConfig.CORE_E2E_SRC, bundleConfig.TMP_DIR);
+  console.log(chalk.green('Copying Core'));
+  return await Promise.all([
+    // copy client directory
+    await copyRecursive.copyFolderRecursive(bundleConfig.CORE_CLIENT_SRC, bundleConfig.TMP_DIR),
+    // copy e2e directory
+    await copyRecursive.copyFolderRecursive(bundleConfig.CORE_E2E_SRC, bundleConfig.TMP_DIR)
+  ])
 }
 
 const copyModule = async () => {
-  // copy client directory
-  if (fs.existsSync(bundleConfig.MODULE_CLIENT_SRC)) {
-    await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
-  }
-  // copy e2e directory
-  if (fs.existsSync(bundleConfig.MODULE_E2E_SRC)) {
-    await copyRecursive.copyFolderRecursiveSync(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST);
-  }
+  console.log(chalk.green('Copying Modules'));
+  return await Promise.all([
+    // copy client directory
+    await copyRecursive.copyFolderRecursive(bundleConfig.MODULE_CLIENT_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST),
+    // copy e2e directory
+    await copyRecursive.copyFolderRecursive(bundleConfig.MODULE_E2E_SRC, bundleConfig.TMP_DIR, bundleConfig.BLACK_LIST)
+  ])
 }
 
 // Create the bundles Angular.json file
 async function buildAngularJson() {
-  const coreJsonStr = fs.readFileSync(bundleConfig.CORE_NG_JSON);
+  const coreJsonStr = await fs.promises.readFile(bundleConfig.CORE_NG_JSON);
   let coreJsonData = JSON.parse(coreJsonStr);
 
   coreJsonData.defaultProject = bundleConfig.DEFAULT_PROJECT;
 
   for (const mod of bundleConfig.ALL_MODULES) {
-    const modJsonStr = fs.readFileSync(bundleConfig.MODULE_NG_JSON)
+    const modJsonStr = await fs.promises.readFile(bundleConfig.MODULE_NG_JSON)
 
     let modJsonData = JSON.parse(modJsonStr);
 
@@ -120,9 +112,11 @@ async function buildAngularJson() {
   });
 }
 
-bundleConfig.init(() => {
+bundleConfig.init(async () => {
   console.log(chalk.cyan('Bundling started...'));
-  bundleModules(() => {
-    console.log(chalk.cyan('Bundling complete!'));
-  });
+  return await bundleModules()
+    .then(() => {
+      console.log(chalk.cyan('Bundling complete!'));
+      return 1;
+    });
 })

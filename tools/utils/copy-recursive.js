@@ -5,43 +5,48 @@ import {
 import _ from 'lodash';
 import fs from 'fs';
 
-export async function copyFileSync(source, target) {
-
-  var targetFile = target;
-
+export async function copyFile(source, target) {
   //if target is a directory a new file with the same name will be created
-  if (fs.existsSync(target)) {
-    if (fs.lstatSync(target).isDirectory()) {
-      targetFile = join(target, basename(source));
-    }
+  if ((await fs.promises.lstat(target)).isDirectory()) {
+    target = join(target, basename(source));
   }
 
-  fs.writeFileSync(targetFile, fs.readFileSync(source));
+  return await fs.promises.writeFile(target, (await fs.promises.readFile(source)));
 }
 
-export async function copyFolderRecursiveSync(source, target, blackList = []) {
-  let files = [];
+export async function copyFolderRecursive(source, target, blackList = []) {
+  try {
+    // test if source exists
+    await fs.promises.access(source);
 
-  // check if folder needs to be created or integrated
-  let targetFolder = join(target, basename(source));
+    if ((await fs.promises.lstat(source)).isDirectory()) {
+      let targetFolder = join(target, basename(source));
 
-  if (!fs.existsSync(targetFolder)) {
-    await fs.ensureDir(targetFolder);
-  }
+      await fs.promises.mkdir(targetFolder, {
+        recursive: true
+      });
 
-  // copy
-  if (fs.lstatSync(source).isDirectory()) {
-    files = fs.readdirSync(source);
+      let files = [];
 
-    files = _.difference(files, blackList);
+      files = await fs.promises.readdir(source);
+      files = _.difference(files, blackList);
 
-    await Promise.all(files.map(async (file) => {
-      var curSource = join(source, file);
-      if (fs.lstatSync(curSource).isDirectory()) {
-        await copyFolderRecursiveSync(curSource, targetFolder);
-      } else {
-        await copyFileSync(curSource, targetFolder);
-      }
-    }));
+      return await Promise.all(files.map(async (file) => {
+        var curSource = join(source, file);
+        if ((await fs.promises.lstat(curSource)).isDirectory()) {
+          //  console.log(1)
+          return await copyFolderRecursive(curSource, targetFolder);
+        } else {
+          return await copyFile(curSource, targetFolder);
+        }
+      })).catch((e) => {
+        console.log('copy err', e)
+        return;
+      });
+    } else {
+      return;
+    }
+  } catch {
+    return;
   }
 }

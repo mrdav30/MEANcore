@@ -94,7 +94,7 @@ const backupPkg = async (cb) => {
     if (args.switch === 'install') {
 
       // Default to compatible with version if not provided
-      if(!version.includes('^') && !version.includes('~')){
+      if(version && !version.includes('^') && !version.includes('~')){
         version = '^' + version;
       }
 
@@ -126,7 +126,7 @@ const backupPkg = async (cb) => {
 
 bundleConfig.init(() => {
   if (args.package === '%npm_config_pkg%') {
-    console.log(chalk.red('You need to pass a package name!'));
+    console.log(chalk.red('You need to pass a package name! "--pkg=lodash"'));
     return 1;
   }
 
@@ -138,11 +138,12 @@ bundleConfig.init(() => {
     SAVE_FLG = '--save';
   } else {
     console.log(chalk.red('Invalid dependency type!...', args.depType));
+    console.log(chalk.red('Valid options include dev, devDependencies, dep, dependencies'));
     return 1;
   }
 
   if (args.mod !== '%npm_config_mod%' && !bundleConfig.ALL_MODULES.some(e => e.APP_NAME === args.mod)) {
-    console.log(chalk.red('Module does not exist!'))
+    console.log(chalk.red('Module does not exist!', args.mod))
     return 1;
   }
 

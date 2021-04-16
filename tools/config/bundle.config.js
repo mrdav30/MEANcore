@@ -52,6 +52,8 @@ export class BundleConfig {
      */
     this.TMP_DIR = 'projects';
 
+    this.DIST_DIR = 'dist'
+
     // Path to the bundled package.json
     this.LINK_CORE_PKG = join(this.PROJECT_ROOT, '/package.json');
     // Path to the backup of COREs specific package.json 

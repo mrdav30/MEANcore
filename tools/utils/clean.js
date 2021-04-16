@@ -26,19 +26,21 @@ export async function cleanPaths(paths) {
         console.log(chalk.red(`Cannot remove files outside the project root but tried "${normalize(p)}"`));
         reject();
       } else {
-        fs.remove(p, (e) => {
-          if (e) {
-            console.log(chalk.red('Clean task failed with: ', e));
-          } else {
+        fs.promises.rmdir(p, { recursive: true })
+          .then(() => {
             console.log(chalk.yellowBright('Removed - ', p));
-          }
 
-          resolve();
-        });
+            resolve();
+          })
+          .catch((e) => {
+            if (e) {
+              console.log(chalk.red('Clean task failed with: ', e));
+            }
+          });
       }
     });
   });
 
-  await Promise.all(promises)
+  return await Promise.all(promises)
     .catch(e => console.log(chalk.red(`Error while removing files "${[].concat(paths).join(', ')}", ${e}`)));
 }
