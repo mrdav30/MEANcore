@@ -10,7 +10,7 @@ const install = () => {
 
     console.log('Need to install dotenv...for now');
     cp.exec('npm install dotenv');
-  } else{
+  } else {
     console.log('Setting new git hooksPath : %npm_config_core_prj_root%\\.githooks');
     cp.exec('git config core.hooksPath %npm_config_core_prj_root%\\.githooks');
   }

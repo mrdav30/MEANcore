@@ -26,6 +26,8 @@ import * as defaultConfig from './env/default.js';
 // Get the current config
 import * as environmentConfig from './env/index.js';
 
+let config = {};
+
 /**
  * Validate NODE_ENV existence
  */
@@ -119,10 +121,11 @@ function initGlobalConfigFiles(config, assets) {
   // Setting Globbed submodules base path
   config.submodules = [];
   const modulePath = getGlobbedPaths(assets.submodules.basePath);
+
   modulePath.forEach((path) => {
     config.submodules.push({
       basePath: path,
-      appDefaultConfig: path + '/config/env/default.js'
+      appDefaultConfig: join(path, '/config/env/default.js')
     });
   })
 }
@@ -138,7 +141,9 @@ function initGlobalConfig() {
   let assets = objectHelpers.merge(null, Object.assign({}, defaultAssets), Object.assign({}, environmentAssets[process.env.NODE_ENV]));
 
   // Merge config files
-  let config = objectHelpers.merge(null, Object.assign({}, defaultConfig), Object.assign({}, environmentConfig[process.env.NODE_ENV]));
+
+  //let 
+  config = objectHelpers.merge(null, Object.assign({}, defaultConfig), Object.assign({}, environmentConfig[process.env.NODE_ENV]));
 
   // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
   const localConfig = join(process.cwd(), 'config/env/local-' + process.env.NODE_ENV + '.js');
@@ -166,7 +171,7 @@ function initGlobalConfig() {
   return config;
 }
 
-const retrieveModuleConfigs = async (config) => {
+const retrieveModuleConfigs = async () => {
   let moduleConfigs = [];
 
   await Promise.all(config.submodules.map(async (module) => {

@@ -103,7 +103,7 @@ export class BundleConfig {
 
   // Retrive the mod specific env config 
   async setConfig(done) {
-    const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
+    const moduleConfigs = await config.utils.retrieveModuleConfigs();
 
     if (moduleConfigs.length === 0) {
       console.log('No submodules loaded...loading default core!');

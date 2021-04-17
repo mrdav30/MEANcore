@@ -466,7 +466,7 @@ async function initApps(db) {
   //  Configure mongodb models
   await loadMongoModels(config);
 
-  const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
+  const moduleConfigs = await config.utils.retrieveModuleConfigs();
 
   if (moduleConfigs.length === 0) {
     console.log(chalk.bold.yellow('No submodules loaded...loading default core!'))
