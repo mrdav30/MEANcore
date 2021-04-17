@@ -26,9 +26,11 @@ const bundleModules = async () => {
     console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
     console.log(chalk.green('==================================='));
 
-    await Promise.all([    
+    let copyModulePromise = !bundleConfig.CORE_ONLY ? copyModule() : Promise.resolve();
+
+    await Promise.all([
       await copyCore(),
-      await copyModule(),
+      await copyModulePromise,
       await setNgEnv.createAngularEnv(bundleConfig)
     ]).catch((e) => {
       console.log('bundle err', e);
@@ -84,24 +86,26 @@ async function buildAngularJson() {
 
   coreJsonData.defaultProject = bundleConfig.DEFAULT_PROJECT;
 
-  for (const mod of bundleConfig.ALL_MODULES) {
-    const modJsonStr = await fs.promises.readFile(bundleConfig.MODULE_NG_JSON)
+  if (!bundleConfig.CORE_ONLY) {
+    for (const mod of bundleConfig.ALL_MODULES) {
+      const modJsonStr = await fs.promises.readFile(bundleConfig.MODULE_NG_JSON)
 
-    let modJsonData = JSON.parse(modJsonStr);
+      let modJsonData = JSON.parse(modJsonStr);
 
-    modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME, '{{mod}}');
-    modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME + '-e2e', '{{mod}}-e2e');
+      modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME, '{{mod}}');
+      modJsonData = objectHelpers.renameKeys(modJsonData, mod.APP_NAME + '-e2e', '{{mod}}-e2e');
 
-    modJsonData = await objectHelpers.replacePropertyValues(modJsonData, '{{mod}}', mod.APP_NAME);
+      modJsonData = await objectHelpers.replacePropertyValues(modJsonData, '{{mod}}', mod.APP_NAME);
 
-    coreJsonData.projects = _.mergeWith({}, coreJsonData.projects, modJsonData, (objValue, srcValue) => {
-      if (_.isArray(objValue)) {
-        return objValue.concat(srcValue);
+      coreJsonData.projects = _.mergeWith({}, coreJsonData.projects, modJsonData, (objValue, srcValue) => {
+        if (_.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+      });
+
+      if (coreJsonData.defaultProject.length <= 0) {
+        coreJsonData.defaultProject = mod.APP_NAME;
       }
-    });
-
-    if (coreJsonData.defaultProject.length <= 0) {
-      coreJsonData.defaultProject = mod.APP_NAME;
     }
   }
 

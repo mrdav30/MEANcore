@@ -198,18 +198,20 @@ bundleConfig.init(() => {
     fs.copyFileSync(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
   }
 
-  bundleConfig.ALL_MODULES.forEach((mod) => {
-    dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
-    outputs.push(mod.LINK_MOD_PKG);
+  if (!bundleConfig.CORE_ONLY) {
+    bundleConfig.ALL_MODULES.forEach((mod) => {
+      dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
+      outputs.push(mod.LINK_MOD_PKG);
 
-    if (fs.existsSync(mod.MOD_PKG_BKP)) {
-      // Overwrite module package.json with back up!
-      fs.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
-    } else {
-      // Back up current module package.json
-      fs.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
-    }
-  });
+      if (fs.existsSync(mod.MOD_PKG_BKP)) {
+        // Overwrite module package.json with back up!
+        fs.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
+      } else {
+        // Back up current module package.json
+        fs.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
+      }
+    });
+  }
 
   build({
       dependencies,

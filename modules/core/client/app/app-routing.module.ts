@@ -40,7 +40,7 @@ export const AppRoutes: Routes = [
   },
   {
     path: '**',
-    component: PageNotFoundComponent,
+    component: PageNotFoundComponent
   }
 ];
 

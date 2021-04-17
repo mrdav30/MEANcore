@@ -33,6 +33,9 @@ export class BundleConfig {
      */
     this.ALL_MODULES = [];
 
+    // Flipped to true if no other modules are loaded
+    this.CORE_ONLY = false;
+
     /*
      *  Module's directory
      */
@@ -101,6 +104,12 @@ export class BundleConfig {
   // Retrive the mod specific env config 
   async setConfig(done) {
     const moduleConfigs = await config.utils.retrieveModuleConfigs(config);
+
+    if (moduleConfigs.length === 0) {
+      console.log('No submodules loaded...loading default core!');
+      this.CORE_ONLY = true;
+      moduleConfigs.push(config);
+    }
 
     await moduleConfigs.map(async (modConfig) => {
       await this.setModules(modConfig);

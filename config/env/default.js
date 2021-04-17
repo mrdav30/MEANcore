@@ -1,6 +1,6 @@
 export const app = {
   title: 'MEANcore - MeanStack Web Projects!',
-  name: 'meancore',
+  name: 'core',
   description: 'Applications running on mean stack',
   keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
   logo: process.env.APP_LOGO || 'assets/images/logo.png',
