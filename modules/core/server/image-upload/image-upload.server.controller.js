@@ -19,21 +19,23 @@ export const getUpload = (config) => {
   return upload;
 }
 
-export const upload = (req, res) => {
+export const upload = async (req, res) => {
   const config = req.app.locals.config;
 
   const dir = req.query.upload || '';
   const filename = req.file.filename;
-  const finalDest = config.uploads.images.uploadRepository + dir + '/' + filename
+  const finalDestPath = config.uploads.images.uploadRepository + dir;
 
-  fs.move(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDest, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send({
-        message: config.helpers.getErrorMessage(err)
-      });
-    }
+  try {
+    // test if source exists
+    await fs.promises.access(finalDestPath);
+  } catch {
+    await fs.promises.mkdir(finalDestPath, {
+      recursive: true
+    });
+  }
 
+  await fs.promises.rename(config.uploads.images.uploadRepository + '/_tempDir/' + filename, finalDestPath + '/' + filename).then(() => {
     const base = res.locals.host;
     // eslint-disable-next-line no-useless-escape
     const url = join(req.file.baseUrl, dir, filename).replace(/[\\\/]+/g, '/').replace(/^[\/]+/g, '');
@@ -43,21 +45,30 @@ export const upload = (req, res) => {
       "uploaded": true,
       "url": (req.file.storage == 'local' ? base : '') + '/' + url
     });
-  });
-}
-
-export const removeImage = (req, res) => {
-  const config = req.app.locals.config;
-  fs.promises.unlink(config.uploads.images.uploadRepository + req.body.imagePath, (err) => {
+  }).catch((err) => {
     if (err) {
       console.error(err);
       return res.status(500).send({
         message: config.helpers.getErrorMessage(err)
       });
     }
+  });
+}
 
+export const removeImage = async (req, res) => {
+  const config = req.app.locals.config;
+  const target = config.uploads.images.uploadRepository + req.body.imagePath;
+
+  await fs.promises.unlink(target, () => {}).then(() => {
     res.status(200).send({
       message: 'Image successfully removed'
     });
+  }).catch((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({
+        message: config.helpers.getErrorMessage(err)
+      });
+    }
   })
 }

@@ -26,11 +26,9 @@ const bundleModules = async () => {
     console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
     console.log(chalk.green('==================================='));
 
-    let copyModulePromise = !bundleConfig.CORE_ONLY ? copyModule() : Promise.resolve();
-
     await Promise.all([
       await copyCore(),
-      await copyModulePromise,
+      !bundleConfig.CORE_ONLY ? await copyModule() : Promise.resolve(),
       await setNgEnv.createAngularEnv(bundleConfig)
     ]).catch((e) => {
       console.log('bundle err', e);
