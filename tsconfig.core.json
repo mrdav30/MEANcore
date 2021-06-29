@@ -1,0 +1,36 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowJs": true,
+    "downlevelIteration": true,
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es6",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "@env": ["./environments/environment.ts"],
+      "@utils": ["./features/utils.ts"],
+      "@assets": ["./assets"],
+      "@shared_modules/owasp-password-strength-test": ["../../../shared_modules/owasp-password-strength-test.js"],
+      "core-js/es6/*": ["../../../node_modules/core-js/es/*"],
+      "core-js/es7/*": ["../../../node_modules/core-js/es/*"]
+    }
+  },
+  "exclude": [
+    "../../../dist",
+    "../../../src"
+  ]
+}

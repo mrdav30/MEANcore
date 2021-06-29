@@ -1,16 +1,28 @@
 export const app = {
   title: 'MEANcore - MeanStack Web Projects!',
-  name: process.env.APP_NAME || 'meancore',
+  name: 'core',
   description: 'Applications running on mean stack',
   keywords: 'mongodb, express, angular2+, typescript, node.js, mongoose, passport',
+  logo: process.env.APP_LOGO || 'assets/images/logo.png',
   appBaseUrl: process.env.APP_BASE_URL || '/',
   apiBaseUrl: process.env.API_BASE_URL || 'api',
-  defaultPage: 'index.html'
+  defaultPage: 'index.html',
+  // DOMAIN config should be set to the fully qualified application accessible
+  // URL. For example: https://www.myapp.com (including port if required).
+  // domain name as string or RegEx
+  // "For any value containing & must be escaped with ^ i.e. ABC=M&M should be ABC=M^&M"
+  // domainPattern: 'localhost',
+  domain: process.env.DOMAIN,
+  defaultRoute: process.env.APP_DEFAULT_ROUTE || '',
+  metaTitleSuffix: process.env.META_TITLE_SUFFIX || ' | MEANcore'
 };
 export const GOOGLE_CLIENT_EMAIL = process.env.GOOGLE_CLIENT_EMAIL || '';
+export const GOOGLE_ANALYTICS_ID = process.env.GOOGLE_ANALYTICS_ID || '';
 export const GOOGLE_PRIVATE_KEY = process.env.GOOGLE_PRIVATE_KEY || '';
 export const GOOGLE_VIEW_ID = process.env.GOOGLE_VIEW_ID || '';
+export const RECAPTCHA_SITE_KEY = process.env.RECAPTCHA_SITE_KEY || '';
 export const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '';
+export const TWITTER_HANDLE = process.env.TWITTER_HANDLE || '';
 export const mongoDB = {
   promise: global.Promise,
   options: {
@@ -33,9 +45,9 @@ export const sessionCookie = {
   // in HTTPS mode.
   secure: false
 };
-export const sessionSecret = process.env.SESSION_SECRET || 'MEANcore';
-export const sessionKey = process.env.SESSION_KEY || 'sessionId';
-export const sessionCollection = process.env.SESSION_COLLECTION || 'sessions';
+export const sessionSecret = process.env.SESSION_SECRET || 'MEANCORE';
+export const sessionKey = process.env.SESSION_KEY || 'meancore-key';
+export const sessionCollection = process.env.SESSION_COLLECTION || 'meancore-sessions';
 export const cps = {
   // Specify directives as normal.
   directives: {
@@ -71,6 +83,15 @@ export const cps = {
 export const illegalUsernames = ['meancore', 'administrator', 'password', 'admin', 'user',
   'unknown', 'anonymous', 'null', 'undefined', 'api'
 ];
+export const owaspConfig = {
+  allowPassphrases: true,
+  maxLength: 128,
+  minLength: 10,
+  minPhraseLength: 20,
+  minOptionalTestsToPass: 4,
+  passwordExpirationDays: 90,
+  resetPasswordExpiresMS: 3600000 // 1 hour
+};
 export const aws = {
   s3: {
     accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
@@ -94,3 +115,9 @@ export const uploads = {
     }
   }
 };
+export const scriptStore = [{
+  // Required for google analytics 
+  name: 'gtag',
+  src: 'https://www.googletagmanager.com/gtag/js?id=' + GOOGLE_ANALYTICS_ID,
+  async: true
+}];

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const HttpsProxyAgent = require('https-proxy-agent');
 
 /*
@@ -22,7 +23,7 @@ function setupForCorporateProxy(config) {
     config = [config];
   }
 
-  const proxyServer = process.env.http_proxy || process.env.HTTP_PROXY;
+  const proxyServer = process.env.HTTP_PROXY;
   let agent = null;
 
   if (proxyServer) {

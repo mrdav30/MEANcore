@@ -1,14 +1,21 @@
 /**
  * Module dependencies.
  */
-import _ from 'lodash';
-import chalk from 'chalk';
-import glob from 'glob';
-import fse from 'fs-extra';
+
+import fs from 'fs';
+import url from 'url';
 import {
   resolve,
-  join
+  join,
 } from 'path';
+
+import {
+  getGlobbedPaths
+} from '../tools/utils/glob-paths.js';
+
+import * as objectHelpers from '../tools/utils/object-helpers.js';
+
+import 'dotenv/config.js';
 
 // Get the default assets
 import * as defaultAssets from './assets/default.js';
@@ -19,61 +26,20 @@ import * as defaultConfig from './env/default.js';
 // Get the current config
 import * as environmentConfig from './env/index.js';
 
-/**
- * Get files by glob patterns
- */
-function getGlobbedPaths(globPatterns, excludes) {
-  // URL paths regex
-  let urlRegex = new RegExp('^(?:[a-z]+:)?//', 'i');
-
-  // The output array
-  let output = [];
-
-  // If glob pattern is array then we use each pattern in a recursive way, otherwise we use glob
-  if (_.isArray(globPatterns)) {
-    globPatterns.forEach(function (globPattern) {
-      output = _.union(output, getGlobbedPaths(globPattern, excludes));
-    });
-  } else if (_.isString(globPatterns)) {
-    if (urlRegex.test(globPatterns)) {
-      output.push(globPatterns);
-    } else {
-      let files = glob.sync(globPatterns);
-      if (excludes) {
-        files = files.map(function (file) {
-          if (_.isArray(excludes)) {
-            Object.keys(excludes).forEach(function (i) {
-              file = file.replace(excludes[i], '');
-            });
-          } else {
-            file = file.replace(excludes, '');
-          }
-          return file;
-        });
-      }
-      output = _.union(output, files);
-    }
-  }
-
-  return output;
-}
+let config = {};
 
 /**
  * Validate NODE_ENV existence
  */
 function validateEnvironment() {
-  let environmentFiles = glob.sync('./config/env/' + process.env.NODE_ENV + '.js');
-  console.log();
-  if (!environmentFiles.length) {
+  if (!fs.existsSync('./config/env/' + process.env.NODE_ENV + '.js')) {
     if (process.env.NODE_ENV) {
-      console.error(chalk.red('+ Error: No configuration file found for "' + process.env.NODE_ENV + '" environment using development instead'));
+      console.error('+ Error: No configuration file found for "' + process.env.NODE_ENV + '" environment using development instead');
     } else {
-      console.error(chalk.red('+ Error: NODE_ENV is not defined! Using default development environment'));
+      console.error('+ Error: NODE_ENV is not defined! Using default development environment');
     }
     process.env.NODE_ENV = 'development';
   }
-  // Reset console color
-  console.log(chalk.white(''));
 }
 
 /**
@@ -86,12 +52,12 @@ function validateSecureMode(config) {
     return true;
   }
 
-  let privateKey = fse.existsSync(resolve(config.secure.privateKey));
-  let certificate = fse.existsSync(resolve(config.secure.certificate));
+  let privateKey = fs.existsSync(resolve(config.secure.privateKey));
+  let certificate = fs.existsSync(resolve(config.secure.certificate));
 
   if (!privateKey || !certificate) {
-    console.log(chalk.red('+ Error: Certificate file or key file is missing, falling back to non-SSL mode'));
-    console.log(chalk.red('  To create them, simply run the following from your shell: sh ./scripts/generate-ssl-certs.sh'));
+    console.error('+ Error: Certificate file or key file is missing, falling back to non-SSL mode');
+    console.error('  To create them, simply run the following from your shell: sh ./tools/generate-ssl-certs.sh');
     console.log();
     config.secure.ssl = false;
   }
@@ -106,11 +72,11 @@ function validateSessionSecret(config, testing) {
     return true;
   }
 
-  if (config.sessionSecret === 'MEANcore') {
+  if (config.sessionSecret === 'MEANcore' || config.sessionSecret === '') {
     if (!testing) {
-      console.log(chalk.red('+ WARNING: It is strongly recommended that you change sessionSecret config while running in production!'));
-      console.log(chalk.red('  Please add `sessionSecret: process.env.SESSION_SECRET || \'super amazing secret\'` to '));
-      console.log(chalk.red('  `config/env/production.js` or `config/env/local.js`'));
+      console.error('+ WARNING: It is strongly recommended that you change sessionSecret config while running in production!');
+      console.error('  Please add `sessionSecret: process.env.SESSION_SECRET || \'super amazing secret\'` to ');
+      console.error('  `config/env/production.js` or `config/env/local.js`');
       console.log();
     }
     return false;
@@ -149,6 +115,19 @@ function initGlobalConfigFiles(config, assets) {
 
   // Setting Globbed shared modules files
   config.files.sharedModules = getGlobbedPaths(assets.server.sharedModules);
+
+  config.files.views = getGlobbedPaths(assets.server.views);
+
+  // Setting Globbed submodules base path
+  config.submodules = [];
+  const modulePath = getGlobbedPaths(assets.submodules.basePath);
+
+  modulePath.forEach((path) => {
+    config.submodules.push({
+      basePath: path,
+      appDefaultConfig: join(path, '/config/env/default.js')
+    });
+  })
 }
 
 /**
@@ -159,16 +138,17 @@ function initGlobalConfig() {
   validateEnvironment();
 
   // Merge assets
-  let assets = _.merge(Object.assign({}, defaultAssets), Object.assign({}, environmentAssets[process.env.NODE_ENV]));
+  let assets = objectHelpers.merge(null, Object.assign({}, defaultAssets), Object.assign({}, environmentAssets[process.env.NODE_ENV]));
 
   // Merge config files
-  let config = _.merge(Object.assign({}, defaultConfig), Object.assign({}, environmentConfig[process.env.NODE_ENV]));
+  config = objectHelpers.merge(null, Object.assign({}, defaultConfig), Object.assign({}, environmentConfig[process.env.NODE_ENV]));
 
+  let rootPath = process.env.npm_config_core_prj_root ? process.env.npm_config_core_prj_root : process.cwd();
   // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
-  const localConfig = join(process.cwd(), 'config/env/local-' + process.env.NODE_ENV + '.js');
-  if (fse.existsSync(localConfig)) {
+  const localConfig = join(rootPath, 'config/env/local-' + process.env.NODE_ENV + '.js');
+  if (fs.existsSync(localConfig)) {
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    config = _.merge(config, import(localConfig));
+    config = objectHelpers.merge(null, config, import(localConfig));
   }
 
   // Initialize global globbed files
@@ -180,16 +160,60 @@ function initGlobalConfig() {
   // Validate session secret
   validateSessionSecret(config);
 
-  // Print a warning if config.domain is not set
-  // validateDomainIsSet(config);
-
   // Expose configuration utilities
   config.utils = {
     getGlobbedPaths: getGlobbedPaths,
-    validateSessionSecret: validateSessionSecret
+    validateSessionSecret: validateSessionSecret,
+    retrieveModuleConfigs: retrieveModuleConfigs
   };
 
   return config;
+}
+
+const retrieveModuleConfigs = async () => {
+  let moduleConfigs = [];
+
+  await Promise.all(config.submodules.map(async (module) => {
+    const originalConfig = objectHelpers.merge(null, {}, config);
+    let rootPath = process.env.npm_config_core_prj_root ? process.env.npm_config_core_prj_root : process.cwd();
+
+    const appConfigPath = url.pathToFileURL(join(rootPath, module.appDefaultConfig)).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    let appConfig = await import(appConfigPath);
+    const newConfig = objectHelpers.merge((objValue, srcValue) => {
+      if (Array.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      } else {
+        return srcValue;
+      }
+    }, originalConfig, appConfig);
+
+
+
+    const moduleEnvConfigPath = url.pathToFileURL(join(rootPath, module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const moduleEnvConfig = await import(moduleEnvConfigPath);
+
+    // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
+    const modLocalConfig = url.pathToFileURL(join(rootPath, module.basePath + 'config/env/local-' + process.env.NODE_ENV + '.js')).href;
+    if (fs.existsSync(modLocalConfig)) {
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
+      appConfig = objectHelpers.merge(null, appConfig, import(modLocalConfig));
+    }
+
+    // Merge default core config with submodules specific config
+    appConfig = objectHelpers.merge((objValue, srcValue) => {
+      if (Array.isArray(objValue)) {
+        return objValue.concat(srcValue);
+      } else {
+        return srcValue;
+      }
+    }, newConfig, moduleEnvConfig);
+
+    moduleConfigs.push(appConfig);
+  }));
+
+  return moduleConfigs;
 }
 
 /**
