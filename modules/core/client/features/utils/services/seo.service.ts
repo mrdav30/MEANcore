@@ -21,6 +21,7 @@ export class SeoService {
             { name: 'twitter:site', content: '' },
             { name: 'twitter:title', content: '' },
             { name: 'twitter:description', content: '' },
+            { name: 'twitter:creator', content: '' },
             { name: 'twitter:image', content: '' },
             { property: 'og:type', content: '' },
             { property: 'og:site_name', content: '' },
