@@ -107,7 +107,8 @@ export const getGlobbedPaths = (globPatterns, excludes) => {
     if (urlRegex.test(globPatterns)) {
       output.push(globPatterns);
     } else {
-      let files = getGlobs(process.cwd(), globPatterns);
+
+      let files = getGlobs(process.env.npm_config_core_prj_root ? process.env.npm_config_core_prj_root : process.cwd(), globPatterns);
       
       if (excludes) {
         files = files.map(function (file) {

@@ -3,6 +3,7 @@
 //  The generated core.package.json file will override upon commit.
 
 import fs from 'fs';
+import cp from 'child_process';
 import * as objectHelpers from './utils/object-helpers.js';
 
 import bundleConfig from './config.init.js';
@@ -44,7 +45,7 @@ const build = async ({
     //  console.log(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`);
 
     await compose(outputs, dedupedDependencies).then(() => {
-      return 1;
+      return Promise.resolve();
     });
   })
 }
@@ -180,7 +181,7 @@ const compose = async (outputs, fileContents) => {
   }
 }
 
-bundleConfig.init(() => {
+bundleConfig.init(async () => {
   const dependencies = {
     core: bundleConfig.LINK_CORE_PKG
   };
@@ -190,34 +191,38 @@ bundleConfig.init(() => {
   ];
 
   // back up unbundled package files
-  if (fs.existsSync(bundleConfig.CORE_PKG_BKP)) {
+  try {
+    await fs.promises.access(bundleConfig.CORE_PKG_BKP);
     // Overwrite current core package.json with back up!
-    fs.copyFileSync(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
-  } else {
-    // Back up current core package.json
-    fs.copyFileSync(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
-  }
+    await fs.promises.copyFile(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
+   } catch {
+     // No current back up package.json recover, back up current core package.json
+     await fs.promises.copyFile(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
+   }
 
   if (!bundleConfig.CORE_ONLY) {
-    bundleConfig.ALL_MODULES.forEach((mod) => {
+    bundleConfig.ALL_MODULES.forEach(async (mod) => {
       dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
       outputs.push(mod.LINK_MOD_PKG);
 
-      if (fs.existsSync(mod.MOD_PKG_BKP)) {
-        // Overwrite module package.json with back up!
-        fs.copyFileSync(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
-      } else {
-        // Back up current module package.json
-        fs.copyFileSync(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
+      try {
+        await fs.promises.access(mod.MOD_PKG_BKP);
+         // Overwrite module package.json with back up!
+        await fs.promises.copyFile(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
+      } catch {
+        // No module back up package.json to recover, back up current module package.json
+        await fs.promises.copyFile(mod.LINK_MOD_PKG, mod.MOD_PKG_BKP);
       }
     });
   }
 
-  build({
+  return await build({
       dependencies,
       outputs
     }).then(() => {
-      console.log("Bundling linked packages complete")
+      cp.exec("npm config set core_pkg_linked 1");
+      console.log("Bundling linked packages complete");
+      return 1;
     })
     .catch((err) => {
       console.log(err);

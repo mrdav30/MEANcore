@@ -1,19 +1,19 @@
 #!/bin/sh
 export PATH=/usr/local/bin:$PATH
 
+# This commit hook will reverse and rebundle if neccessary
+echo >&2 "###POST-COMMIT - PACKAGE LINK CHECK###".
+
 PRJ_ROOT=`npm config get core_prj_root`
 LINK_REBUNDLE=`npm config get core_link_rebundle`
 LINK_RELOCK=`npm config get core_link_relock`
-
-# This commit hook will reverse and rebundle if neccessary
-echo >&2 "###POST-COMMIT - PACKAGE LINK CHECK###".
 
 if [[ $LINK_REBUNDLE -eq 1 ]]
 then
 
   echo >&2 "Rebundling linked package".
 
-  node $PRJ_ROOT\\tools\\bundle-packages.js
+  npm run bundle:packages
 
   npm config set core_link_rebundle 0
 

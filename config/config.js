@@ -141,12 +141,11 @@ function initGlobalConfig() {
   let assets = objectHelpers.merge(null, Object.assign({}, defaultAssets), Object.assign({}, environmentAssets[process.env.NODE_ENV]));
 
   // Merge config files
-
-  //let 
   config = objectHelpers.merge(null, Object.assign({}, defaultConfig), Object.assign({}, environmentConfig[process.env.NODE_ENV]));
 
+  let rootPath = process.env.npm_config_core_prj_root ? process.env.npm_config_core_prj_root : process.cwd();
   // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
-  const localConfig = join(process.cwd(), 'config/env/local-' + process.env.NODE_ENV + '.js');
+  const localConfig = join(rootPath, 'config/env/local-' + process.env.NODE_ENV + '.js');
   if (fs.existsSync(localConfig)) {
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     config = objectHelpers.merge(null, config, import(localConfig));
@@ -176,8 +175,9 @@ const retrieveModuleConfigs = async () => {
 
   await Promise.all(config.submodules.map(async (module) => {
     const originalConfig = objectHelpers.merge(null, {}, config);
+    let rootPath = process.env.npm_config_core_prj_root ? process.env.npm_config_core_prj_root : process.cwd();
 
-    const appConfigPath = url.pathToFileURL(module.appDefaultConfig).href;
+    const appConfigPath = url.pathToFileURL(join(rootPath, module.appDefaultConfig)).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     let appConfig = await import(appConfigPath);
     const newConfig = objectHelpers.merge((objValue, srcValue) => {
@@ -188,12 +188,14 @@ const retrieveModuleConfigs = async () => {
       }
     }, originalConfig, appConfig);
 
-    const moduleEnvConfigPath = url.pathToFileURL(join(process.cwd(), module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
+
+
+    const moduleEnvConfigPath = url.pathToFileURL(join(rootPath, module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const moduleEnvConfig = await import(moduleEnvConfigPath);
 
     // Extend the config object with the local-NODE_ENV.js custom/local environment. This will override any settings present in the local configuration.
-    const modLocalConfig = url.pathToFileURL(join(process.cwd(), module.basePath + 'config/env/local-' + process.env.NODE_ENV + '.js')).href;
+    const modLocalConfig = url.pathToFileURL(join(rootPath, module.basePath + 'config/env/local-' + process.env.NODE_ENV + '.js')).href;
     if (fs.existsSync(modLocalConfig)) {
       // eslint-disable-next-line node/no-unsupported-features/es-syntax
       appConfig = objectHelpers.merge(null, appConfig, import(modLocalConfig));
