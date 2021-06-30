@@ -55,10 +55,18 @@ export const merge = (customizer, ...args) => {
         if (Object.prototype.toString.call(obj[prop]) === '[object Object]') {
           target[prop] = merge(null, target[prop], obj[prop]);
         } else {
-          if (!customizer) {
-            target[prop] = obj[prop];
+          if (Array.isArray(obj[prop])) {
+            if(target[prop] == null){
+              target[prop] = obj[prop];
+            }else{
+              target[prop] = target[prop].concat(obj[prop]);
+            }
           } else {
-            target[prop] = customizer(target[prop], obj[prop]);
+            if (!customizer) {
+              target[prop] = obj[prop];
+            } else {
+              target[prop] = customizer(target[prop], obj[prop]);
+            }
           }
         }
       }

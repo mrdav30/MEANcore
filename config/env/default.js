@@ -74,11 +74,11 @@ export const cps = {
       'https://www.google-analytics.com/',
       'https://www.gstatic.com/images/branding/'
     ],
-    reportUri: '/report-violation',
     objectSrc: ["'none'"],
-    upgradeInsecureRequests: true,
-    workerSrc: false // This is not set.
-  }
+  },
+  reportUri: '/report-violation',
+  upgradeInsecureRequests: true,
+  workerSrc: false // This is not set.
 };
 export const illegalUsernames = ['meancore', 'administrator', 'password', 'admin', 'user',
   'unknown', 'anonymous', 'null', 'undefined', 'api'

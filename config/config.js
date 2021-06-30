@@ -178,15 +178,7 @@ const retrieveModuleConfigs = async () => {
     const appConfigPath = url.pathToFileURL(join(rootPath, module.appDefaultConfig)).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     let appConfig = await import(appConfigPath);
-    const newConfig = objectHelpers.merge((objValue, srcValue) => {
-      if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      } else {
-        return srcValue;
-      }
-    }, originalConfig, appConfig);
-
-
+    const newConfig = objectHelpers.merge(null, originalConfig, appConfig);
 
     const moduleEnvConfigPath = url.pathToFileURL(join(rootPath, module.basePath + '/config/env', process.env.NODE_ENV + '.js')).href;
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -200,13 +192,7 @@ const retrieveModuleConfigs = async () => {
     }
 
     // Merge default core config with submodules specific config
-    appConfig = objectHelpers.merge((objValue, srcValue) => {
-      if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
-      } else {
-        return srcValue;
-      }
-    }, newConfig, moduleEnvConfig);
+    appConfig = objectHelpers.merge(null, newConfig, moduleEnvConfig);
 
     moduleConfigs.push(appConfig);
   }));

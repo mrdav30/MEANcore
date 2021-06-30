@@ -280,7 +280,7 @@ const initHelmetHeaders = (app, moduleConfig) => {
 
   // Disable cps during dev testing to prevent issues with ng-dev proxy
   if (process.env.NODE_ENV === 'production') {
-    app.use(csp(moduleConfig.cps));
+    app.use(csp(moduleConfig.csp));
   }
 
   // POST any CSP violations
