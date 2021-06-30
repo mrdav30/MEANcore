@@ -8,13 +8,13 @@ import logger from './logger.js';
 import {
   startTaskScheduler
 } from './agenda.js';
+import { configureSocket } from './socket.io.js';
 import bodyparser from 'body-parser';
 import session from 'express-session';
 import {
   loadMongoModels
 } from './mongoose-manager.js';
-import connectMongo from 'connect-mongo';
-const MongoStore = connectMongo(session);
+import MongoStore from 'connect-mongo';
 import compress from 'compression';
 import methodOverride from 'method-override';
 import cookieParser from 'cookie-parser';
@@ -66,7 +66,9 @@ const initLocalvariables = function (app, moduleConfig) {
 /**
  * Configure Express session
  */
-const initSession = (app, moduleConfig, db) => {
+const initSession = (app, moduleConfig, mongoInstance) => {
+  // eslint-disable-next-line node/no-unsupported-features/es-syntax
+// const MongoStore = connectMongo.default;
   app.use(session({
     saveUninitialized: false, // dont save unmodified
     resave: false, // forces the session to be saved back to the store
@@ -77,10 +79,10 @@ const initSession = (app, moduleConfig, db) => {
       secure: moduleConfig.sessionCookie.secure && moduleConfig.secure.ssl
     },
     name: moduleConfig.sessionKey,
-    store: new MongoStore({
-      db: db,
-      collection: moduleConfig.sessionCollection,
-      url: moduleConfig.mongoDB.uri
+    store: MongoStore.create({
+      client: mongoInstance.client,
+      collectionName: moduleConfig.sessionCollection,
+      mongoUrl: moduleConfig.mongoDB.uri
     })
   }));
 };
@@ -360,9 +362,9 @@ const initErrorRoutes = (app, moduleConfig) => {
   });
 };
 
-const initTaskScheduler = async (db, moduleConfig) => {
+const initTaskScheduler = async (mongoInstance, moduleConfig) => {
   // Start Agenda task scheduler
-  await startTaskScheduler(db).then((scheduler) => {
+  await startTaskScheduler(mongoInstance).then((scheduler) => {
     moduleConfig.taskScheduler = scheduler;
   });
 }
@@ -370,12 +372,10 @@ const initTaskScheduler = async (db, moduleConfig) => {
 /**
  * Configure Socket.io
  */
-const configureSocketIO = async (app, db) => {
+const configureSocketIO = async (app, mongoInstance) => {
   // Load the Socket.io configuration
   try {
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    const server = await import('./socket.io.js');
-    return server.default(app, db);
+      return configureSocket(app, config, mongoInstance);
   } catch (err) {
     console.log(err);
   }
@@ -400,7 +400,7 @@ const enableCORS = (app) => {
 /**
  * Initialize each Express application listed in the modules directory
  */
-const init = async (moduleConfig, db) => {
+const init = async (moduleConfig, mongoInstance) => {
   // Initialize express app
   let app = express();
 
@@ -434,13 +434,13 @@ const init = async (moduleConfig, db) => {
   initClientRoutes(app, moduleConfig);
 
   // Initialize Express session
-  initSession(app, moduleConfig, db);
+  initSession(app, moduleConfig, mongoInstance);
 
   // Initialize error routes
   initErrorRoutes(app, moduleConfig);
 
   // Initialize Agenda for task scheduling 
-  initTaskScheduler(db, moduleConfig);
+  initTaskScheduler(mongoInstance, moduleConfig);
 
   await Promise.all([
     // Initialize modules server configuration
@@ -456,7 +456,7 @@ const init = async (moduleConfig, db) => {
 };
 
 // Begin initialization of core and all mods 
-async function initApps(db) {
+async function initApps(mongoInstance) {
   // need to decide if use express or connect??
   let rootApp = express();
 
@@ -475,7 +475,7 @@ async function initApps(db) {
 
   // Now initialize each module set in allConfigs
   await Promise.all(moduleConfigs.map(async (moduleConfig) => {
-    await init(moduleConfig, db).then((module) => {
+    await init(moduleConfig, mongoInstance).then((module) => {
       if (moduleConfig.app.appBaseUrl) {
         rootApp.use(moduleConfig.app.appBaseUrl, module);
       } else if (moduleConfig.app.domainPattern) {
@@ -484,15 +484,15 @@ async function initApps(db) {
     });
   }));
 
-  rootApp = await configureSocketIO(rootApp, db);
+  const httpServer = await configureSocketIO(rootApp, mongoInstance);
 
-  return rootApp;
+  return httpServer;
 }
 
-export async function initAllApps(db, callback) {
-  const rootApp = await initApps(db);
+export async function initAllApps(mongoInstance, callback) {
+  const httpServer = await initApps(mongoInstance);
   if (callback) {
-    return callback(rootApp);
+    return callback(httpServer);
   }
 
   return;

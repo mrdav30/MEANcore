@@ -17,7 +17,7 @@ export const connectMongoDB = async (config) => {
       // Enabling mongoose debug mode if required
      mongoose.set('debug', config.mongoDB.debug);
 
-     return instance.connection.db;
+     return instance.connection;
     })
     .catch((err) => {
       console.error(chalk.red('Could not connect to MongoDB!'));

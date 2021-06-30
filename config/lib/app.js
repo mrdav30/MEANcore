@@ -12,10 +12,10 @@ import {
 import chalk from 'chalk';
 
 export async function init(callback) {
-  await connectMongoDB(config).then(async (db) => {
-    initAllApps(db, (app) => {
+  await connectMongoDB(config).then(async (mongoInstance) => {
+    initAllApps(mongoInstance, (httpServer) => {
       if (callback) {
-        callback(app, config);
+        callback(httpServer, config);
       }
     });
   });
@@ -24,10 +24,10 @@ export async function init(callback) {
 export function start(callback) {
   let _this = this;
 
-  _this.init((app, config) => {
+  _this.init((httpServer, config) => {
 
     // Start the app by listening on <port> at <host>
-    let server = app.listen(config.port, config.host, () => {
+    let server = httpServer.listen(config.port, config.host, () => {
 
       process.stdin.resume(); //so the program will not close instantly
 
@@ -81,7 +81,9 @@ export function start(callback) {
       console.log(chalk.green('App version:     ' + config.version));
       console.log('--');
 
-      if (callback) callback(app, config);
+      if (callback) {
+        callback(httpServer, config);
+      }
     });
 
     server.timeout = 10 * 60 * 1000; // 10 mins

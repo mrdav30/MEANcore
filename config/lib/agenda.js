@@ -2,11 +2,11 @@ import config from '../config.js';
 import url from 'url';
 import agenda from 'agenda';
 
-export function startTaskScheduler(db) {
+export function startTaskScheduler(mongoInstance) {
   return new Promise((resolve) => {
     // or override the default collection name:
     let _agenda = new agenda({
-      mongo: db
+      mongo: mongoInstance.db
     });
 
     const jobTypes = config.agenda && config.agenda.JOB_TYPES ? config.agenda.JOB_TYPES.split(',') : [];

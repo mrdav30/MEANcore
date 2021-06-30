@@ -1,5 +1,5 @@
 // Load the module dependencies
-import config from '../config.js';
+// import config from '../config.js';
 import {
   resolve
 } from 'path';
@@ -13,14 +13,12 @@ import {
 } from 'https';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import socket from 'socket.io';
-import session from 'express-session';
-import connectMongo from 'connect-mongo';
-const MongoStore = connectMongo(session);
+import { Server } from 'socket.io';
+import MongoStore from 'connect-mongo';
 
 // Define the Socket.io configuration method
-export default (app, db) => {
-  let server;
+export const configureSocket = (app, config, mongoInstance) => {
+  let httpServer;
   if (config.secure && config.secure.ssl) {
     // Load SSL key and certificate
     const privateKey = fs.readFileSync(resolve(config.secure.privateKey), 'utf8');
@@ -67,19 +65,21 @@ export default (app, db) => {
     };
 
     // Create new HTTPS Server
-    server = _createServer(options, app);
+    httpServer = _createServer(options, app);
   } else {
     // Create a new HTTP server
-    server = createServer(app);
+    httpServer = createServer(app);
   }
   // Create a new Socket.io server
-  const io = socket.listen(server);
+ // const io = socket.listen(server);
+  //const socket = io(server);
+  const io = new Server(httpServer);
 
   // Create a MongoDB storage object
-  const store = new MongoStore({
-    db: db,
-    collection: config.sessionCollection,
-    url: config.mongoDB.uri
+  const store = MongoStore.create({
+    client: mongoInstance.client,
+    collectionName: config.sessionCollection,
+    mongoUrl: config.mongoDB.uri
   });
 
   // Intercept Socket.io's handshake request
@@ -127,5 +127,5 @@ export default (app, db) => {
     }));
   });
 
-  return server;
+  return httpServer;
 }
