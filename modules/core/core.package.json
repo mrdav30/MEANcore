@@ -16,12 +16,12 @@
   "type": "module",
   "scripts": {
     "init": "node ./tools/init-core.js core && npm run bundle:packages",
-    "bundle:packages": "node %npm_config_core_prj_root%/tools/bundle-packages.js",
-    "unbundle:packages": "node %npm_config_core_prj_root%/tools/unbundle-packages.js",
-    "link:install": "node %npm_config_core_prj_root%/tools/link-packages.js --switch install --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
-    "link:uninstall": "node %npm_config_core_prj_root%/tools/link-packages.js --switch uninstall --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
-    "bundle:modules": "node %npm_config_core_prj_root%/tools/bundle-modules.js",
-    "watch:dev": "node %npm_config_core_prj_root%/tools/utils/watch.js",
+    "bundle:packages": "node ./tools/bundle-packages.js",
+    "unbundle:packages": "node ./tools/unbundle-packages.js",
+    "link:install": "node ./tools/link-packages.js --switch install --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
+    "link:uninstall": "node ./tools/link-packages.js --switch uninstall --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
+    "bundle:modules": "node ./tools/bundle-modules.js",
+    "watch:dev": "node ./tools/utils/watch.js",
     "build:dev": "npm run bundle:modules && ng build",
     "build:prod": "npm run bundle:modules && ng build -c production",
     "client:dev": "concurrently \"ng serve\" \"npm run watch:dev\"",
@@ -32,10 +32,10 @@
     "start:prod": "npm run build:prod && npm run server:prod",
     "test:client": "ng test",
     "lint:client": "ng lint",
-    "lint:server": "%npm_config_core_prj_root%/node_modules/.bin/eslint %npm_config_core_prj_root%/config/**/*.js %npm_config_core_prj_root%/modules/**/server/**/*.js",
+    "lint:server": "./node_modules/.bin/eslint ./config/**/*.js ./modules/**/server/**/*.js",
     "e2e": "npm run bundle:modules && ng e2e",
-    "generate-ssl-certs": "%npm_config_core_prj_root%/tools/generate-ssl-certs.sh",
-    "seed": "node %npm_config_core_prj_root%/tools/seed-db.js"
+    "generate-ssl-certs": "./tools/generate-ssl-certs.sh",
+    "seed": "node ./tools/seed-db.js"
   },
   "dependencies": {
     "@angular/animations": "^11.0.9",
