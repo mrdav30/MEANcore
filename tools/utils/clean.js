@@ -26,7 +26,7 @@ export async function cleanPaths(paths) {
         console.log(chalk.red(`Cannot remove files outside the project root but tried "${normalize(p)}"`));
         reject();
       } else {
-        fs.promises.rmdir(p, { recursive: true })
+        fs.promises.rm(p, { force: true, recursive: true })
           .then(() => {
             console.log(chalk.yellowBright('Removed - ', p));
 
@@ -35,6 +35,7 @@ export async function cleanPaths(paths) {
           .catch((e) => {
             if (e) {
               console.log(chalk.red('Clean task failed with: ', e));
+              reject();
             }
           });
       }

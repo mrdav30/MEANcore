@@ -26,11 +26,8 @@
       "@assets": ["./assets"],
       "@shared_modules/owasp-password-strength-test": ["../../../shared_modules/owasp-password-strength-test.js"],
       "core-js/es6/*": ["../../../node_modules/core-js/es/*"],
-      "core-js/es7/*": ["../../../node_modules/core-js/es/*"]
+      "core-js/es7/*": ["../../../node_modules/core-js/es/*"],
+      "tslib" : ["path/to/node_modules/tslib/tslib.d.ts"]
     }
-  },
-  "exclude": [
-    "../../../dist",
-    "../../../src"
-  ]
+  }
 }

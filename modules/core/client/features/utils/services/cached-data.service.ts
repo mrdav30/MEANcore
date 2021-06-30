@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
-import { tap, publishReplay, refCount, catchError } from 'rxjs/operators';
+import { Observable, ReplaySubject, throwError } from 'rxjs';
+import { tap, share, catchError } from 'rxjs/operators';
 import { map, forEach } from 'lodash';
 
 import { HandleErrorService } from './handle-error.service';
@@ -33,7 +33,7 @@ export class CachedDataService {
         return done(res);
     }
 
-    getData(url: string): any {
+    getData(url: string) {
         if (!allData[url]) {
             allData[url] = this.http.get(url).pipe(
                 tap((res: any) => {
@@ -42,12 +42,18 @@ export class CachedDataService {
                         return obj;
                     });
                 }),
-                publishReplay(1),
-                refCount(),
-                catchError((err) => {
+                share({
+                    connector: () => new ReplaySubject(1),
+                    resetOnError: false,
+                    resetOnComplete: false,
+                    resetOnRefCountZero: false
+                }),
+                catchError((err: any) => {
                     console.log('error', err);
                     delete allData[url];
-                    return this.handleErrorService.handleError<any>();
+                    return throwError(() => {
+                        this.handleErrorService.handleError<any>('cache', err);
+                    });
                 })
             );
         }

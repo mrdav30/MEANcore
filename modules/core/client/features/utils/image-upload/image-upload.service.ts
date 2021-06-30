@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError } from 'rxjs/operators';
+import { lastValueFrom } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { environment } from '@env';
@@ -20,12 +20,6 @@ export class ImageUploadService {
     ) { }
 
     removeImage(imagePath: string): Promise<any> {
-        return this.http.put(environment.appBaseUrl + environment.apiBaseUrl + '/image-uploads', { imagePath })
-            .pipe(
-                catchError((err) => {
-                    return this.handleErrorService.handleError<any>(err);
-                })
-            )
-            .toPromise();
+        return lastValueFrom(this.http.put(environment.appBaseUrl + environment.apiBaseUrl + '/image-uploads', { imagePath }));
     }
 }
