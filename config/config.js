@@ -15,8 +15,6 @@ import {
 
 import * as objectHelpers from '../tools/utils/object-helpers.js';
 
-import 'dotenv/config.js';
-
 // Get the default assets
 import * as defaultAssets from './assets/default.js';
 // Get the current assets

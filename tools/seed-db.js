@@ -1,4 +1,4 @@
-import 'dotenv/config.js';
+import "../env.js";
 
 import {
   connectMongoDB,
