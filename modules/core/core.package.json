@@ -10,8 +10,8 @@
     "url": "https://github.com/meancore/meancore.git"
   },
   "engines": {
-    "node": ">=14.9.0",
-    "npm": ">=6.14.0"
+    "node": ">=16.4.0",
+    "npm": ">=7.56.0"
   },
   "type": "module",
   "scripts": {

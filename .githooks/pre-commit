@@ -7,7 +7,7 @@ echo >&2 "###PRE-COMMIT - PACKAGE LINK CHECK###".
 PRJ_ROOT=`npm config get core_prj_root`
 PKG_LINKED=`npm config get core_pkg_linked`
 PKG_CHG=`git diff --name-only --cached --exit-code package.json`
-PKG_LOCK_CHG=`git diff --name-only --cached --exit-code package-lock.json`
+PKG_LOCK_CHG=`git diff --name-only --cached --exit-code -- package-lock.json`
 
 if [[ $PKG_LINKED -eq 1 ]]
 then
