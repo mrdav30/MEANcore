@@ -7,6 +7,10 @@ import _ from 'lodash';
 import chalk from 'chalk';
 
 import {
+  join
+} from 'path';
+
+import {
   clean,
   copyRecursive,
   setNgEnv,
@@ -25,6 +29,8 @@ const bundleModules = async () => {
     console.log(chalk.green('==================================='));
     console.log(chalk.green('Bundling: ' + bundleConfig.APP_NAME));
     console.log(chalk.green('==================================='));
+
+    await fs.promises.mkdir(join(bundleConfig.DIST_DIR, bundleConfig.APP_NAME), { recursive: true});
 
     await Promise.all([
       await copyCore(),
