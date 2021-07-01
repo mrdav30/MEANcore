@@ -68,8 +68,20 @@ const backupPkg = async (cb) => {
   // Need to check if the version number was included in the package parameter...
   // Always skip the first instance of @ to exclude pkg names (i.e. @angular)
   if(PKG.includes('@', 1)){
-    strippedPackage = PKG.substring(0, PKG.indexOf('@', 1));
-    version = PKG.substring(PKG.indexOf('@', 1)).replace('@', '');
+    if(PKG.includes('/@')){
+      //Need to check if the package name contains an additional instance of @
+      const test2 = PKG.indexOf('@', PKG.indexOf('/@') + 2);
+      if(test2 > -1){
+        strippedPackage = PKG.substring(0, PKG.indexOf('@', test2));
+        console.log("version ", version);
+      }else{
+        strippedPackage = PKG;
+        version = null;
+      }
+    }else{
+      strippedPackage = PKG.substring(0, PKG.indexOf('@', 1));
+      version = PKG.substring(PKG.indexOf('@', 1)).replace('@', '');
+    }
   } else if (FLAG === 'install') {
     fs.promises.readFile(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
@@ -110,7 +122,7 @@ const backupPkg = async (cb) => {
       const dupeKeys = (l, r) => r;
       pkgData[DEPENDENCY_TYPE] = _.mergeWith(sorted, pkgData[DEPENDENCY_TYPE], dupeKeys);
     } else {
-      delete pkgData[DEPENDENCY_TYPE][strippedPackage]
+      delete pkgData[DEPENDENCY_TYPE][strippedPackage];
     }
 
     await fs.promises.writeFile(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
