@@ -26,12 +26,13 @@ then
 
     if [ -n "$PKG_LOCK_CHG" ]
     then
-      npm i --package-lock-only --force
+      npm i --package-lock-only
       npm config set core_link_relock 1
     fi
 
     # Stage updated files
-    git add -u
+    git add -u "package.json"
+    git add -u "package-lock.json"
 
     # Re-apply original unstaged changes
     git stash pop -q
@@ -49,7 +50,7 @@ then
     npm config set core_link_rebundle 1
 
     # Stage updated files
-    git add -u
+    git add -u "package.json"
 
     # Re-apply original unstaged changes
     git stash pop -q
@@ -63,13 +64,13 @@ then
 
     # Revert package
     npm run unbundle:packages
-    npm i --package-lock-only --force
+    npm i --package-lock-only
     npm run bundle:packages
 
     npm config set core_link_relock 1
 
     # Stage updated files
-    git add -u
+    git add -u "package-lock.json"
 
     # Re-apply original unstaged changes
     git stash pop -q
