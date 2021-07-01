@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable, ReplaySubject, throwError } from 'rxjs';
-import { tap, share, catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
+import { tap, publishReplay, refCount, catchError } from 'rxjs/operators';
 import { map, forEach } from 'lodash';
 
 import { HandleErrorService } from './handle-error.service';
@@ -42,12 +42,8 @@ export class CachedDataService {
                         return obj;
                     });
                 }),
-                share({
-                    connector: () => new ReplaySubject(1),
-                    resetOnError: false,
-                    resetOnComplete: false,
-                    resetOnRefCountZero: false
-                }),
+                publishReplay(1),
+                refCount(),
                 catchError((err: any) => {
                     console.log('error', err);
                     delete allData[url];

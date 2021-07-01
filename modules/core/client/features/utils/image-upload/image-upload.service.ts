@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { environment } from '@env';
 
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 import { ConfigService } from '../services/config.service';
 import { HandleErrorService } from '../services/handle-error.service';
-
-const httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable()
 export class ImageUploadService {
@@ -20,6 +18,15 @@ export class ImageUploadService {
     ) { }
 
     removeImage(imagePath: string): Promise<any> {
-        return lastValueFrom(this.http.put(environment.appBaseUrl + environment.apiBaseUrl + '/image-uploads', { imagePath }));
+        return this.http.put(environment.appBaseUrl + environment.apiBaseUrl + '/image-uploads', { imagePath })
+            .pipe(
+                catchError((err: any) => {
+                    console.log('error', err);
+                    return throwError(() => {
+                        this.handleErrorService.handleError<any>('image-upload', err);
+                    });
+                })
+            )
+            .toPromise();
     }
 }
