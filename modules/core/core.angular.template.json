@@ -4,27 +4,30 @@
   "newProjectRoot": "projects",
   "projects": {
     "core": {
-      "root": "",
-      "sourceRoot": "projects/core/client",
       "projectType": "application",
-      "prefix": "app",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
         }
       },
+      "root": "",
+      "sourceRoot": "projects/core/client",
+      "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "outputPath": "dist/core",
-            "progress": true,
-            "preserveSymlinks": true,
             "index": "projects/core/client/index.html",
             "main": "projects/core/client/main.ts",
             "polyfills": "projects/core/client/polyfills.ts",
             "tsConfig": "projects/core/client/tsconfig.app.json",
+            "aot": true,
+            "progress": true,
+            "preserveSymlinks": true,
             "assets": [
               "projects/core/client/favicon.ico",
               "projects/core/client/robots.txt",
@@ -65,7 +68,16 @@
                 }
               ]
             }
-          }
+          },
+          "development": {
+            "buildOptimizer": false,
+            "optimization": false,
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "sourceMap": true,
+            "namedChunks": true
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -76,6 +88,9 @@
           "configurations": {
             "production": {
               "browserTarget": "core:build:production"
+            },
+            "development": {
+              "browserTarget": "core:build:development"
             },
             "test": {
               "browserTarget": "ng-configuration:build:test"

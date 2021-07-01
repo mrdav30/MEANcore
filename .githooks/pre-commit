@@ -24,15 +24,16 @@ then
 
     npm config set core_link_rebundle 1
 
+    # Stage updated files
+    git add -u "package.json"
+
     if [ -n "$PKG_LOCK_CHG" ]
     then
       npm i --package-lock-only
-      npm config set core_link_relock 1
+      npm config set core_link_relock 1   
+      # Stage updated files
+      git add -u "package-lock.json"
     fi
-
-    # Stage updated files
-    git add -u "package.json"
-    git add -u "package-lock.json"
 
     # Re-apply original unstaged changes
     git stash pop -q

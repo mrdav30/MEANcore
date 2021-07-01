@@ -32,8 +32,7 @@ export default {
         "eslint-plugin-jsdoc",
         "@angular-eslint/eslint-plugin",
         "eslint-plugin-prefer-arrow",
-        "@typescript-eslint",
-        "@typescript-eslint/tslint"
+        "@typescript-eslint"
     ],
     "rules": {
         "@angular-eslint/component-class-suffix": "error",

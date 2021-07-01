@@ -8,26 +8,26 @@ import { PasswordValidatorService } from '../services/password-validator.service
 })
 export class PasswordValidatorComponent implements OnChanges {
     @Input() passwordToCheck: string;
-    @Output() GetPasswordValidation = new EventEmitter<any>();
+    @Output() getPasswordValidation = new EventEmitter<any>();
 
     public requirementsColor: string;
-    public requirementsProgress: string;
+    public requirementsProgress: number;
     // Requirements Meter - visual indicator for users
     public requirementsMeter = [{
         color: 'danger',
-        progress: '20'
+        progress: 20
     }, {
         color: 'warning',
-        progress: '40'
+        progress: 40
     }, {
         color: 'info',
-        progress: '60'
+        progress: 60
     }, {
         color: 'primary',
-        progress: '80'
+        progress: 80
     }, {
         color: 'success',
-        progress: '100'
+        progress: 100
     }];
 
     constructor(
@@ -51,13 +51,13 @@ export class PasswordValidatorComponent implements OnChanges {
         this.requirementsProgress = this.requirementsMeter[requirementsIdx].progress;
 
         if (result.errors.length) {
-            this.GetPasswordValidation.emit({
+            this.getPasswordValidation.emit({
                 passwordTooltip: this.passwordValidatorService.getPopoverMsg(),
                 errorMessages: result.errors,
                 status: true
             });
         } else {
-            this.GetPasswordValidation.emit({
+            this.getPasswordValidation.emit({
                 passwordTooltip: '',
                 errorMessages: [],
                 status: false

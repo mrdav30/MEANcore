@@ -15,7 +15,7 @@
     <div id="userList" *ngIf="selectedRole && usersSelected" class="col-sm-4">
       <app-dynamic-list listTitle="{{selectedRole.name}} / Users" [items]="selectedRole.users" [itemsMetadata]="usersMetadata"
         [isReadOnly]="true" [viewingMetadata]="usersReadOnlyMetadata" (itemCreate)="onAddUserToRole($event, selectedRole)"
-        (itemChanges)="onModifyUser($event)" (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
+        (itemDelete)="onRemoveUserFromRole($event, selectedRole)">
       </app-dynamic-list>
     </div>
     <div id="featureList" *ngIf="selectedRole && featuresSelected" class="col-sm-4">

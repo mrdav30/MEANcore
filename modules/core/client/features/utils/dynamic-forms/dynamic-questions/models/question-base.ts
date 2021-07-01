@@ -6,20 +6,21 @@ export class QuestionBase<T> {
   required: boolean;
   order: number;
   controlType: string;
+  selectOptions: { key: string; value: string }[] = [];
   disabled: boolean;
   hideOnCreate: boolean;
   hideOnEdit: boolean;
   constructor(options: {
-    value?: T,
-    key?: string,
-    label?: string,
-    createLabel?: string,
-    required?: boolean,
-    order?: number,
-    controlType?: string,
-    disabled?: boolean,
-    hideOnCreate?: boolean,
-    hideOnEdit?: boolean
+    value?: T;
+    key?: string;
+    label?: string;
+    createLabel?: string;
+    required?: boolean;
+    order?: number;
+    controlType?: string;
+    disabled?: boolean;
+    hideOnCreate?: boolean;
+    hideOnEdit?: boolean;
   } = {}) {
     this.value = options.value;
     this.key = options.key || '';

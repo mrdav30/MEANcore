@@ -198,19 +198,18 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - Server-side rendering for web-crawlers using [Puppeteer](https://github.com/GoogleChrome/puppeteer)
 - Unit tests using [Jasmine](http://jasmine.github.io) and [Karma](https://karma-runner.github.io)
 - End-to-end tests using [Protractor](https://github.com/angular/protractor)
-- Static code analysis: [ESLint](https://github.com/eslint/eslint), [Stylelint](http://stylelint.io) and [HTMLHint](http://htmlhint.com/)
+- Static code analysis: [ESLint](https://github.com/eslint/eslint), [Angular-ESLint](https://github.com/angular-eslint/angular-eslint), [Stylelint](http://stylelint.io) and [HTMLHint](http://htmlhint.com/)
 
 #### Libraries
 
 - [Mongoose.js](https://mongoosejs.com/)
 - [Express.js](https://expressjs.com/)
 - [Angular](https://angular.io)
+- [AngularMaterial](https://material.angular.io/)
 - [Node.js](https://nodejs.org/en/)
 - [Ag-Grid](https://www.ag-grid.com/)
-- [Bootstrap 4](https://getbootstrap.com)
 - [Font Awesome](http://fontawesome.io)
 - [RxJS](http://reactivex.io/rxjs)
-- [ng-bootstrap](https://ng-bootstrap.github.io)
 - [Moment.js](https://momentjs.com/)
 - [Lodash](https://lodash.com)
 - [Async](https://caolan.github.io/async/)

@@ -9,7 +9,7 @@
     <div *ngSwitchCase="'readonly'" class="form-group">
       <span class="ml-2">{{question.value}}</span>
     </div>
-    <input class="form-control" type="text" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.type">
+    <input class="form-control" type="text" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.controlType">
     <textarea class="form-control" *ngSwitchCase="'textarea'" [formControlName]="question.key" [id]="question.key"></textarea>
     <input class="form-control" type="number" *ngSwitchCase="'number'" [formControlName]="question.key" [id]="question.key">
     <input class="form-control" type="checkbox" *ngSwitchCase="'checkbox'" [formControlName]="question.key" [id]="question.key">

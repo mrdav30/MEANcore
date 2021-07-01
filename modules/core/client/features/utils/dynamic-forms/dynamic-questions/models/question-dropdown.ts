@@ -4,7 +4,7 @@ import { get } from 'lodash';
 
 export class DropdownQuestion extends QuestionBase<string> {
   controlType = 'dropdown';
-  selectOptions: { key: string, value: string }[] = [];
+  selectOptions: { key: string; value: string }[] = [];
 
   constructor(options: {} = {}) {
     super(options);
