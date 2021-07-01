@@ -24,7 +24,7 @@ then
 
   echo >&2 "Rebuilding package-lock".
 
-  npm i --package-lock-only
+  npm i --package-lock-only --force
 
   npm config set core_link_relock 0
 

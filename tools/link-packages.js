@@ -6,18 +6,20 @@ import {
   join
 } from 'path';
 import async from 'async';
-import yargs from 'yargs';
 
 import bundleConfig from './config.init.js';
 
-const args = yargs(process.argv).argv;
-
+let FLAG;
+let PKG;
 let DEPENDENCY_TYPE;
+let TARGET_MOD;
+
+//let DEPENDENCY_TYPE;
 let SAVE_FLG;
 
 const initPkgLink = async () => {
- let npmCmd = args.switch === 'install' ? 'npm install' : 'npm uninstall';
- npmCmd += ' ' + args.package + ' ' + SAVE_FLG;
+ let npmCmd = FLAG === 'install' ? 'npm install' : 'npm uninstall';
+ npmCmd += ' ' + PKG + ' ' + SAVE_FLG;
 
   async.series([
     (callback) => {
@@ -37,8 +39,8 @@ const initPkgLink = async () => {
 
 //Install the package in the current package.json
 const execNpmCommand = (npmCmd, cb) => {
-  let msg = args.switch === 'install' ? 'Installing...' : 'Uninstalling...';
-  console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
+  let msg = FLAG === 'install' ? 'Installing...' : 'Uninstalling...';
+  console.log(chalk.green(msg, PKG + ' ' + SAVE_FLG));
 
   const child = cp.exec(npmCmd, (err) => {
     if (err) {
@@ -46,8 +48,8 @@ const execNpmCommand = (npmCmd, cb) => {
       return cb(true);
     }
 
-    msg = args.switch === 'install' ? 'Installed...' : 'Uninstalled...';
-    console.log(chalk.green(msg, args.package + ' ' + SAVE_FLG));
+    msg = FLAG === 'install' ? 'Installed...' : 'Uninstalled...';
+    console.log(chalk.green(msg, PKG + ' ' + SAVE_FLG));
 
     return cb();
   });
@@ -58,17 +60,17 @@ const execNpmCommand = (npmCmd, cb) => {
 };
 
 const backupPkg = async (cb) => {
-  const basePkgPath = args.mod === '%npm_config_mod%' ? bundleConfig.CORE_PKG_BKP : `./modules/${args.mod}/mod.package.json`;
+  const basePkgPath = TARGET_MOD == null ? bundleConfig.CORE_PKG_BKP : `./modules/${TARGET_MOD}/mod.package.json`;
 
   let version;
-  let pkg = args.package;
+  let strippedPackage = PKG;
 
   // Need to check if the version number was included in the package parameter...
   // Always skip the first instance of @ to exclude pkg names (i.e. @angular)
-  if(pkg.includes('@', 1)){
-    pkg = args.package.substring(0, args.package.indexOf('@', 1));
-    version = args.package.substring(args.package.indexOf('@', 1)).replace('@', '');
-  } else if (args.switch === 'install') {
+  if(PKG.includes('@', 1)){
+    strippedPackage = PKG.substring(0, PKG.indexOf('@', 1));
+    version = PKG.substring(PKG.indexOf('@', 1)).replace('@', '');
+  } else if (FLAG === 'install') {
     fs.promises.readFile(join(process.cwd(), './package.json')).then((pkgStr) => {
       let pkgData;
       try {
@@ -77,7 +79,7 @@ const backupPkg = async (cb) => {
         pkgData = {};
       }
 
-      version = pkgData[DEPENDENCY_TYPE][pkg];
+      version = pkgData[DEPENDENCY_TYPE][strippedPackage];
     }).catch((err) => {
       return cb(err);
     });
@@ -91,14 +93,14 @@ const backupPkg = async (cb) => {
       pkgData = {};
     }
 
-    if (args.switch === 'install') {
+    if (FLAG === 'install') {
 
       // Default to compatible with version if not provided
       if(version && !version.includes('^') && !version.includes('~')){
         version = '^' + version;
       }
 
-      pkgData[DEPENDENCY_TYPE][pkg] = version;
+      pkgData[DEPENDENCY_TYPE][strippedPackage] = version;
 
       const sorted = {};
       Object.keys(pkgData[DEPENDENCY_TYPE]).sort().forEach((key) => {
@@ -108,7 +110,7 @@ const backupPkg = async (cb) => {
       const dupeKeys = (l, r) => r;
       pkgData[DEPENDENCY_TYPE] = _.mergeWith(sorted, pkgData[DEPENDENCY_TYPE], dupeKeys);
     } else {
-      delete pkgData[DEPENDENCY_TYPE][pkg]
+      delete pkgData[DEPENDENCY_TYPE][strippedPackage]
     }
 
     await fs.promises.writeFile(basePkgPath, bundleConfig.stringify(pkgData), 'utf-8').then(() => {
@@ -125,25 +127,31 @@ const backupPkg = async (cb) => {
 };
 
 bundleConfig.init(() => {
-  if (args.package === '%npm_config_pkg%') {
-    console.log(chalk.red('You need to pass a package name! "--pkg=lodash"'));
+
+  FLAG = process.argv[3];
+  PKG = process.env.npm_config_pkg ? process.env.npm_config_pkg : null;
+  DEPENDENCY_TYPE = process.env.npm_config_type ? process.env.npm_config_type : null;
+  TARGET_MOD = process.env.npm_config_mod ? process.env.npm_config_mod : null;
+   
+  if (PKG == null) {
+    console.log(chalk.red('You need to pass a package name! ex: --pkg=lodash'));
     return 1;
   }
 
-  if (args.depType === 'dev' || args.depType === 'devDependencies') {
+  if (DEPENDENCY_TYPE === 'dev' || DEPENDENCY_TYPE === 'devDependencies') {
     DEPENDENCY_TYPE = 'devDependencies';
     SAVE_FLG = '--save-dev';
-  } else if (args.depType === 'dependencies' || args.depType === 'dep' || args.depType === '%npm_config_type%') {
+  } else if (DEPENDENCY_TYPE === 'dependencies' || DEPENDENCY_TYPE === 'dep' || DEPENDENCY_TYPE === null) {
     DEPENDENCY_TYPE = 'dependencies';
     SAVE_FLG = '--save';
   } else {
-    console.log(chalk.red('Invalid dependency type!...', args.depType));
+    console.log(chalk.red('Invalid dependency type!...', DEPENDENCY_TYPE));
     console.log(chalk.red('Valid options include dev, devDependencies, dep, dependencies'));
     return 1;
   }
 
-  if (args.mod !== '%npm_config_mod%' && !bundleConfig.ALL_MODULES.some(e => e.APP_NAME === args.mod)) {
-    console.log(chalk.red('Module does not exist!', args.mod))
+  if (TARGET_MOD !== null && !bundleConfig.ALL_MODULES.some(e => e.APP_NAME === TARGET_MOD)) {
+    console.log(chalk.red('Module does not exist!', TARGET_MOD))
     return 1;
   }
 

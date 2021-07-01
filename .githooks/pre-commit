@@ -26,7 +26,7 @@ then
 
     if [ -n "$PKG_LOCK_CHG" ]
     then
-      npm i --package-lock-only
+      npm i --package-lock-only --force
       npm config set core_link_relock 1
     fi
 
@@ -63,7 +63,7 @@ then
 
     # Revert package
     npm run unbundle:packages
-    npm i --package-lock-only
+    npm i --package-lock-only --force
     npm run bundle:packages
 
     npm config set core_link_relock 1

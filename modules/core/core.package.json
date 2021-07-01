@@ -11,15 +11,15 @@
   },
   "engines": {
     "node": ">=16.4.0",
-    "npm": ">=7.56.0"
+    "npm": ">=7.5.6"
   },
   "type": "module",
   "scripts": {
     "init": "node ./tools/init-core.js core && npm run bundle:packages",
     "bundle:packages": "node ./tools/bundle-packages.js",
     "unbundle:packages": "node ./tools/unbundle-packages.js",
-    "link:install": "node ./tools/link-packages.js --switch install --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
-    "link:uninstall": "node ./tools/link-packages.js --switch uninstall --package %npm_config_pkg% --depType %npm_config_type% --mod %npm_config_mod% && npm run bundle:packages",
+    "link:install": "node ./tools/link-packages.js --flag install && npm run bundle:packages",
+    "link:uninstall": "node ./tools/link-packages.js --flag uninstall && npm run bundle:packages",
     "bundle:modules": "node ./tools/bundle-modules.js",
     "watch:dev": "node ./tools/utils/watch.js",
     "build:dev": "npm run bundle:modules && ng build",
@@ -106,7 +106,6 @@
     "universal-analytics": "^0.4.23",
     "vhost": "3.0.2",
     "winston": "^3.2.1",
-    "yargs": "^17.0.1",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {
@@ -118,6 +117,8 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/lodash": "^4.14.149",
     "@types/node": "^15.12.5",
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
     "codelyzer": "^6.0.0",
     "eslint": "^7.8.1",
     "eslint-plugin-node": "^11.1.0",
