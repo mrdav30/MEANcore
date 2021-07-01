@@ -17,14 +17,14 @@ const RIGHT = 'RIGHT';
 const STRIP_NON_NUMERICS = /[^a-zA-Z0-9 ]/g;
 
 const build = async ({
-  dependencies,
-  outputs
+  packages,
+  outputPackages
 }) => {
-  if (dependencies && objectHelpers.isEmpty(dependencies)) {
+  if (packages && objectHelpers.isEmpty(packages)) {
     return errorFactory('Missing required property dependencies');
   }
 
-  if (typeof outputs !== 'object') {
+  if (typeof outputPackages !== 'object') {
     return errorFactory('Must provide output paths for desired package.json')
   }
 
@@ -33,34 +33,41 @@ const build = async ({
     return errorFactory(`Must provide at least one of package.json dependency types: ${Array.from(DEPENDENCY_TYPES)}`);
   }
 
-  const mappedDependencies = Object.values(dependencies).map((value) => value);
+  const mappedPackges = Object.values(packages).map((value) => value);
 
-  await Promise.all(mappedDependencies.map(async (url) => {
-    return fs.promises.readFile(url);
-  })).then(async (deps) => {
-    const parsedDependencies = await parse(deps);
-    const filteredDependencies = await filter(bundleConfig.PKG_BLK_LIST, parsedDependencies);
-    const dedupedDependencies = await dedupe(bundleConfig.PKG_DEP_TYPES, filteredDependencies);
+  let packageData = [];
+  for await (let url of mappedPackges) {
+    await fs.promises.readFile(url).then((data) => {
+      packageData.push(data);
+    })
+  }
 
-    //  console.log(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`);
+  const parsedDependencies = await parse(packageData);
+  const filteredDependencies = await filter(bundleConfig.PKG_BLK_LIST, parsedDependencies);
+  const dedupedDependencies = await dedupe(bundleConfig.PKG_DEP_TYPES, filteredDependencies);
 
-    await compose(outputs, dedupedDependencies).then(() => {
-      return Promise.resolve();
-    });
-  })
+  //  console.log(`::package-json-compose::Generating\n${config.stringify(dedupedDependencies)}`);
+
+  await compose(outputPackages, dedupedDependencies).then(() => {
+    return Promise.resolve();
+  });
 }
 
 const parse = async (data) => data.map((text) => {
-  const result = JSON.parse(text);
+  try {
+    const result = JSON.parse(text);
 
-  const {
-    dependencies = {}, devDependencies = {}, peerDependencies = {}
-  } = result;
-  return {
-    dependencies,
-    devDependencies,
-    peerDependencies
-  };
+    const {
+      dependencies = {}, devDependencies = {}, peerDependencies = {}
+    } = result;
+    return {
+      dependencies,
+      devDependencies,
+      peerDependencies
+    };
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 const filter = async (blacklist, parsedDependencies) => {
@@ -162,8 +169,8 @@ const write = async (output, fileContents) => {
 
 //Non-destructive to all other package.json properties
 const compose = async (outputs, fileContents) => {
-  for (let output of outputs) {
-    fs.promises.readFile(output)
+  for await (let output of outputs) {
+    await fs.promises.readFile(output)
       .then(async (data) => {
         let parsed;
 
@@ -182,11 +189,11 @@ const compose = async (outputs, fileContents) => {
 }
 
 bundleConfig.init(async () => {
-  const dependencies = {
+  const packages = {
     core: bundleConfig.LINK_CORE_PKG
   };
 
-  const outputs = [
+  const outputPackages = [
     bundleConfig.LINK_CORE_PKG
   ];
 
@@ -195,19 +202,19 @@ bundleConfig.init(async () => {
     await fs.promises.access(bundleConfig.CORE_PKG_BKP);
     // Overwrite current core package.json with back up!
     await fs.promises.copyFile(bundleConfig.CORE_PKG_BKP, bundleConfig.LINK_CORE_PKG);
-   } catch {
-     // No current back up package.json recover, back up current core package.json
-     await fs.promises.copyFile(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
-   }
+  } catch {
+    // No current back up package.json recover, back up current core package.json
+    await fs.promises.copyFile(bundleConfig.LINK_CORE_PKG, bundleConfig.CORE_PKG_BKP);
+  }
 
   if (!bundleConfig.CORE_ONLY) {
     bundleConfig.ALL_MODULES.forEach(async (mod) => {
-      dependencies[mod.APP_NAME] = mod.LINK_MOD_PKG;
-      outputs.push(mod.LINK_MOD_PKG);
+      packages[mod.APP_NAME] = mod.LINK_MOD_PKG;
+      outputPackages.push(mod.LINK_MOD_PKG);
 
       try {
         await fs.promises.access(mod.MOD_PKG_BKP);
-         // Overwrite module package.json with back up!
+        // Overwrite module package.json with back up!
         await fs.promises.copyFile(mod.MOD_PKG_BKP, mod.LINK_MOD_PKG);
       } catch {
         // No module back up package.json to recover, back up current module package.json
@@ -217,8 +224,8 @@ bundleConfig.init(async () => {
   }
 
   return await build({
-      dependencies,
-      outputs
+      packages,
+      outputPackages
     }).then(() => {
       cp.exec("npm config set core_pkg_linked 1");
       console.log("Bundling linked packages complete");
