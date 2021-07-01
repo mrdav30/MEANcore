@@ -98,7 +98,7 @@
     "passport-twitter": "~1.0.4",
     "pngquant": "^4",
     "puppeteer": "^10.1",
-    "rxjs": "^7.1",
+    "rxjs": "^7.1.0",
     "sitemap-generator": "^8.5.1",
     "socket.io": "^4.1.2",
     "streamifier": "^0.1.1",
@@ -109,7 +109,12 @@
     "zone.js": "^0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^12",
+    "@angular-devkit/build-angular": "^12.1.0",
+    "@angular-eslint/builder": "12.2.0",
+    "@angular-eslint/eslint-plugin": "12.2.0",
+    "@angular-eslint/eslint-plugin-template": "12.2.0",
+    "@angular-eslint/schematics": "12.2.0",
+    "@angular-eslint/template-parser": "12.2.0",
     "@angular/cli": "^12.1",
     "@angular/compiler-cli": "^12.1",
     "@angular/language-service": "^12.1",
@@ -117,11 +122,14 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/lodash": "^4.14.149",
     "@types/node": "^15.12.5",
-    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/eslint-plugin": "4.23.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
-    "codelyzer": "^6.0.0",
     "eslint": "^7.8.1",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jsdoc": "^35.4.1",
     "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
     "jasmine-core": "^3.6.0",
     "jasmine-spec-reporter": "^7",
     "karma": "^6.3.4",
@@ -130,7 +138,6 @@
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
-    "tslint": "~6.1.0",
-    "typescript": "^4.3.4"
+    "typescript": "^4.3.5"
   }
 }

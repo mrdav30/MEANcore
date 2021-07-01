@@ -11,7 +11,6 @@ import { environment } from '@env';
 export class UnauthorizedComponent implements OnInit {
     public url: string;
 
-    // tslint:disable-next-line
     constructor(
         private router: Router
     ) { }

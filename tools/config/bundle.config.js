@@ -73,7 +73,7 @@ export class BundleConfig {
     this.DEFAULT_PROJECT = "";
 
     // Files that will be ignored during the build process
-    this.BLACK_LIST = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tslint.json', 'tsconfig.e2e.json'];
+    this.BLACK_LIST = ['tsconfig.json', 'tsconfig.app.json', 'tsconfig.spec.json', 'tsconfig.e2e.json'];
 
     this.PKG_BLK_LIST = [];
 

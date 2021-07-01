@@ -15,7 +15,7 @@ import {
   trim
 } from 'lodash';
 
-const noop = () => {}; // tslint:disable-line
+const noop = () => {};
 
 const SPLIT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

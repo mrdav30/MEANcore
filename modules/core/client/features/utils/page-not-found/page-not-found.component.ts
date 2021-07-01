@@ -11,7 +11,6 @@ import { environment } from '@env';
 export class PageNotFoundComponent implements OnInit {
     public url: string;
 
-    // tslint:disable-next-line
     constructor(
         private router: Router
     ) { }

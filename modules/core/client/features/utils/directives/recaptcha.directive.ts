@@ -85,7 +85,6 @@ export class ReCaptchaDirective implements OnInit, AfterViewInit, ControlValueAc
         return this.widgetId;
     }
 
-    // tslint:disable-next-line
     writeValue(obj: any): void { }
 
     registerOnChange(fn: any): void {
