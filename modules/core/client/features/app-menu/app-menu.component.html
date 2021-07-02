@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-navbar sticky-top">
-  <a class="navbar-brand" routerLink="{{appDefaultRoute}}"><img class="img-fluid mr-2" src="{{appLogo}}" />MEANcore</a>
+  <a class="navbar-brand" routerLink="{{appDefaultRoute}}"><img class="img-fluid mx-2" src="{{appLogo}}" />MEANcore</a>
   <button class="navbar-toggler" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed"
     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -19,7 +19,7 @@
         </li>
       </ng-template>
     </ul>
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ms-auto">
       <li *ngIf="showSearchNav" class="nav-item search-nav">
         <form name="searchForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
           <div class="search-panel">
@@ -27,20 +27,20 @@
               <i class="icon-search"></i>
             </button>
             <input type="search" name="searchQuery" id="searchQuery" *ngIf="isSearchVisible" placeholder="Search..."
-              [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required appInputRestriction class="ml-2">
+              [(ngModel)]="searchQuery" (keydown.Enter)="onSubmit()" required appInputRestriction class="ms-2">
           </div>
         </form>
       </li>
       <li *ngIf="!currentUser && showLoginNav" class="nav-item">
-        <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark mr-2">Login</a>
-        <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark">Get Started</a>
+        <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark me-2">Login</a>
+        <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark me-2">Get Started</a>
       </li>
       <li *ngIf="currentUser" class="nav-item">
-        <a routerLink="/profile" rel="nofollow" class="btn mr-2 user-avatar">         
+        <a routerLink="/profile" rel="nofollow" class="btn me-2 user-avatar">         
           <img [(src)]="currentUserAvatar" *ngIf="currentUserAvatar">
-          <i class="mr-2 icon-user" *ngIf="!currentUserAvatar"></i>
+          <i class="me-2 icon-user" *ngIf="!currentUserAvatar"></i>
         </a>
-        <button type="button" (click)="logout()" class="btn btn-outline-dark">Logout</button>
+        <button type="button" (click)="logout()" class="btn btn-outline-dark me-2">Logout</button>
       </li>
     </ul>
   </div>

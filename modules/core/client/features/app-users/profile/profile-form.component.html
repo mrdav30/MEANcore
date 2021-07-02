@@ -24,9 +24,9 @@
         <input type="text" id="username" name="username" class="form-control" [(ngModel)]="profile.username"
           #username="ngModel" spellcheck="false" required />
         <div *ngIf="f.submitted && username.invalid" class="alert alert-danger">
-          <div *ngIf="username.errors.required"><i class="icon-exclamation mr-2"></i>Username is required</div>
+          <div *ngIf="username.errors.required"><i class="icon-exclamation me-2"></i>Username is required</div>
           <div *ngIf="username.errors.alreadyused">
-            <i class="icon-exclamation mr-2"></i>Username already in use
+            <i class="icon-exclamation me-2"></i>Username already in use
           </div>
           <div *ngIf="username.errors.alreadyused">Available: {{possibleUsername}}</div>
         </div>
@@ -39,9 +39,9 @@
         <input type="email" id="email" name="email" class="form-control" [(ngModel)]="profile.email" #email="ngModel"
           spellcheck="false" required pattern="^[^\s@]+@[^\s@]+\.[^\s@]{2,}$" />
         <div *ngIf="f.submitted && email.invalid" class="alert alert-danger">
-          <div *ngIf="email.errors.required"><i class="icon-exclamation mr-2"></i>Email is required</div>
+          <div *ngIf="email.errors.required"><i class="icon-exclamation me-2"></i>Email is required</div>
           <div *ngIf="email.errors.pattern">
-            <i class="icon-exclamation mr-2"></i>Email must be a valid email address
+            <i class="icon-exclamation me-2"></i>Email must be a valid email address
           </div>
         </div>
       </div>
@@ -57,7 +57,7 @@
         </div>
         <div *ngIf="f.submitted && password.invalid">
           <div *ngFor="let passwordError of passwordErrors" class="alert alert-danger">
-            <i class="icon-exclamation mr-2"></i>{{passwordError}}
+            <i class="icon-exclamation me-2"></i>{{passwordError}}
           </div>
         </div>
         <app-password-validator [hidden]="!profile.password.length" [passwordToCheck]="profile.password"

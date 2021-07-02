@@ -1,13 +1,13 @@
 <div [formGroup]="form" class="question">
-  <label [attr.for]="question.key" *ngIf="isNewObject && question.createLabel" class="ml-2">
+  <label [attr.for]="question.key" *ngIf="isNewObject && question.createLabel" class="ms-2">
     <strong>{{question.createLabel}}</strong>
   </label>
-  <label [attr.for]="question.key" *ngIf="!isNewObject || !question.createLabel" class="ml-2">
+  <label [attr.for]="question.key" *ngIf="!isNewObject || !question.createLabel" class="ms-2">
     <strong>{{question.label}}</strong>
   </label>
   <div [ngSwitch]="question.controlType">
     <div *ngSwitchCase="'readonly'" class="form-group">
-      <span class="ml-2">{{question.value}}</span>
+      <span class="ms-2">{{question.value}}</span>
     </div>
     <input class="form-control" type="text" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.controlType">
     <textarea class="form-control" *ngSwitchCase="'textarea'" [formControlName]="question.key" [id]="question.key"></textarea>
@@ -18,6 +18,6 @@
     </select>
   </div>
   <div class="alert alert-danger" *ngIf="!isValid">
-    <span class="ml-2">{{question.label}} is required</span>
+    <span class="ms-2">{{question.label}} is required</span>
   </div>
 </div>

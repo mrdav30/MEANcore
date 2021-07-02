@@ -12,13 +12,13 @@
               (keydown.Enter)="validateUser()" />
           </div>
           <div *ngIf="usernameOrEmail.invalid && usernameOrEmail.errors" class="alert alert-danger">
-            <div *ngIf="usernameOrEmail.errors.notused"><i class="icon-exclamation mr-2"></i>Username or email doesn't
+            <div *ngIf="usernameOrEmail.errors.notused"><i class="icon-exclamation me-2"></i>Username or email doesn't
               exist</div>
           </div>
         </div>
         <div class="card-footer">
           <a routerLink="/sign-up" class="card-link">Create account</a>
-          <button type="button" [disabled]="usernameOrEmail.invalid" (click)="validateUser()" class="btn btn-primary float-right">Next</button>
+          <button type="button" [disabled]="usernameOrEmail.invalid" (click)="validateUser()" class="btn btn-primary float-end">Next</button>
         </div>
       </div>
       <div class="card" [ngbCollapse]="!isUserValidated">
@@ -32,13 +32,13 @@
           </div>
           <div *ngIf="password.invalid && password.errors" class="alert alert-danger">
             <div *ngIf="password.errors.incorrect">
-              <i class="icon-exclamation mr-2"></i>Password doesn't match our records
+              <i class="icon-exclamation me-2"></i>Password doesn't match our records
             </div>
           </div>
           <a [routerLink]="['/password/recover', user.usernameOrEmail]" class="card-link">Forgot password?</a>
         </div>
         <div class="card-footer">
-          <button type="button" (click)="signIn()" [disabled]="password.invalid" class="btn btn-primary float-right">Next</button>
+          <button type="button" (click)="signIn()" [disabled]="password.invalid" class="btn btn-primary float-end">Next</button>
         </div>
       </div>
     </div>

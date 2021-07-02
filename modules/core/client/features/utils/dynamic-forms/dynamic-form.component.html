@@ -5,7 +5,7 @@
         [isNewObject]="isNewObject" [question]="question" [form]="form">
       </app-dynamic-question>
     </div>
-    <div *ngIf="!isReadOnly" class="btn-group float-right mr-2">
+    <div *ngIf="!isReadOnly" class="btn-group float-end me-2">
       <button type="submit" class="btn btn-success" [disabled]="!form.valid">
         <i class="icon-save"></i>
       </button>

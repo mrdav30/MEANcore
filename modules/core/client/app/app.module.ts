@@ -32,9 +32,7 @@ import {
   SeoService
 } from '@utils';
 
-export function init_app(appLoadService: AppLoadService) {
-  return () => appLoadService.initializeApp();
-}
+export const initApp = (appLoadService: AppLoadService) => () => appLoadService.initializeApp();
 
 @NgModule({
   declarations: [
@@ -59,7 +57,7 @@ export function init_app(appLoadService: AppLoadService) {
     AppLoadService,
     {
       provide: APP_INITIALIZER,
-      useFactory: init_app,
+      useFactory: initApp,
       deps: [AppLoadService],
       multi: true
     },

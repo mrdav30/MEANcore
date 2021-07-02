@@ -48,7 +48,14 @@
           "configurations": {
             "production": {
               "progress": false,
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": true,
@@ -82,7 +89,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "core:build",
+            "browserTarget": "core:build:development",
             "proxyConfig": "proxy.conf.cjs"
           },
           "configurations": {
@@ -95,7 +102,8 @@
             "test": {
               "browserTarget": "ng-configuration:build:test"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

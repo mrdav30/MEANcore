@@ -37,6 +37,7 @@ body {
 /*bootstrap override*/
 
 a {
+  text-decoration: none;
   word-wrap: break-word;
   -webkit-transition: color .1s ease-in, background .1s ease-in;
   transition: color .1s ease-in, background .1s ease-in
@@ -45,7 +46,7 @@ a {
 a:focus,
 a:hover {
   color: #7b7b7b;
-  text-decoration: none !important;
+  text-decoration: none;
   font-weight: 900;
   outline: 0
 }

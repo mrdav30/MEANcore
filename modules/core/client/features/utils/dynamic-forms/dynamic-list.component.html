@@ -1,13 +1,13 @@
 <div class="card">
   <div class="card-header">
-    <h5 class="card-title float-left">
+    <h5 class="card-title float-start">
       <strong>{{listTitle}}</strong>
     </h5>
-    <button type="button" *ngIf="!creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-success float-right"
+    <button type="button" *ngIf="!creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-success float-end"
       aria-hidden="true" ngbTooltip="Create">
       <i class="icon-plus" aria-hidden="true"></i>
     </button>
-    <button type="button" *ngIf="creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-secondary float-right"
+    <button type="button" *ngIf="creatingItem" (click)="toggleCreateItem()" class="btn btn-xs btn-secondary float-end"
       aria-hidden="true" ngbTooltip="Cancel">
       <i class="icon-times" aria-hidden="true"></i>
     </button>
@@ -26,14 +26,14 @@
         <button type="button" class="btn btn-md btn-light text-nowrap text-truncate" (click)="toggleItem(item)">
           <strong>{{item.name}}</strong>
           <span *ngIf="hasMultipleLists(item)" aria-hidden="true">
-            <i class="icon-angle-down ml-2"></i>
+            <i class="icon-angle-down ms-2"></i>
           </span>
           <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item) || isToggle || isReadOnly" aria-hidden="true">
-            <i class="icon-chevron-right ml-2"></i>
+            <i class="icon-chevron-right ms-2"></i>
           </span>
-          <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item)" class="badge badge-pill badge-dark ml-2">{{getFirstListCount(item)}}</span>
+          <span *ngIf="!hasMultipleLists(item) && getFirstListCount(item)" class="badge badge-pill badge-dark ms-2">{{getFirstListCount(item)}}</span>
         </button>
-        <div class="btn-group float-right" role="group">
+        <div class="btn-group float-end" role="group">
           <button type="button" *ngIf="!editingItem && !isReadOnly" class="btn btn-xs btn-secondary" (click)="toggleEditItem(item)"
             ngbTooltip="Edit" aria-hidden="true">
             <span><i class="icon-edit"></i></span>
@@ -51,7 +51,7 @@
           <div class="alert alert-danger form-group" role="alert">
             Remove <strong>{{item.name}}</strong> from <strong>{{listTitle}}</strong>?
           </div>
-          <div class="btn-group float-right" role="group">
+          <div class="btn-group float-end" role="group">
             <button type="button" class="btn btn-danger" (click)="onDelete(item)"><i class="icon-check"></i></button>
             <button type="button" class="btn btn-info" (click)="aboutToDeleteItem=false"><i class="icon-times"></i></button>
           </div>
@@ -60,8 +60,8 @@
           <button type="button" *ngFor="let list of getLists(item)" class="list-group-item btn btn-light  text-nowrap text-truncate"
             (click)="toggleList(list)">
             <span>{{list.name}}</span>
-            <i class="icon-angle-down ml-2"></i>
-            <span *ngIf="list.items.length" class="badge badge-pill badge-dark ml-2">{{list.items.length}}</span>
+            <i class="icon-angle-down ms-2"></i>
+            <span *ngIf="list.items.length" class="badge badge-pill badge-dark ms-2">{{list.items.length}}</span>
           </button>
         </div>
         <div *ngIf="isSelected(item) && editingItem">
