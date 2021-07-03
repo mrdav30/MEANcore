@@ -6,7 +6,7 @@
     <strong>{{question.label}}</strong>
   </label>
   <div [ngSwitch]="question.controlType">
-    <div *ngSwitchCase="'readonly'" class="form-group">
+    <div *ngSwitchCase="'readonly'" class="mt-2">
       <span class="ms-2">{{question.value}}</span>
     </div>
     <input class="form-control" type="text" *ngSwitchCase="'textbox'" [formControlName]="question.key" [id]="question.key" [type]="question.controlType">

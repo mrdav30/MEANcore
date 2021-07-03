@@ -20,7 +20,7 @@
       </ng-template>
     </ul>
     <ul class="navbar-nav ms-auto">
-      <li *ngIf="showSearchNav" class="nav-item search-nav">
+      <li *ngIf="showSearchNav" class="nav-item search-nav me-2">
         <form name="searchForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
           <div class="search-panel">
             <button type="button" class="btn btn-lg" (click)="isSearchVisible=isSearchVisible?false:true">
@@ -32,11 +32,13 @@
         </form>
       </li>
       <li *ngIf="!currentUser && showLoginNav" class="nav-item">
-        <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark me-2">Login</a>
-        <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark me-2">Get Started</a>
+        <div class="btn-group" role="group">
+          <a routerLink="/sign-in" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark">Login</a>
+          <a routerLink="/sign-up" routerLinkActive="btn-secondary" rel="nofollow" class="btn btn-outline-dark me-2">Get Started</a>
+        </div>
       </li>
       <li *ngIf="currentUser" class="nav-item">
-        <a routerLink="/profile" rel="nofollow" class="btn me-2 user-avatar">         
+        <a routerLink="/profile" rel="nofollow" class="btn p-2 user-avatar">         
           <img [(src)]="currentUserAvatar" *ngIf="currentUserAvatar">
           <i class="me-2 icon-user" *ngIf="!currentUserAvatar"></i>
         </a>

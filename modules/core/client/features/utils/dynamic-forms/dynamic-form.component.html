@@ -1,6 +1,6 @@
-<div class="card form-group">
+<div class="card">
   <form [formGroup]="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-    <div *ngFor="let question of questions" class="form-group">
+    <div *ngFor="let question of questions">
       <app-dynamic-question *ngIf="(isNewObject && !question.hideOnCreate) || (!isNewObject && !question.hideOnEdit)"
         [isNewObject]="isNewObject" [question]="question" [form]="form">
       </app-dynamic-question>

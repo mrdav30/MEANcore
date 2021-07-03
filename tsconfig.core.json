@@ -14,13 +14,13 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "esModuleInterop": true,
-    "target": "es2017",
-    "module": "es2020",
+    "target": "es6",
+    "module": "esnext",
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
-      "es2018",
+      "esnext",
       "dom"
     ],
     "paths": {
@@ -32,11 +32,5 @@
       "core-js/es7/*": ["../../../node_modules/core-js/es/*"],
       "tslib" : ["path/to/node_modules/tslib/tslib.d.ts"]
     }
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
   }
 }

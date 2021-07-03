@@ -1,5 +1,5 @@
 <div class="container p-3">
-  <div class="card form-group">
+  <div class="card mt-2">
     <div class="card-body">
       <h3><i class="icon-tag me-2"></i>Contact Us</h3>
       <div [ngbCollapse]="isMessageSent">
@@ -20,7 +20,7 @@
   </div>
   <div [ngbCollapse]="isMessageSent">
     <form name="postForm" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
-      <div class="row form-group">
+      <div class="row mt-2">
         <div class="col-sm-6">
           <div>
             <label for="name">Name</label>
@@ -34,7 +34,7 @@
         <div class="col-sm-6"></div>
 
       </div>
-      <div class="row form-group">
+      <div class="row mt-2">
         <div class="col-sm-6">
           <div>
             <label for="email">Email</label>
@@ -48,7 +48,7 @@
         </div>
         <div class="col-sm-6"></div>
       </div>
-      <div class="row form-group">
+      <div class="row mt-2">
         <div class="col-sm-6">
           <div>
             <label for="subject">Subject</label>
@@ -61,7 +61,7 @@
         </div>
         <div class="col-sm-6"></div>
       </div>
-      <div class="row form-group">
+      <div class="row mt-2">
         <div class="col-sm-6">
           <div>
             <label for="message">Message</label>
@@ -74,7 +74,7 @@
         </div>
         <div class="col-sm-6"></div>
       </div>
-      <div class="row form-group">
+      <div class="row mt-2">
         <div class="col-sm-6">
           <div *ngIf="f.submitted && f.form.invalid" class="alert alert-danger">
             Please correct any errors trying to save.
