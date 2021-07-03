@@ -48,18 +48,20 @@ export const sessionCookie = {
 export const sessionSecret = process.env.SESSION_SECRET || 'MEANCORE';
 export const sessionKey = process.env.SESSION_KEY || 'meancore-key';
 export const sessionCollection = process.env.SESSION_COLLECTION || 'meancore-sessions';
-export const cps = {
+export const csp = {
   // Specify directives as normal.
   directives: {
     defaultSrc: ["'self'"],
     connectSrc: [
       "'self'",
+      'https://www.google-analytics.com/',
+      'https://www.googletagmanager.com/gtag/'
     ],
     scriptSrc: [
       "'self'",
       "'unsafe-eval'",
-      'https://www.googletagmanager.com/gtag/',
-      'https://www.google-analytics.com/'
+      'https://www.google-analytics.com/',
+      'https://www.googletagmanager.com/gtag/'
     ],
     styleSrc: ["'self'", "'unsafe-inline'"],
     fontSrc: [
@@ -72,6 +74,7 @@ export const cps = {
       "'self'",
       'data:',
       'https://www.google-analytics.com/',
+      'https://www.googletagmanager.com/',
       'https://www.gstatic.com/images/branding/'
     ],
     objectSrc: ["'none'"],
