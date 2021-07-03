@@ -125,11 +125,10 @@ export class AuthService {
     checkPermission(permission: any, attributes: any): any {
         permission = permission.toLowerCase();
         const permissions = filter(this.user.permission_data[environment.appName], (p) => p.name === permission);
-        return some(permissions, (p) => {
-            return every(Object.keys(attributes), (key) => {
+        return some(permissions, (p) => every(Object.keys(attributes), (key) => {
                 const attr = attributes[key];
                 return !p.attributes || !p.attributes[key] || p.attributes[key].indexOf(attr) !== -1;
-            });
-        });
+            })
+        );
     }
 }

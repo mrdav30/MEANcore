@@ -9,7 +9,6 @@ import {
   startTaskScheduler
 } from './agenda.js';
 import { configureSocket } from './socket.io.js';
-import bodyparser from 'body-parser';
 import session from 'express-session';
 import {
   loadMongoModels
@@ -76,7 +75,8 @@ const initSession = (app, moduleConfig, mongoInstance) => {
     cookie: {
       maxAge: moduleConfig.sessionCookie.maxAge,
       httpOnly: moduleConfig.sessionCookie.httpOnly,
-      secure: moduleConfig.sessionCookie.secure && moduleConfig.secure.ssl
+      secure: moduleConfig.sessionCookie.secure && moduleConfig.secure.ssl,
+      sameSite: 'strict'
     },
     name: moduleConfig.sessionKey,
     store: MongoStore.create({
@@ -111,11 +111,11 @@ const initMiddleware = (app, moduleConfig) => {
   }
 
   // Request body parsing middleware should be above methodOverride
-  app.use(bodyparser.urlencoded({
+  app.use(express.urlencoded({
     extended: true,
     limit: '260mb'
   }));
-  app.use(bodyparser.json({
+  app.use(express.json({
     limit: '260mb'
   }));
   app.use(methodOverride());

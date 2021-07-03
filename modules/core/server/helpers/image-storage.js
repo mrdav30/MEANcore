@@ -88,7 +88,7 @@ export const ImageStorage = (config, options) => {
 
       if (this.options.storage == 'local') {
         // if upload path does not exist, create the upload path structure
-        !fs.existsSync(this.uploadPath) && fs.mkdirp.sync(this.uploadPath);
+        !fs.existsSync(this.uploadPath) && fs.mkdirSync(this.uploadPath);
       }
 
     }
