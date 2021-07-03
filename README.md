@@ -32,7 +32,7 @@ Checkout our blog [Techievor](https://techievor.com) built on meancore for a ful
 ## Prerequisites
 Make sure you have installed all of the following prerequisites on your development machine:
 * Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
-* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.0.0 of Node.js, v14.9.0 being the recommended.
+* Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.0.0 of Node.js, v14.15.0 being the recommended.
 * MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017). This version of MEANcore requires at minimum version >=4.0.0, v4.0.5 being the recommended.
 
 # Getting Started
@@ -61,27 +61,32 @@ MAILER_SECRET='pass'
 MAILER_TEST=true
 ```
 
-2. Next install dependencies:
+2. Setup link-package:
+```bash
+npm run init
+```
+ This command will setup git hooks and preemptively bundle all package.json files located under the modules directory.
+
+3. Next install dependencies:
  ```bash
  npm install
  ```
- This command will preemptively bundle all package.json files located under the modules directory.
 
-3. Run the MongoDB Seed (Optional)
+4. Run the MongoDB Seed (Optional)
 To have the default menu feature(s), role(s), and/or user account(s) at runtime:
 ```bash
 npm run seed
 ```
 This will try to seed the features, roles, and users based on the defined NODE_ENV in your env config. You have to copy the user passwords from the console and store it somewhere safe.
 
-4. Running with TLS (Optional)
+5. Running with TLS (Optional)
 The application will start by default with the secuire configuration (SSL mode) turned off and listen on port 3000.  To run your application in a secure manner, you'll need to use OpenSSL and generate a set of self-signed certificates.  Unix-based users can use the following command:
 ```bash
 npm run generate-ssl-certs
 ```
 Windows users can follow the instructions found [here](https://support.citrix.com/article/CTX128656).  After you've generated the key and certificate, ensure they are placed in the config/sslcerts folder.
 
-5. Then launch development server, and open `localhost:4200` in your browser:
+6. Then launch development server, and open `localhost:4200` in your browser:
  ```bash
  npm run start:dev
  ```
@@ -120,12 +125,18 @@ modules/**                   contains various modules that can be bundled togeth
 |  +- test.ts                   unit tests entry point
 |- e2e/                         end-to-end tests
 |- server/                      project source code for server
+project/                         bundled client modules
 shared_modules/              custom modules that are shared between the client and server
-src/                         bundled client modules
 tools/                       scripts for configuration and managing the application
+|- bundle-modules.js         bundles all module's client folder under project for ng build
+|- bundle-packages.js        bundles all module's packages into a single file in project root
+|- generate-sitemap.js       generates a sitemap.xml with all routes in project
 |- generate-ssl-certs.sh     generate self-signed certs for dev testing
+|- init-core.js              creates npm & git env vars for git hooks
+|- link-packages.js          replaces npm install/uninstall to keep all module packages in sync
 |- seed-db.js                seeds the db with default configuration based on config
 |- set-env.ts                run to configure environment configuration based on process.env
+|- unbundle-packages.js      reverse of bundle-packages
 reports/                     test and coverage reports
 .env                         process.env variable configuration
 proxy.conf.js                backend proxy configuration
@@ -138,7 +149,13 @@ Task automation is based on [NPM scripts](https://docs.npmjs.com/misc/scripts).
 
 Tasks                         | Description
 ------------------------------|---------------------------------------------------------------------------------------
-npm run config                | Produces angular environment configuration from .env
+npm run init                  | Creates npm & git environment variables for git hooks used for link-packages
+npm run bundle:packages       | Bundles all packages under modules directory into single file used by root
+npm run unbundle:packages     | Reverses bundle:packages
+npm run link:install          | Replaces npm install; used to keep linked module packages in sync
+npm run link:uninstall        | Replaces npm uninstall; used to keep linked module packages in sync
+npm run bundle:modules        | Bundles all module's client folder into project directory for ng build
+npm run watch:dev             | Watches each module client directory for changes and rebundles into project folder for ng to pick up
 npm run build:dev             | Lint code and build app for development in `dist/` folder
 npm run build:prod            | Lint code and build app for production in `dist/` folder
 npm run client:dev            | Run development ng server on `http://localhost:4200/` only
@@ -153,6 +170,14 @@ npm run e2e                   | Run e2e tests using [Protractor](http://www.prot
 npm run generate-ssl-certs    | Generates self-signed certificates on Unix-based systems using OpenSSL
 npm run seed                  | Seeds the database with defaults based on defined configuration
 
+## Link Packages
+The follow parameters are used with link:install & link:uninstall
+```
+parms:                     
+  |--pkg={name of npm package} 
+  |--type={type of dependency: blank or dependencies; dev or devDependencies} 
+  |--mod={target mod; can leave blank for core}
+```
 
 ## Development Server
 
@@ -205,10 +230,11 @@ Development, build and quality processes are based on [angular-cli](https://gith
 - [Mongoose.js](https://mongoosejs.com/)
 - [Express.js](https://expressjs.com/)
 - [Angular](https://angular.io)
-- [AngularMaterial](https://material.angular.io/)
 - [Node.js](https://nodejs.org/en/)
 - [Ag-Grid](https://www.ag-grid.com/)
 - [Font Awesome](http://fontawesome.io)
+- [NgBootstrap](https://ng-bootstrap.github.io/#/home)
+- [Bootstrap](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
 - [RxJS](http://reactivex.io/rxjs)
 - [Moment.js](https://momentjs.com/)
 - [Lodash](https://lodash.com)
