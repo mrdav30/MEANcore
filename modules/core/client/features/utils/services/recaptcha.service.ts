@@ -14,8 +14,7 @@ export class ReCaptchaValidatorService {
     ) { }
 
     validateToken(token: string) {
-        return (_: AbstractControl) => {
-            return this.http.get(this.url, { params: { token } }).pipe(
+        return (_: AbstractControl) => this.http.get(this.url, { params: { token } }).pipe(
                 map((res: any) => {
                     if (!res.success) {
                         return { tokenInvalid: true };
@@ -23,6 +22,5 @@ export class ReCaptchaValidatorService {
                     return null;
                 })
             );
-        };
     }
 }

@@ -15,12 +15,8 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
     const routeData = route.data || {};
     const user = this.authService.user;
-    const userRoles = map(user.roles, (role) => {
-      return role.name;
-    });
-    const userPermissions = flatMap(user.roles, (role) => {
-      return role.featurePermissions;
-    });
+    const userRoles = map(user.roles, (role) => role.name);
+    const userPermissions = flatMap(user.roles, (role) => role.featurePermissions);
 
     // if public url
     if (routeData.isPublic) {
