@@ -16,44 +16,62 @@ import {
 
 import bundleConfig from '../config.init.js';
 
-async function checkDestination(filename) {
+function checkDestination(filename) {
   const coreRelative = relative(bundleConfig.CORE_CLIENT_SRC, filename);
-  // if file in module then first chart should not be . // for outside of module paths, path starts with ../../
-  if (coreRelative.charAt(0) !== '.') {
-    // if core change copy to all bundled modules that utilize this file
-    return bundleConfig.ALL_MODULES.forEach(async (mod) => {
-      const dest = join(mod.TMP_DIR, '/client/', coreRelative);
+  return new Promise(async (resolve) => {
+    // if file in module then first chart should not be . // for outside of module paths, path starts with ../../
+    if (coreRelative.charAt(0) !== '.') {
+      // if core change copy to all bundled modules that utilize this file
+      for await (const mod of bundleConfig.ALL_MODULES) {
+        const dest = join(mod.TMP_DIR, '/client/', coreRelative);
 
-      return await copyToTemp(dest, filename, mod.APP_NAME)
-    });
-  } else {
-    // if mod change copy to bundled module from source
-    return bundleConfig.ALL_MODULES.some(async (mod) => {
-      const modRelative = relative(mod.MODULE_CLIENT_SRC, filename);
-     
-      if (modRelative.charAt(0) !== '.') {
-        const dest = join(mod.TMP_DIR, '/client/', modRelative);
-
-        return await copyToTemp(dest, filename, mod.APP_NAME)
+        await copyToTemp(dest, filename, mod.APP_NAME);
       }
-    });
-  }
+
+      resolve();
+    } else {
+      // if mod change copy to bundled module from source
+      bundleConfig.ALL_MODULES.some(async (mod) => {
+        const modRelative = relative(mod.MODULE_CLIENT_SRC, filename);
+
+        if (modRelative.charAt(0) !== '.') {
+          const dest = join(mod.TMP_DIR, '/client/', modRelative);
+
+          await copyToTemp(dest, filename, mod.APP_NAME)
+          return;
+        }
+      });
+
+      resolve();
+    }
+  });
 }
 
-async function copyToTemp(dest, filename, modName) {
-  try {
-    await fs.promises.access(dest);
+function copyToTemp(dest, filename, modName) {
+  new Promise(async (resolve) => {
+    try {
+      if (bundleConfig.BLACK_LIST.indexOf(filename) > -1) {
+        console.log(chalk.cyan('Skipping, file is black-listed in config: ' + filename));
+        return resolve();
+      }
 
-    console.log(chalk.green('==================================='));
-    console.log(chalk.green('Bundling change for: ' + modName));
-    console.log(chalk.green('    + ' + filename));
-    console.log(chalk.green('==================================='));
+      await fs.promises.access(dest);
 
-    await copyFile(filename, dest);
-  } catch {
-    console.log(chalk.cyan('Skipping, file does not exist or is black-listed for: ' + modName));
-    console.log(chalk.cyan('Consider rebundling if this is a new file or copy/paste'));
-  }
+      console.log(chalk.green('==================================='));
+      console.log(chalk.green('Bundling change for: ' + modName));
+      console.log(chalk.green('    + ' + filename));
+      console.log(chalk.green('==================================='));
+
+      await copyFile(filename, dest);
+
+      return resolve();
+    } catch {
+      console.log(chalk.cyan('Skipping, file does not exist for: ' + modName));
+      console.log(chalk.cyan('Consider rebundling if this is a new file or copy/paste'));
+
+      return resolve();
+    }
+  })
 }
 
 /**
@@ -85,9 +103,8 @@ export function watchTask() {
           console.log(chalk.red('filename not provided for client watcher!'))
           return;
         }
-        
-        if (!(await fs.promises.lstat(filename)).isDirectory() &&
-          event === 'update') {
+
+        if (!(await fs.promises.lstat(filename)).isDirectory() && event === 'update') {
           changeFileManager.addFile(filename);
         }
 
