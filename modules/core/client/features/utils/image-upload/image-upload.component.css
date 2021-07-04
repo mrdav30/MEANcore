@@ -18,6 +18,7 @@
     margin-left: auto;
     margin-right: auto;
     height: 100%;
+    width: 100%;
     z-index: 2;
     border-radius: 1em;
 }

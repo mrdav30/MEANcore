@@ -1,6 +1,6 @@
 <div>
   <div class="upload-picture" [style.width.px]="imageWidth" [style.height.px]="imageHeight">
-    <img *ngIf="currentUrl" src="{{currentUrl}}" />
+    <img class="mx-auto" *ngIf="currentUrl" src="{{currentUrl}}" />
     <label for="uploader-input" ng2FileDrop [ngClass]="{'drag-over': hasDragOver}" (fileOver)="fileOver($event)"
       [uploader]="uploader">
       <div class="infotext">
