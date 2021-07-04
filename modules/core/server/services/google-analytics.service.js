@@ -14,8 +14,9 @@ export const getData = (config, startDate, endDate, dimensions, metrics, filters
     return callback(null, null);
   }
 
-  var gAnalytics = google.analytics('v3');
-  var authClient = new google.auth.JWT(config.GOOGLE_CLIENT_EMAIL, null, config.GOOGLE_PRIVATE_KEY, scopes);
+  const gAnalytics = google.analytics('v3');
+  const privateKey = config.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n");
+  const authClient = new google.auth.JWT(config.GOOGLE_CLIENT_EMAIL, null, privateKey, scopes);
 
   authClient.authorize((err) => {
     if (err) {
@@ -23,7 +24,7 @@ export const getData = (config, startDate, endDate, dimensions, metrics, filters
       return callback(err);
     }
 
-    var params = {
+    const params = {
       'auth': authClient,
       'ids': 'ga:' + view_id,
       'start-date': startDate,
@@ -39,15 +40,16 @@ export const getData = (config, startDate, endDate, dimensions, metrics, filters
         return callback(err);
       }
 
-      var data = response.data ? response.data : [];
+      const data = response.data ? response.data : [];
 
       // map column headers to data rows
-      var result = _.map(data.rows, (row) => {
-        var rowdoc = {};
-        for (var i = 0; i < data.columnHeaders.length; i++) {
-          var name = _.replace(data.columnHeaders[i].name, /^ga:/, '');
+      const result = _.map(data.rows, (row) => {
+        let rowdoc = {};
+        for (let i = 0; i < data.columnHeaders.length; i++) {
+          let name = _.replace(data.columnHeaders[i].name, /^ga:/, '');
           rowdoc[name] = row[i];
         }
+
         return rowdoc;
       })
 
