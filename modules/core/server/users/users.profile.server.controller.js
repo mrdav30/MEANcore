@@ -80,17 +80,17 @@ export const updateProfile = (req, res) => {
 
   validateChanges(req, profile, (err, result) => {
     if (err && !result) {
-      res.status(200).send({
+      return res.status(200).send({
         message: config.helpers.getErrorMessage(err),
         msgType: 'error'
       });
     } else if (result && result.userExists) {
-      res.status(200).send({
+      return res.status(200).send({
         userExists: true,
         possibleUsername: result.availableUsername
       });
     } else {
-      res.status(200).send({
+      return res.status(200).send({
         message: 'Success!'
       });
     }

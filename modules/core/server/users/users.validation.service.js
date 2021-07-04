@@ -100,7 +100,7 @@ export const validateChanges = (req, userUpdates, callback) => {
               }
 
               // Merge existing user
-              user = _.extend(user, userUpdates);
+              user = _.extend(user.toObject(), userUpdates);
 
               user.updated = Date.now();
               user.displayName = userUpdates.firstName + ' ' + userUpdates.lastName;
