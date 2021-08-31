@@ -38,10 +38,11 @@ export class ResetPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.titleService.setTitle('Password Reset' + environment.metaTitleSuffix);
-    this.route.params.subscribe((params: RouteParams) => {
-      this.isTokenInvalid = params.token === 'invalid' ? true : false;
-      this.credentials.token = params.token !== 'invalid' ? params.token : 'invalid';
-      this.username = params.username ? params.username : null;
+    this.route.paramMap.subscribe(paramMap => {
+      const token = paramMap.get('token');
+      this.isTokenInvalid = token === 'invalid' ? true : false;
+      this.credentials.token = token !== 'invalid' ? token : 'invalid';
+      this.username = paramMap.get('username');
     });
   }
 

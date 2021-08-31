@@ -36,8 +36,8 @@ export class RecoverPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.titleService.setTitle('Password Recovery' + environment.metaTitleSuffix);
-    this.route.params.subscribe(params => {
-      this.user.usernameOrEmail = params.usernameOrEmail;
+    this.route.paramMap.subscribe(paramMap => {
+      this.user.usernameOrEmail = paramMap.get('usernameOrEmail');
     });
   }
 

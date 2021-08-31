@@ -14,9 +14,6 @@ import { ImageUploadService } from './image-upload.service';
     styleUrls: ['./image-upload.component.css']
 })
 export class ImageUploadComponent implements OnInit {
-    public uploader: FileUploader;
-    public hasDragOver = false;
-    public endPointBase = environment.appBaseUrl + environment.apiBaseUrl + environment.imageBaseUrl;
 
     @Input()
     public imageWidth = 200;
@@ -42,6 +39,10 @@ export class ImageUploadComponent implements OnInit {
 
     @Output()
     public urlChange = new EventEmitter();
+
+    public uploader: FileUploader;
+    public hasDragOver = false;
+    public endPointBase = environment.appBaseUrl + environment.apiBaseUrl + environment.imageBaseUrl;
 
     constructor(
         private imageUploadService: ImageUploadService

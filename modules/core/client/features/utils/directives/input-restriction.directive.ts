@@ -4,9 +4,8 @@ import { Directive, HostListener, ElementRef, Input } from '@angular/core';
     selector: '[appInputRestriction]'
 })
 export class InputRestrictionDirective {
-
-    regexStr = '^[a-zA-Z0-9_]*$';
     @Input() isAlphaNumeric: boolean;
+    regexStr = '^[a-zA-Z0-9_]*$';
 
     constructor(private el: ElementRef) { }
 
@@ -25,6 +24,6 @@ export class InputRestrictionDirective {
             this.el.nativeElement.value = this.el.nativeElement.value.replace(/[^A-Za-z ]/g, '').replace(/\s/g, '');
             event.preventDefault();
 
-        }, 100)
+        }, 100);
     }
 }
