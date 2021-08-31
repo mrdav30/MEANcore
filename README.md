@@ -33,7 +33,7 @@ Checkout our blog [Techievor](https://techievor.com) built on meancore for a ful
 Make sure you have installed all of the following prerequisites on your development machine:
 * Git - [Download & Install Git](https://git-scm.com/downloads). OSX and Linux machines typically have this already installed.
 * Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager. If you encounter any problems, you can also use this [GitHub Gist](https://gist.github.com/isaacs/579814) to install Node.js.  This version of MEANcore requires at minimum version >=14.0.0 of Node.js, v14.15.0 being the recommended.
-* MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017). This version of MEANcore requires at minimum version >=4.0.0, v4.0.5 being the recommended.
+* MongoDB - [Download & Install MongoDB](http://www.mongodb.org/downloads), and make sure it's running on the default port (27017). This version of MEANcore requires at minimum version >=4.2, v4.2.15 being the recommended.
 
 # Getting Started
 
