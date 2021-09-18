@@ -55,6 +55,7 @@ export class SignInComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.userFocus.nativeElement.focus();
+    window.scrollTo(0, 0);
   }
 
   validateUser(): void {
