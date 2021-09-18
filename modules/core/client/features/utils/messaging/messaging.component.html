@@ -1,6 +1,6 @@
 <div class="messageContainer">
   <div *ngFor="let message of messages" class="alert" [ngClass]="{'alert-success': message.msgType==='success', 'alert-danger': message.msgType==='error' }">
     <span>{{message.message}}</span>
-    <button type="button" class="btn-close align-bottom" (click)="dismiss()" disabled aria-label="Close"></button>
+    <button type="button" class="btn-close align-bottom" (click)="dismiss()" aria-label="Close"></button>
   </div>
 </div>
