@@ -1,12 +1,31 @@
-import { Component, OnInit, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
+import {
+  Component,
+  OnInit,
+  HostListener
+} from '@angular/core';
+import {
+  Router
+} from '@angular/router';
 
-import { filter, intersection, map, orderBy } from 'lodash';
+import {
+  filter,
+  intersection,
+  map,
+  orderBy
+} from 'lodash';
 
-import { environment } from '@env';
+import {
+  environment
+} from '@env';
 
-import { UserAccessControlService } from '../user-access-control/services/user-access-control.service';
-import { ConfigService, AuthService, MenuConfig } from '@utils';
+import {
+  UserAccessControlService
+} from '../user-access-control/services/user-access-control.service';
+import {
+  ConfigService,
+  AuthService,
+  MenuConfig
+} from '@utils';
 
 @Component({
   moduleId: module.id,
@@ -36,7 +55,14 @@ export class AppMenuComponent implements OnInit {
     private authService: AuthService,
     private configService: ConfigService,
     private uacService: UserAccessControlService
-  ) { }
+  ) {}
+
+  @HostListener('window:resize', ['$event.target'])
+  onResize(event: any) {
+    if (event.innerWidth > 990) {
+      this.isNavbarCollapsed = true;
+    }
+  }
 
   ngOnInit(): void {
     this.authService.userChange$.subscribe(currentUser => {
@@ -49,13 +75,6 @@ export class AppMenuComponent implements OnInit {
     this.onResize(window);
   }
 
-  @HostListener('window:resize', ['$event.target'])
-  onResize(event: any) {
-    if (event.innerWidth > 990) {
-      this.isNavbarCollapsed = true;
-    }
-  }
-
   onSetUser(currentUser?: any): void {
     this.currentUser = currentUser ? currentUser : this.authService.user ? this.authService.user : false;
     this.currentUserAvatar = this.currentUser ? this.currentUser.avatarUrl : null;
@@ -65,16 +84,11 @@ export class AppMenuComponent implements OnInit {
   setMenuUI(): void {
     this.menus = this.configService.config.menuConfig ? this.configService.config.menuConfig : [];
     // if currentUser has no roles defined, assign to default currentUser role
-    let userRoles = this.currentUser && this.currentUser.roles ? map(this.currentUser.roles, (role) => {
-      return role.name;
-    }) : ['currentUser'];
+    let userRoles = this.currentUser && this.currentUser.roles ? map(this.currentUser.roles, (role) => role.name) : ['currentUser'];
     if (!Array.isArray(userRoles)) {
       userRoles = [userRoles];
     }
-    this.visibleMenus = filter(this.menus, (menu) => {
-      return !menu.roles ||
-        intersection(userRoles, menu.roles).length ? true : false;
-    });
+    this.visibleMenus = filter(this.menus, (menu) => !menu.roles || intersection(userRoles, menu.roles).length ? true : false);
 
     this.visibleMenus = orderBy(this.visibleMenus, 'order_priority', 'asc');
   }
