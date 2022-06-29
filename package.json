@@ -86,7 +86,7 @@
     "node-watch": "^0.7.1",
     "nodemailer": "^6.4.2",
     "nodemon": "^2.0.2",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
     "passport-github": "~1.1.0",
     "passport-google-oauth": "^2.0.0",
