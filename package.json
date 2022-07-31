@@ -98,7 +98,7 @@
     "passport-paypal-openidconnect": "^0.1.1",
     "passport-twitter": "~1.0.4",
     "pngquant": "^4",
-    "puppeteer": "^10.1",
+    "puppeteer": "^13.3.0",
     "rxjs": "^6.6.0",
     "sitemap-generator": "^8.5.1",
     "socket.io": "^4.1.2",
