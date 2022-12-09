@@ -64,7 +64,7 @@
     "cookie-parser": "~1.4.1",
     "core-js": "^3.6.4",
     "dotenv": "^10",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-hbs": "^2.3.4",
     "express-session": "^1.17.0",
     "generate-password": "^1.5.0",
